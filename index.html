@@ -84,7 +84,6 @@
     .kpi-ribbon-val { font-size: 0.95rem; font-weight: 900; color: #fff; white-space: nowrap; }
     .kpi-ribbon-sub { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-top: 1px; }
 
-    /* Active Filter Clear Chip */
     .filter-indicator {
       display: none; align-items: center; justify-content: space-between;
       background: var(--surface-elevated); border: 1px solid var(--border);
@@ -93,7 +92,6 @@
     .filter-indicator span { color: var(--accent); }
     .filter-indicator button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 800; }
 
-    /* Books Grid */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .grid-container {
@@ -192,7 +190,6 @@
     .shelf-kpi-val { font-size: 1.5rem; font-weight: 900; color: #fff; }
     .shelf-kpi-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
 
-    /* YOY History */
     .dash-heading { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: #fff; }
     .yoy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
     .yoy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; }
@@ -200,7 +197,6 @@
     .yoy-books { font-size: 1.25rem; font-weight: 900; color: #fff; margin: 2px 0; }
     .yoy-avg { font-size: 0.72rem; color: var(--gold); font-weight: 700; }
 
-    /* Bottom Nav */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + var(--safe-bottom));
       padding-bottom: var(--safe-bottom); background: rgba(14, 16, 20, 0.96); backdrop-filter: blur(14px);
@@ -214,7 +210,6 @@
     .nav-icon { font-size: 1.25rem; }
     .nav-label { font-size: 0.7rem; font-weight: 800; }
 
-    /* Bottom Sheet Search Modal */
     .search-sheet-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
       z-index: 120; display: none; align-items: flex-end;
@@ -231,7 +226,6 @@
     }
     .search-sheet-clear { position: absolute; right: 12px; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
 
-    /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
       z-index: 100; display: none; justify-content: center; align-items: flex-end;
@@ -255,7 +249,6 @@
     .btn-flag { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .btn-close { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
 
-    /* Series Drawer Items */
     .series-drawer-item {
       display: flex; align-items: center; gap: 12px; background: var(--surface-elevated);
       border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; cursor: pointer; margin-bottom: 8px;
@@ -264,7 +257,6 @@
     .series-drawer-thumb { width: 34px; height: 48px; border-radius: 4px; object-fit: cover; background: #1e2026; }
     .series-drawer-title { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Two-Phase Report Modal Styling */
     .report-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
     .report-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; }
     .report-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
@@ -277,7 +269,6 @@
 </head>
 <body>
 
-  <!-- Birthday Greeting Header -->
   <div class="bday-banner" id="bdayBanner">
     <div class="bday-emoji">🎂</div>
     <div>
@@ -315,7 +306,6 @@
         <option value="Nonfiction">🧠 Nonfiction</option>
       </select>
 
-      <!-- 4-State Filter Row -->
       <div class="filter-pills-row">
         <div class="toggle-group">
           <span class="toggle-label label-derek">Derek</span>
@@ -336,15 +326,12 @@
     </div>
   </header>
 
-  <!-- TAB 1: CATALOG -->
   <main id="tabCatalog" class="tab-content active">
-    <!-- Active Deep-Filter Chip -->
     <div class="filter-indicator" id="filterIndicator">
       <div>Active Filter: <span id="filterIndicatorText">Custom</span></div>
       <button onclick="resetDeepFilters()">✕ Clear</button>
     </div>
 
-    <!-- Single 3-Box Header KPI Ribbon -->
     <div class="mini-kpi-ribbon">
       <div class="kpi-ribbon-card">
         <span class="kpi-ribbon-tag derek">Derek</span>
@@ -368,7 +355,6 @@
     </div>
   </main>
 
-  <!-- TAB 2: OUR SHELF -->
   <main id="tabShelf" class="tab-content">
     <div class="dashboard-container">
       <div class="user-deck">
@@ -377,7 +363,6 @@
         <button class="deck-btn" data-user="BOTH" onclick="setShelfUser('BOTH')">Both</button>
       </div>
 
-      <!-- Clickable Goal Banner -->
       <div class="goal-card" onclick="filterByChallengeYear('2026')">
         <div class="goal-top">
           <div class="goal-title" id="shelfGoalTitle">2026 Reading Challenge</div>
@@ -389,7 +374,6 @@
         <div class="pace-text" id="shelfPaceText">Calculating pace...</div>
       </div>
 
-      <!-- Clickable Shelf KPIs -->
       <div class="kpi-cards-grid">
         <div class="shelf-kpi-card" onclick="filterByAllReads()">
           <div class="shelf-kpi-title">Total Read</div>
@@ -413,13 +397,11 @@
         </div>
       </div>
 
-      <!-- Year-Over-Year History -->
       <h3 class="dash-heading">Year-Over-Year History</h3>
       <div class="yoy-grid" id="yoyGrid"></div>
     </div>
   </main>
 
-  <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navCatalog" onclick="switchTab('catalog')">
       <div class="nav-icon">📚</div>
@@ -435,7 +417,6 @@
     </button>
   </nav>
 
-  <!-- Slide-Up Search Bottom Sheet -->
   <div class="search-sheet-overlay" id="searchSheetOverlay">
     <div class="search-sheet">
       <div class="search-bar-wrap">
@@ -449,7 +430,6 @@
     </div>
   </div>
 
-  <!-- Book Details Modal -->
   <div class="modal-overlay" id="bookModal">
     <div class="modal-sheet">
       <div class="modal-header">
@@ -471,7 +451,6 @@
     </div>
   </div>
 
-  <!-- Series Drawer Modal -->
   <div class="modal-overlay" id="seriesModal">
     <div class="modal-sheet">
       <h2 class="modal-title" id="seriesTitle" style="margin-bottom:4px;">Series</h2>
@@ -483,10 +462,8 @@
     </div>
   </div>
 
-  <!-- Two-Phase Flag & Auto-Fix Modal -->
   <div class="modal-overlay" id="reportModal">
     <div class="modal-sheet">
-      <!-- Phase 1 -->
       <div id="reportPhase1">
         <div class="report-title">Phase 1: What has an issue?</div>
         <div class="report-sub">Select the component that needs repair:</div>
@@ -498,7 +475,6 @@
         </div>
       </div>
 
-      <!-- Phase 2 -->
       <div id="reportPhase2" style="display:none;">
         <div class="report-title" id="phase2Title">Phase 2: What's wrong with it?</div>
         <div class="report-sub">Provide the specific symptom:</div>
@@ -517,9 +493,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // APPS SCRIPT WEB APP /EXEC URL:
-    // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxqHyaW5e9EFCaw7JcUqxiFGQ5zGq-Wc4LhzcFU_rwF4NXBmoznT7AzFF5B8QhgtzkJ/exec";
 
     let books = [];
@@ -528,12 +501,11 @@
     let filterKianna = 'ALL';
     let searchQuery = '';
     let currentShelfUser = 'D';
-    let deepFilterPredicate = null; // Custom deep filter from shelf clicks
+    let deepFilterPredicate = null;
     let activeBook = null;
     let reportTarget = '';
     let reportDetail = '';
 
-    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
@@ -574,7 +546,6 @@
       }
     }
 
-    // Search Sheet
     function openSearchSheet() {
       document.getElementById('searchSheetOverlay').classList.add('open');
       const input = document.getElementById('searchSheetInput');
@@ -616,7 +587,6 @@
       renderShelf();
     }
 
-    // 4-Pill Filter Selection
     document.querySelectorAll('.toggle-pill').forEach(btn => {
       btn.addEventListener('click', function() {
         const fType = this.dataset.filter;
@@ -634,14 +604,12 @@
       });
     });
 
-    // Reset Custom Deep Filters
     function resetDeepFilters() {
       deepFilterPredicate = null;
       document.getElementById('filterIndicator').style.display = 'none';
       renderBooks();
     }
 
-    // Interactive Deep-Link Filters from Shelf KPIs
     function filterByChallengeYear(year) {
       switchTab('catalog');
       selectedList = 'ALL';
@@ -718,10 +686,8 @@
       updateRibbon(scoped);
 
       const filtered = scoped.filter(b => {
-        // Deep-link predicate filter override
         if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
 
-        // Search query
         if (searchQuery) {
           const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
           const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
@@ -732,12 +698,10 @@
         const dRead = b.derekRating > 0;
         const kRead = b.kiannaRating > 0;
 
-        // Derek 4-state logic
         if (filterDerek === 'READ' && !dRead) return false;
         if (filterDerek === 'WISH' && !b.derekWishlist) return false;
         if (filterDerek === 'UNREAD' && dRead) return false;
 
-        // Kianna 4-state logic
         if (filterKianna === 'READ' && !kRead) return false;
         if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
         if (filterKianna === 'UNREAD' && kRead) return false;
@@ -900,7 +864,6 @@
       });
     }
 
-    // Series Drawer
     function openSeriesDrawer(seriesName, currentTitle) {
       const matching = books.filter(b => (b.series || '').trim().toLowerCase() === seriesName.trim().toLowerCase());
       matching.sort((a, b) => (parseFloat(a.seriesNumber) || 999) - (parseFloat(b.seriesNumber) || 999));
@@ -934,7 +897,6 @@
 
     function closeSeriesModal() { document.getElementById('seriesModal').classList.remove('open'); }
 
-    // Two-Phase Report Modal
     function openReportWizard() {
       if (!activeBook) return;
       document.getElementById('reportStatus').style.display = 'none';
@@ -996,7 +958,6 @@
           if (res.success) {
             statusDiv.style.color = 'var(--emerald)';
             statusDiv.textContent = `Success: ${res.status}`;
-            // Live update on-screen object
             if (res.target === 'cover') activeBook.coverUrl = res.newValue;
             if (res.target === 'audio') activeBook.audioLength = res.newValue;
             if (res.target === 'desc') activeBook.description = res.newValue;
@@ -1049,9 +1010,7 @@
     function escapeHtml(s) { return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
     document.getElementById('bookModal').onclick = (e) => { if (e.target.id === 'bookModal') closeModal(); };
 
-    // Initial Data Boot via LocalStorage + Fresh Silent Sync
-   function initData() {
-      // 1. Instant paint from cache if available
+    function initData() {
       const cached = localStorage.getItem('chaptertwo_books_cache');
       if (cached) {
         try {
@@ -1061,7 +1020,6 @@
         } catch (e) {}
       }
 
-      // 2. Fetch directly from your live JSON API
       fetch(API_URL, { method: 'GET', redirect: 'follow' })
         .then(res => {
           if (!res.ok) throw new Error("HTTP " + res.status);
