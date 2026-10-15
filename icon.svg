@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#181b24" />
+      <stop offset="100%" stop-color="#0b0c0e" />
+    </radialGradient>
+    <linearGradient id="bookDerek" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="bookKianna" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6" />
+      <stop offset="100%" stop-color="#db2777" />
+    </linearGradient>
+    <linearGradient id="linerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <radialGradient id="cherryGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="45%" stop-color="#dc2626" />
+      <stop offset="100%" stop-color="#991b1b" />
+    </radialGradient>
+    <filter id="shadowLg" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+    <filter id="shadowSm" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <g filter="url(#shadowLg)">
+    <rect x="106" y="348" width="300" height="46" rx="10" fill="url(#bookDerek)" />
+    <rect x="340" y="355" width="56" height="32" rx="6" fill="#f8fafc" />
+    <line x1="394" y1="355" x2="394" y2="387" stroke="#cbd5e1" stroke-width="2" />
+    <text x="368" y="371" font-family="-apple-system, BlinkMacSystemFont, &#39;Segoe UI&#39;, Roboto, sans-serif" font-size="20" font-weight="900" fill="#0284c7" text-anchor="middle" dominant-baseline="central" transform="rotate(90 368 371)">D</text>
+    <rect x="124" y="355" width="6" height="32" rx="3" fill="#ffffff" opacity="0.45" />
+    <rect x="136" y="355" width="4" height="32" rx="2" fill="#ffffff" opacity="0.25" />
+  </g>
+  <g filter="url(#shadowLg)">
+    <rect x="126" y="294" width="260" height="44" rx="10" fill="url(#bookKianna)" />
+    <rect x="328" y="301" width="48" height="30" rx="6" fill="#f8fafc" />
+    <line x1="374" y1="301" x2="374" y2="331" stroke="#cbd5e1" stroke-width="2" />
+    <text x="352" y="316" font-family="-apple-system, BlinkMacSystemFont, &#39;Segoe UI&#39;, Roboto, sans-serif" font-size="19" font-weight="900" fill="#db2777" text-anchor="middle" dominant-baseline="central" transform="rotate(90 352 316)">K</text>
+    <rect x="144" y="301" width="6" height="30" rx="3" fill="#ffffff" opacity="0.45" />
+    <rect x="156" y="301" width="4" height="30" rx="2" fill="#ffffff" opacity="0.25" />
+  </g>
+  <g filter="url(#shadowLg)">
+    <polygon points="196,228 316,228 300,288 212,288" fill="url(#linerGrad)" />
+    <line x1="228" y1="230" x2="223" y2="286" stroke="#92400e" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+    <line x1="248" y1="230" x2="246" y2="286" stroke="#92400e" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+    <line x1="264" y1="230" x2="266" y2="286" stroke="#92400e" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+    <line x1="284" y1="230" x2="289" y2="286" stroke="#92400e" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+    <rect x="176" y="206" width="160" height="32" rx="16" fill="#f1f5f9" />
+    <rect x="194" y="174" width="124" height="34" rx="17" fill="#ffffff" filter="url(#shadowSm)" />
+    <ellipse cx="256" cy="162" rx="44" ry="24" fill="#ffffff" />
+    <rect x="220" y="184" width="9" height="4" rx="2" transform="rotate(-20 220 184)" fill="#38bdf8" />
+    <rect x="278" y="180" width="9" height="4" rx="2" transform="rotate(30 278 180)" fill="#fbbf24" />
+    <rect x="238" y="216" width="9" height="4" rx="2" transform="rotate(15 238 216)" fill="#f472b6" />
+    <rect x="268" y="218" width="9" height="4" rx="2" transform="rotate(-35 268 218)" fill="#38bdf8" />
+    <circle cx="256" cy="186" r="3" fill="#fbbf24" />
+    <path d="M 256 128 C 262 104, 282 96, 292 98" fill="none" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" />
+    <circle cx="256" cy="132" r="16" fill="url(#cherryGrad)" />
+    <circle cx="251" cy="127" r="4.5" fill="#ffffff" opacity="0.85" />
+  </g>
+</svg>
