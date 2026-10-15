@@ -33,7 +33,7 @@
       backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: 12px 16px;
     }
 
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .logo-area { display: flex; align-items: center; gap: 8px; }
     .logo-icon { width: 28px; height: 28px; }
     .logo { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
@@ -44,19 +44,10 @@
       border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 800; padding: 6px 12px; cursor: pointer;
     }
 
-    .search-row { display: flex; flex-direction: column; gap: 8px; }
-    .search-inputs { display: flex; gap: 8px; }
+    .controls-row { display: flex; flex-direction: column; gap: 8px; }
     .list-select {
-      flex: 1; max-width: 175px; background: var(--surface); border: 1px solid var(--border); color: #fff;
-      padding: 9px 10px; border-radius: var(--radius); font-size: 0.82rem; font-weight: 700; outline: none; cursor: pointer;
-    }
-    .search-input-box { flex: 2; position: relative; display: flex; align-items: center; }
-    .search-input {
       width: 100%; background: var(--surface); border: 1px solid var(--border); color: #fff;
-      padding: 9px 30px 9px 12px; border-radius: var(--radius); font-size: 0.85rem; outline: none;
-    }
-    .search-clear {
-      position: absolute; right: 10px; color: var(--text-muted); cursor: pointer; display: none; font-size: 1.1rem;
+      padding: 9px 12px; border-radius: var(--radius); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer;
     }
 
     /* 4-State Filter Row */
@@ -72,7 +63,7 @@
 
     .toggle-pill {
       background: transparent; border: none; color: var(--text-muted); font-size: 0.7rem;
-      font-weight: 700; padding: 4px 7px; border-radius: 6px; cursor: pointer; transition: 0.15s;
+      font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: 0.15s;
     }
     .toggle-pill.active { background: var(--surface-elevated); color: #fff; }
     .toggle-pill.active.d-on { background: rgba(56, 189, 248, 0.25); color: var(--derek); }
@@ -92,6 +83,15 @@
     .kpi-ribbon-tag.both { color: var(--both); }
     .kpi-ribbon-val { font-size: 0.95rem; font-weight: 900; color: #fff; white-space: nowrap; }
     .kpi-ribbon-sub { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-top: 1px; }
+
+    /* Active Filter Clear Chip */
+    .filter-indicator {
+      display: none; align-items: center; justify-content: space-between;
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 8px; margin: 10px 16px 0 16px; padding: 6px 12px; font-size: 0.75rem; font-weight: 700;
+    }
+    .filter-indicator span { color: var(--accent); }
+    .filter-indicator button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 800; }
 
     /* Books Grid */
     .tab-content { display: none; }
@@ -127,7 +127,7 @@
     .series-badge {
       position: absolute; top: 4px; left: 4px; background: rgba(15, 23, 42, 0.9);
       border: 1px solid rgba(99, 102, 241, 0.7); color: #a5b4fc; font-size: 0.65rem;
-      font-weight: 900; padding: 2px 5px; border-radius: 4px;
+      font-weight: 900; padding: 2px 5px; border-radius: 4px; z-index: 2;
     }
 
     .card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
@@ -149,15 +149,15 @@
     }
     .ratings-count-pill { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
 
-    /* Birthday Celebration Banner */
+    /* Birthday Banner */
     .bday-banner {
       background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(99, 102, 241, 0.15));
       border: 1px solid rgba(244, 114, 182, 0.4); border-radius: var(--radius);
-      padding: 14px 16px; margin: 12px 16px 4px 16px; display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; margin: 12px 16px 4px 16px; display: flex; align-items: center; gap: 12px;
     }
-    .bday-emoji { font-size: 1.8rem; }
-    .bday-title { font-size: 0.95rem; font-weight: 800; color: #fff; }
-    .bday-subtitle { font-size: 0.78rem; color: #cbd5e1; margin-top: 2px; }
+    .bday-emoji { font-size: 1.7rem; }
+    .bday-title { font-size: 0.92rem; font-weight: 800; color: #fff; }
+    .bday-subtitle { font-size: 0.76rem; color: #cbd5e1; margin-top: 1px; }
 
     /* Shelf View */
     .dashboard-container { padding: 12px 16px; }
@@ -182,17 +182,25 @@
     .pace-text { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
     .pace-text span { color: var(--emerald); }
 
-    .kpi-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .kpi-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
     .shelf-kpi-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 12px; cursor: pointer; transition: transform 0.1s;
+      padding: 12px; cursor: pointer; transition: transform 0.1s, border-color 0.15s;
     }
-    .shelf-kpi-card:active { transform: scale(0.98); }
+    .shelf-kpi-card:active { transform: scale(0.98); border-color: var(--accent); }
     .shelf-kpi-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
     .shelf-kpi-val { font-size: 1.5rem; font-weight: 900; color: #fff; }
     .shelf-kpi-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
 
-    /* Bottom Navigation Bar for Mobile Native Reach */
+    /* YOY History */
+    .dash-heading { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: #fff; }
+    .yoy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .yoy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; }
+    .yoy-year { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); }
+    .yoy-books { font-size: 1.25rem; font-weight: 900; color: #fff; margin: 2px 0; }
+    .yoy-avg { font-size: 0.72rem; color: var(--gold); font-weight: 700; }
+
+    /* Bottom Nav */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + var(--safe-bottom));
       padding-bottom: var(--safe-bottom); background: rgba(14, 16, 20, 0.96); backdrop-filter: blur(14px);
@@ -206,7 +214,24 @@
     .nav-icon { font-size: 1.25rem; }
     .nav-label { font-size: 0.7rem; font-weight: 800; }
 
-    /* Modal */
+    /* Bottom Sheet Search Modal */
+    .search-sheet-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+      z-index: 120; display: none; align-items: flex-end;
+    }
+    .search-sheet-overlay.open { display: flex; }
+    .search-sheet {
+      background: var(--surface); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0;
+      width: 100%; padding: 20px; padding-bottom: calc(24px + var(--safe-bottom));
+    }
+    .search-bar-wrap { position: relative; display: flex; align-items: center; margin-bottom: 12px; }
+    .search-sheet-input {
+      width: 100%; background: var(--surface-elevated); border: 1px solid var(--accent);
+      color: #fff; padding: 12px 36px 12px 14px; border-radius: 12px; font-size: 1rem; outline: none;
+    }
+    .search-sheet-clear { position: absolute; right: 12px; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+
+    /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
       z-index: 100; display: none; justify-content: center; align-items: flex-end;
@@ -220,14 +245,34 @@
     .modal-title { font-size: 1.15rem; font-weight: 800; color: #fff; }
     .modal-author { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
     .modal-desc { font-size: 0.85rem; line-height: 1.5; color: #cbd5e1; margin: 12px 0; max-height: 200px; overflow-y: auto; }
-    .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
     .btn-act {
-      flex: 1; padding: 10px; border-radius: var(--radius); border: none; font-weight: 700;
-      font-size: 0.82rem; text-align: center; text-decoration: none; cursor: pointer;
+      flex: 1; min-width: 90px; padding: 10px; border-radius: var(--radius); border: none; font-weight: 700;
+      font-size: 0.8rem; text-align: center; text-decoration: none; cursor: pointer;
     }
     .btn-libby { background: #50808e; color: #fff; }
     .btn-goodreads { background: var(--surface-elevated); color: #fff; border: 1px solid var(--border); }
+    .btn-flag { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .btn-close { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+    /* Series Drawer Items */
+    .series-drawer-item {
+      display: flex; align-items: center; gap: 12px; background: var(--surface-elevated);
+      border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; cursor: pointer; margin-bottom: 8px;
+    }
+    .series-drawer-num { font-size: 0.85rem; font-weight: 900; color: #a5b4fc; width: 28px; text-align: center; }
+    .series-drawer-thumb { width: 34px; height: 48px; border-radius: 4px; object-fit: cover; background: #1e2026; }
+    .series-drawer-title { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Two-Phase Report Modal Styling */
+    .report-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .report-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; }
+    .report-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .report-btn {
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px; color: #fff; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-align: left;
+    }
+    .report-btn.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.2); }
   </style>
 </head>
 <body>
@@ -250,25 +295,25 @@
       <button id="btnInstallApp" class="btn-install" onclick="triggerPwaInstall()">+ Install App</button>
     </div>
 
-    <div class="search-row" id="catalogControls">
-      <div class="search-inputs">
-        <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
-          <option value="TOP100" selected>🏆 Top 100</option>
-          <option value="1M">💎 1M+ Club</option>
-          <option value="ALL">📚 Full Catalog</option>
-          <option value="Spicy">🌶️ Spicy</option>
-          <option value="Fantasy">✨ Fantasy</option>
-          <option value="Sci-Fi">🚀 Sci-Fi</option>
-          <option value="Thriller">🔪 Thriller</option>
-          <option value="Mystery">🔍 Mystery</option>
-          <option value="Romance">💘 Romance</option>
-          <option value="Classics">🏛️ Classics</option>
-        </select>
-        <div class="search-input-box">
-          <input type="text" id="searchInput" class="search-input" placeholder="Search title, author...">
-          <span id="searchClearBtn" class="search-clear" onclick="clearSearch()">×</span>
-        </div>
-      </div>
+    <div class="controls-row" id="catalogControls">
+      <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
+        <option value="TOP100" selected>🏆 Top 100 Most Rated</option>
+        <option value="1M">💎 1M+ Ratings Club</option>
+        <option value="ALL">📚 Complete Catalog</option>
+        <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
+        <option value="Spicy">🌶️ Spicy / Romance</option>
+        <option value="Fantasy">✨ Fantasy</option>
+        <option value="Sci-Fi">🚀 Science Fiction</option>
+        <option value="Thriller">🔪 Thriller</option>
+        <option value="Mystery">🔍 Mystery</option>
+        <option value="Romance">💘 Romance</option>
+        <option value="Horror">🩸 Horror</option>
+        <option value="Classics">🏛️ Classics</option>
+        <option value="Dystopian">👁️ Dystopian</option>
+        <option value="Young Adult">🎒 Young Adult</option>
+        <option value="Historical Fiction">⏳ Historical Fiction</option>
+        <option value="Nonfiction">🧠 Nonfiction</option>
+      </select>
 
       <!-- 4-State Filter Row -->
       <div class="filter-pills-row">
@@ -293,6 +338,12 @@
 
   <!-- TAB 1: CATALOG -->
   <main id="tabCatalog" class="tab-content active">
+    <!-- Active Deep-Filter Chip -->
+    <div class="filter-indicator" id="filterIndicator">
+      <div>Active Filter: <span id="filterIndicatorText">Custom</span></div>
+      <button onclick="resetDeepFilters()">✕ Clear</button>
+    </div>
+
     <!-- Single 3-Box Header KPI Ribbon -->
     <div class="mini-kpi-ribbon">
       <div class="kpi-ribbon-card">
@@ -327,7 +378,7 @@
       </div>
 
       <!-- Clickable Goal Banner -->
-      <div class="goal-card" onclick="filterByShelfGoal()">
+      <div class="goal-card" onclick="filterByChallengeYear('2026')">
         <div class="goal-top">
           <div class="goal-title" id="shelfGoalTitle">2026 Reading Challenge</div>
           <div class="goal-count" id="shelfGoalCount">0 / 54</div>
@@ -340,12 +391,12 @@
 
       <!-- Clickable Shelf KPIs -->
       <div class="kpi-cards-grid">
-        <div class="shelf-kpi-card" onclick="filterByShelfRead()">
+        <div class="shelf-kpi-card" onclick="filterByAllReads()">
           <div class="shelf-kpi-title">Total Read</div>
           <div class="shelf-kpi-val" id="shTotalRead">0</div>
           <div class="shelf-kpi-sub" id="shTotalPct">0% of Catalog</div>
         </div>
-        <div class="shelf-kpi-card" onclick="filterByShelfFavorites()">
+        <div class="shelf-kpi-card" onclick="filterByFiveStars()">
           <div class="shelf-kpi-title">5-Star Favorites</div>
           <div class="shelf-kpi-val" id="shFavorites">0</div>
           <div class="shelf-kpi-sub">Tap to view ★ 5.0</div>
@@ -361,6 +412,10 @@
           <div class="shelf-kpi-sub" id="shMutualSub">0 shared reads</div>
         </div>
       </div>
+
+      <!-- Year-Over-Year History -->
+      <h3 class="dash-heading">Year-Over-Year History</h3>
+      <div class="yoy-grid" id="yoyGrid"></div>
     </div>
   </main>
 
@@ -374,13 +429,27 @@
       <div class="nav-icon">📊</div>
       <div class="nav-label">Our Shelf</div>
     </button>
-    <button class="nav-item" onclick="focusSearch()">
+    <button class="nav-item" onclick="openSearchSheet()">
       <div class="nav-icon">🔍</div>
       <div class="nav-label">Search</div>
     </button>
   </nav>
 
-  <!-- Book Modal -->
+  <!-- Slide-Up Search Bottom Sheet -->
+  <div class="search-sheet-overlay" id="searchSheetOverlay">
+    <div class="search-sheet">
+      <div class="search-bar-wrap">
+        <input type="text" id="searchSheetInput" class="search-sheet-input" placeholder="Search by title, author, series...">
+        <span class="search-sheet-clear" onclick="clearSearchSheet()">×</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span id="searchResultCount" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Start typing...</span>
+        <button class="btn-act btn-close" style="flex:none; padding:8px 16px;" onclick="closeSearchSheet()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Details Modal -->
   <div class="modal-overlay" id="bookModal">
     <div class="modal-sheet">
       <div class="modal-header">
@@ -396,16 +465,62 @@
       <div class="modal-actions">
         <a href="#" target="_blank" id="mLibbyBtn" class="btn-act btn-libby">Open Libby</a>
         <a href="#" target="_blank" id="mGrBtn" class="btn-act btn-goodreads">Goodreads</a>
+        <button class="btn-act btn-flag" onclick="openReportWizard()">⚠️ Flag</button>
         <button class="btn-act btn-close" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Series Drawer Modal -->
+  <div class="modal-overlay" id="seriesModal">
+    <div class="modal-sheet">
+      <h2 class="modal-title" id="seriesTitle" style="margin-bottom:4px;">Series</h2>
+      <div id="seriesSub" style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:14px;"></div>
+      <div id="seriesList" style="max-height: 60vh; overflow-y: auto;"></div>
+      <div class="modal-actions">
+        <button class="btn-act btn-close" onclick="closeSeriesModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-Phase Flag & Auto-Fix Modal -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="modal-sheet">
+      <!-- Phase 1 -->
+      <div id="reportPhase1">
+        <div class="report-title">Phase 1: What has an issue?</div>
+        <div class="report-sub">Select the component that needs repair:</div>
+        <div class="report-options-grid">
+          <button class="report-btn" onclick="selectReportTarget('cover', 'Cover Image')">🖼️ Cover Image</button>
+          <button class="report-btn" onclick="selectReportTarget('audio', 'Audio Duration')">🎧 Audio Length</button>
+          <button class="report-btn" onclick="selectReportTarget('desc', 'Description')">📝 Synopsis</button>
+          <button class="report-btn" onclick="selectReportTarget('series', 'Series Info')">🏷️ Series / #</button>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div id="reportPhase2" style="display:none;">
+        <div class="report-title" id="phase2Title">Phase 2: What's wrong with it?</div>
+        <div class="report-sub">Provide the specific symptom:</div>
+        <div id="phase2Options" class="report-options-grid"></div>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn-act btn-libby" id="btnExecuteFix" onclick="submitAutoFix()" disabled>Attempt Auto-Fix</button>
+          <button class="btn-act btn-close" onclick="backToPhase1()">Back</button>
+        </div>
+      </div>
+      
+      <div id="reportStatus" style="font-size:0.8rem; margin-top:12px; font-weight:700; display:none;"></div>
+      <div class="modal-actions" style="margin-top:12px;">
+        <button class="btn-act btn-close" onclick="closeReportModal()">Cancel</button>
       </div>
     </div>
   </div>
 
   <script>
     // ==========================================
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+    // APPS SCRIPT WEB APP /EXEC URL:
     // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxqHyaW5e9EFCaw7JcUqxiFGQ5zGq-Wc4LhzcFU_rwF4NXBmoznT7AzFF5B8QhgtzkJ/exec";
+    const API_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     let books = [];
     let selectedList = 'TOP100';
@@ -413,16 +528,19 @@
     let filterKianna = 'ALL';
     let searchQuery = '';
     let currentShelfUser = 'D';
-    let deferredPrompt = null;
+    let deepFilterPredicate = null; // Custom deep filter from shelf clicks
+    let activeBook = null;
+    let reportTarget = '';
+    let reportDetail = '';
 
-    // Service Worker Registration for PWA
+    // PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
       });
     }
 
-    // Android Install Prompt
+    let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -456,22 +574,37 @@
       }
     }
 
-    function focusSearch() {
-      switchTab('catalog');
-      const input = document.getElementById('searchInput');
+    // Search Sheet
+    function openSearchSheet() {
+      document.getElementById('searchSheetOverlay').classList.add('open');
+      const input = document.getElementById('searchSheetInput');
+      input.value = searchQuery;
       input.focus();
-      input.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function onListChange(val) {
-      selectedList = val;
+    function closeSearchSheet() {
+      document.getElementById('searchSheetOverlay').classList.remove('open');
+      switchTab('catalog');
+    }
+
+    function clearSearchSheet() {
+      document.getElementById('searchSheetInput').value = '';
+      searchQuery = '';
+      document.getElementById('searchResultCount').textContent = 'Cleared.';
       renderBooks();
     }
 
-    function clearSearch() {
-      document.getElementById('searchInput').value = '';
-      searchQuery = '';
-      document.getElementById('searchClearBtn').style.display = 'none';
+    document.getElementById('searchSheetInput').addEventListener('input', function(e) {
+      searchQuery = e.target.value.toLowerCase().trim();
+      renderBooks();
+      const count = document.querySelectorAll('.book-card').length;
+      document.getElementById('searchResultCount').textContent = `${count} matching books found`;
+    });
+
+    function onListChange(val) {
+      selectedList = val;
+      deepFilterPredicate = null;
+      document.getElementById('filterIndicator').style.display = 'none';
       renderBooks();
     }
 
@@ -483,7 +616,7 @@
       renderShelf();
     }
 
-    // 4-Pill Filter Listeners
+    // 4-Pill Filter Selection
     document.querySelectorAll('.toggle-pill').forEach(btn => {
       btn.addEventListener('click', function() {
         const fType = this.dataset.filter;
@@ -495,15 +628,75 @@
 
         if (fType === 'derek') filterDerek = val;
         if (fType === 'kianna') filterKianna = val;
+        deepFilterPredicate = null;
+        document.getElementById('filterIndicator').style.display = 'none';
         renderBooks();
       });
     });
 
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      searchQuery = e.target.value.toLowerCase().trim();
-      document.getElementById('searchClearBtn').style.display = searchQuery ? 'block' : 'none';
+    // Reset Custom Deep Filters
+    function resetDeepFilters() {
+      deepFilterPredicate = null;
+      document.getElementById('filterIndicator').style.display = 'none';
       renderBooks();
-    });
+    }
+
+    // Interactive Deep-Link Filters from Shelf KPIs
+    function filterByChallengeYear(year) {
+      switchTab('catalog');
+      selectedList = 'ALL';
+      document.getElementById('listPicker').value = 'ALL';
+      document.getElementById('filterIndicator').style.display = 'flex';
+      document.getElementById('filterIndicatorText').textContent = `${currentShelfUser === 'D' ? 'Derek' : (currentShelfUser === 'K' ? 'Kianna' : 'Both')} ${year} Challenge Reads`;
+
+      deepFilterPredicate = (b) => {
+        if (currentShelfUser === 'D') return b.derekRating > 0 && b.derekReadDate && b.derekReadDate.startsWith(year);
+        if (currentShelfUser === 'K') return b.kiannaRating > 0 && b.kiannaReadDate && b.kiannaReadDate.startsWith(year);
+        return (b.derekRating > 0 && b.derekReadDate && b.derekReadDate.startsWith(year)) || (b.kiannaRating > 0 && b.kiannaReadDate && b.kiannaReadDate.startsWith(year));
+      };
+      renderBooks();
+    }
+
+    function filterByAllReads() {
+      switchTab('catalog');
+      selectedList = 'ALL';
+      document.getElementById('listPicker').value = 'ALL';
+      document.getElementById('filterIndicator').style.display = 'flex';
+      document.getElementById('filterIndicatorText').textContent = `Total Reads (${currentShelfUser === 'D' ? 'Derek' : (currentShelfUser === 'K' ? 'Kianna' : 'Both')})`;
+
+      deepFilterPredicate = (b) => {
+        if (currentShelfUser === 'D') return b.derekRating > 0;
+        if (currentShelfUser === 'K') return b.kiannaRating > 0;
+        return b.derekRating > 0 && b.kiannaRating > 0;
+      };
+      renderBooks();
+    }
+
+    function filterByFiveStars() {
+      switchTab('catalog');
+      selectedList = 'ALL';
+      document.getElementById('listPicker').value = 'ALL';
+      document.getElementById('filterIndicator').style.display = 'flex';
+      document.getElementById('filterIndicatorText').textContent = `5-Star Favorites (★ 5.0)`;
+
+      deepFilterPredicate = (b) => {
+        if (currentShelfUser === 'D') return b.derekRating >= 4.9;
+        if (currentShelfUser === 'K') return b.kiannaRating >= 4.9;
+        return b.derekRating >= 4.9 && b.kiannaRating >= 4.9;
+      };
+      renderBooks();
+    }
+
+    function filterByMutualReads() {
+      switchTab('catalog');
+      selectedList = 'ALL';
+      document.getElementById('listPicker').value = 'ALL';
+      document.getElementById('filterIndicator').style.display = 'flex';
+      document.getElementById('filterIndicatorText').textContent = `Shared / Mutual Reads`;
+
+      deepFilterPredicate = (b) => b.derekRating > 0 && b.kiannaRating > 0;
+      renderBooks();
+    }
 
     function renderBooks() {
       const grid = document.getElementById('booksGrid');
@@ -514,6 +707,8 @@
         scoped = books.slice().sort((a,b) => b.numRatings - a.numRatings).slice(0, 100);
       } else if (selectedList === '1M') {
         scoped = books.filter(b => b.numRatings >= 1000000);
+      } else if (selectedList === 'DNF') {
+        scoped = books.filter(b => b.derekDnf);
       } else if (selectedList === 'ALL') {
         scoped = books.slice();
       } else {
@@ -523,10 +718,15 @@
       updateRibbon(scoped);
 
       const filtered = scoped.filter(b => {
+        // Deep-link predicate filter override
+        if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
+
+        // Search query
         if (searchQuery) {
           const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
           const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
-          if (!matchTitle && !matchAuthor) return false;
+          const matchSeries = (b.series || '').toLowerCase().includes(searchQuery);
+          if (!matchTitle && !matchAuthor && !matchSeries) return false;
         }
 
         const dRead = b.derekRating > 0;
@@ -562,7 +762,11 @@
           ? `<img src="${coverSrc}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'cover-fallback-jacket\\'><span class=\\'spine-title\\'>${escapeHtml(b.title)}</span></div>';">`
           : `<div class="cover-fallback-jacket"><span class="spine-title">${escapeHtml(b.title)}</span></div>`;
 
-        const seriesPill = b.seriesNumber ? `<span class="series-badge">#${escapeHtml(b.seriesNumber)}</span>` : '';
+        let seriesPill = '';
+        if (b.seriesNumber) {
+          seriesPill = `<button class="series-badge" onclick="event.stopPropagation(); openSeriesDrawer('${escapeHtml(b.series)}', '${escapeHtml(b.title)}')">#${escapeHtml(b.seriesNumber)}</button>`;
+        }
+
         const dBadge = b.derekRating > 0 ? `<div class="rating-badge badge-derek">D: ★ ${b.derekRating}</div>` : (b.derekWishlist ? '<div class="rating-badge badge-wish">D: Wish</div>' : '');
         const kBadge = b.kiannaRating > 0 ? `<div class="rating-badge badge-kianna">K: ★ ${b.kiannaRating}</div>` : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : '');
         const grBadge = Number(b.avgRating) > 0 ? `<div class="rating-badge">GR: ★ ${b.avgRating}</div>` : '';
@@ -664,54 +868,154 @@
       }
       document.getElementById('shMutualScore').textContent = `${match}%`;
       document.getElementById('shMutualSub').textContent = `${mutual.length} shared reads`;
+
+      renderYoyGrid(active);
     }
 
-    // Interactive Deep-Link Filters from Shelf Cards
-    function filterByShelfGoal() {
-      switchTab('catalog');
-      selectedList = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      if (currentShelfUser === 'D') setFilterPill('derek', 'READ');
-      else if (currentShelfUser === 'K') setFilterPill('kianna', 'READ');
-    }
+    function renderYoyGrid(active) {
+      const grid = document.getElementById('yoyGrid');
+      grid.innerHTML = '';
 
-    function filterByShelfRead() {
-      switchTab('catalog');
-      selectedList = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      if (currentShelfUser === 'D') setFilterPill('derek', 'READ');
-      else if (currentShelfUser === 'K') setFilterPill('kianna', 'READ');
-    }
-
-    function filterByShelfFavorites() {
-      switchTab('catalog');
-      selectedList = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      if (currentShelfUser === 'D') setFilterPill('derek', 'READ');
-      else if (currentShelfUser === 'K') setFilterPill('kianna', 'READ');
-    }
-
-    function filterByMutualReads() {
-      switchTab('catalog');
-      selectedList = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      setFilterPill('derek', 'READ');
-      setFilterPill('kianna', 'READ');
-    }
-
-    function setFilterPill(user, val) {
-      document.querySelectorAll(`.toggle-pill[data-filter="${user}"]`).forEach(b => {
-        b.classList.remove('active', 'd-on', 'k-on');
-        if (b.dataset.val === val) {
-          b.classList.add('active', user === 'derek' ? 'd-on' : 'k-on');
-        }
+      const yearMap = {};
+      active.forEach(b => {
+        const y = b.targetDate ? b.targetDate.slice(0, 4) : 'Prior';
+        if (!yearMap[y]) yearMap[y] = { count: 0, sum: 0 };
+        yearMap[y].count++;
+        yearMap[y].sum += b.targetRating;
       });
-      if (user === 'derek') filterDerek = val;
-      if (user === 'kianna') filterKianna = val;
-      renderBooks();
+
+      const years = Object.keys(yearMap).sort((a,b) => b.localeCompare(a));
+      years.forEach(yr => {
+        const item = yearMap[yr];
+        const avg = item.count ? (item.sum / item.count).toFixed(2) : '0.00';
+        const card = document.createElement('div');
+        card.className = 'yoy-card';
+        card.onclick = () => filterByChallengeYear(yr);
+        card.innerHTML = `
+          <div class="yoy-year">${yr}</div>
+          <div class="yoy-books">${item.count} books</div>
+          <div class="yoy-avg">★ ${avg} avg</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Series Drawer
+    function openSeriesDrawer(seriesName, currentTitle) {
+      const matching = books.filter(b => (b.series || '').trim().toLowerCase() === seriesName.trim().toLowerCase());
+      matching.sort((a, b) => (parseFloat(a.seriesNumber) || 999) - (parseFloat(b.seriesNumber) || 999));
+
+      document.getElementById('seriesTitle').textContent = seriesName;
+      document.getElementById('seriesSub').textContent = `${matching.length} books in reading order`;
+      const container = document.getElementById('seriesList');
+      container.innerHTML = '';
+
+      matching.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'series-drawer-item';
+        item.onclick = () => { closeSeriesModal(); openModal(b); };
+
+        const thumbSrc = b.coverUrl || (b.isbn ? `https://covers.openlibrary.org/b/isbn/${b.isbn}-M.jpg` : '');
+        const thumbHtml = thumbSrc ? `<img class="series-drawer-thumb" src="${thumbSrc}">` : '<div class="series-drawer-thumb" style="display:flex;align-items:center;justify-content:center;">📖</div>';
+
+        item.innerHTML = `
+          <div class="series-drawer-num">#${b.seriesNumber || '?'}</div>
+          ${thumbHtml}
+          <div style="flex:1; overflow:hidden;">
+            <div class="series-drawer-title">${escapeHtml(b.title)}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(b.author)}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('seriesModal').classList.add('open');
+    }
+
+    function closeSeriesModal() { document.getElementById('seriesModal').classList.remove('open'); }
+
+    // Two-Phase Report Modal
+    function openReportWizard() {
+      if (!activeBook) return;
+      document.getElementById('reportStatus').style.display = 'none';
+      backToPhase1();
+      document.getElementById('reportModal').classList.add('open');
+    }
+
+    function closeReportModal() { document.getElementById('reportModal').classList.remove('open'); }
+
+    function backToPhase1() {
+      reportTarget = '';
+      reportDetail = '';
+      document.getElementById('reportPhase1').style.display = 'block';
+      document.getElementById('reportPhase2').style.display = 'none';
+      document.getElementById('btnExecuteFix').disabled = true;
+    }
+
+    function selectReportTarget(target, label) {
+      reportTarget = target;
+      document.getElementById('reportPhase1').style.display = 'none';
+      document.getElementById('reportPhase2').style.display = 'block';
+      document.getElementById('phase2Title').textContent = `Phase 2: Issue with ${label}?`;
+
+      const optGrid = document.getElementById('phase2Options');
+      optGrid.innerHTML = '';
+
+      let options = [];
+      if (target === 'cover') options = ['Missing completely', 'Low-res / Blurry', 'Wrong edition / book', 'Other'];
+      else if (target === 'audio') options = ['Missing runtime', 'Inaccurate duration', 'Other'];
+      else if (target === 'desc') options = ['Missing description', 'Incomplete / Snippet', 'Wrong book', 'Other'];
+      else if (target === 'series') options = ['Missing series info', 'Wrong book # in series', 'Not a series', 'Other'];
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'report-btn';
+        btn.textContent = opt;
+        btn.onclick = () => {
+          document.querySelectorAll('#phase2Options .report-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          reportDetail = opt;
+          document.getElementById('btnExecuteFix').disabled = false;
+        };
+        optGrid.appendChild(btn);
+      });
+    }
+
+    function submitAutoFix() {
+      if (!activeBook || !reportTarget || !reportDetail) return;
+      const statusDiv = document.getElementById('reportStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.style.color = 'var(--text-muted)';
+      statusDiv.textContent = 'Attempting automated fix...';
+
+      const fixUrl = `${API_URL}?action=autofix&row=${activeBook.rowIndex}&target=${encodeURIComponent(reportTarget)}&detail=${encodeURIComponent(reportDetail)}&title=${encodeURIComponent(activeBook.title)}&author=${encodeURIComponent(activeBook.author)}`;
+
+      fetch(fixUrl)
+        .then(r => r.json())
+        .then(res => {
+          if (res.success) {
+            statusDiv.style.color = 'var(--emerald)';
+            statusDiv.textContent = `Success: ${res.status}`;
+            // Live update on-screen object
+            if (res.target === 'cover') activeBook.coverUrl = res.newValue;
+            if (res.target === 'audio') activeBook.audioLength = res.newValue;
+            if (res.target === 'desc') activeBook.description = res.newValue;
+            renderBooks();
+            openModal(activeBook);
+          } else {
+            statusDiv.style.color = '#f87171';
+            statusDiv.textContent = `Logged: ${res.status}`;
+          }
+          setTimeout(closeReportModal, 2500);
+        })
+        .catch(err => {
+          statusDiv.style.color = '#f87171';
+          statusDiv.textContent = 'Network error while attempting auto-fix.';
+        });
     }
 
     function openModal(b) {
+      activeBook = b;
       document.getElementById('mTitle').textContent = b.title;
       document.getElementById('mAuthor').textContent = b.author;
       document.getElementById('mDesc').textContent = b.description || 'No description available.';
@@ -745,7 +1049,7 @@
     function escapeHtml(s) { return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
     document.getElementById('bookModal').onclick = (e) => { if (e.target.id === 'bookModal') closeModal(); };
 
-    // Instant Boot using LocalStorage Cache + Silent Fetch
+    // Initial Data Boot via LocalStorage + Fresh Silent Sync
     function initData() {
       const cached = localStorage.getItem('chaptertwo_books_cache');
       if (cached) {
@@ -757,7 +1061,7 @@
       }
 
       if (!API_URL || API_URL.includes("YOUR_APPS_SCRIPT")) {
-        console.warn("Please paste your Apps Script URL into API_URL in index.html.");
+        console.warn("Please paste your Apps Script URL into API_URL.");
         return;
       }
 
