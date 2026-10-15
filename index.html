@@ -604,6 +604,15 @@
       });
     });
 
+    function clearPillSelections() {
+      filterDerek = 'ALL';
+      filterKianna = 'ALL';
+      document.querySelectorAll('.toggle-pill').forEach(p => {
+        p.classList.remove('active', 'd-on', 'k-on');
+        if (p.dataset.val === 'ALL') p.classList.add('active');
+      });
+    }
+
     function resetDeepFilters() {
       deepFilterPredicate = null;
       document.getElementById('filterIndicator').style.display = 'none';
@@ -612,6 +621,7 @@
 
     function filterByChallengeYear(year) {
       switchTab('catalog');
+      clearPillSelections();
       selectedList = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
@@ -627,6 +637,7 @@
 
     function filterByAllReads() {
       switchTab('catalog');
+      clearPillSelections();
       selectedList = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
@@ -642,6 +653,7 @@
 
     function filterByFiveStars() {
       switchTab('catalog');
+      clearPillSelections();
       selectedList = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
@@ -657,6 +669,7 @@
 
     function filterByMutualReads() {
       switchTab('catalog');
+      clearPillSelections();
       selectedList = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
