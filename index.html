@@ -1050,22 +1050,7 @@
     document.getElementById('bookModal').onclick = (e) => { if (e.target.id === 'bookModal') closeModal(); };
 
     // Initial Data Boot via LocalStorage + Fresh Silent Sync
-    // Global JSONP receiver that never gets blocked by CORS
-    window.handleBooksPayload = function(data) {
-      if (Array.isArray(data)) {
-        books = data.map(b => ({
-          ...b,
-          numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
-        }));
-        localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books));
-        renderBooks();
-        renderShelf();
-      } else {
-        document.getElementById('booksGrid').innerHTML = '<div style="text-align:center; padding:40px; color:#f87171;">Failed to load library data.</div>';
-      }
-    };
-
-    function initData() {
+   function initData() {
       // 1. Instant paint from cache if available
       const cached = localStorage.getItem('chaptertwo_books_cache');
       if (cached) {
@@ -1076,20 +1061,34 @@
         } catch (e) {}
       }
 
-      if (!API_URL || API_URL.includes("YOUR_APPS_SCRIPT")) {
-        console.warn("Please paste your Apps Script URL into API_URL.");
-        return;
-      }
-
-      // 2. Fetch fresh data via CORS-proof JSONP
-      const script = document.createElement('script');
-      script.src = `${API_URL}${API_URL.includes('?') ? '&' : '?'}callback=handleBooksPayload&t=${Date.now()}`;
-      script.onerror = function() {
-        if (!books.length) {
-          document.getElementById('booksGrid').innerHTML = '<div style="text-align:center; padding:40px; color:#f87171;">Network connection error.</div>';
-        }
-      };
-      document.body.appendChild(script);
+      // 2. Fetch directly from your live JSON API
+      fetch(API_URL, { method: 'GET', redirect: 'follow' })
+        .then(res => {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(data => {
+          if (Array.isArray(data)) {
+            books = data.map(b => ({
+              ...b,
+              numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
+            }));
+            localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books));
+            renderBooks();
+            renderShelf();
+          } else {
+            console.error("Unexpected payload structure:", data);
+            if (!books.length) {
+              document.getElementById('booksGrid').innerHTML = '<div style="text-align:center; padding:40px; color:#f87171;">Failed to parse book data.</div>';
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Fetch Error:", err);
+          if (!books.length) {
+            document.getElementById('booksGrid').innerHTML = '<div style="text-align:center; padding:40px; color:#f87171;">Connection error: ' + err.message + '</div>';
+          }
+        });
     }
 
     initData();
