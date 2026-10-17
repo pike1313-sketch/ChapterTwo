@@ -1043,10 +1043,31 @@
         })
         .then(data => {
           if (Array.isArray(data)) {
-            books = data.map(b => ({
-              ...b,
-              numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
-            }));
+            books = data.map(b => {
+  let cleanTitle = String(b.title || '').trim();
+  // If Sheets converted a 4-digit title like 1984 into a date string
+  if (cleanTitle.includes('GMT') || /^\d{4}-\d{2}-\d{2}/.test(cleanTitle)) {
+    const d = new Date(cleanTitle);
+    if (!isNaN(d.getFullYear()) && (d.getFullYear() === 1984 || d.getFullYear() === 2001)) {
+      cleanTitle = String(d.getFullYear());
+    }
+  }
+
+  let cleanSeriesNum = String(b.seriesNumber || '').trim();
+  if (cleanSeriesNum.includes('GMT') || /^\d{4}-\d{2}-\d{2}/.test(cleanSeriesNum)) {
+    const d = new Date(cleanSeriesNum);
+    if (!isNaN(d.getDate())) {
+      cleanSeriesNum = String(d.getDate()); // Extracts the original day/number
+    }
+  }
+
+  return {
+    ...b,
+    title: cleanTitle,
+    seriesNumber: cleanSeriesNum,
+    numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
+  };
+});
             localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books));
             renderBooks();
             renderShelf();
