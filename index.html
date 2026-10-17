@@ -69,6 +69,37 @@
     .toggle-pill.active.d-on { background: rgba(56, 189, 248, 0.25); color: var(--derek); }
     .toggle-pill.active.k-on { background: rgba(244, 114, 182, 0.25); color: var(--kianna); }
 
+    /* View Scope Toggle (Top 100 vs Show All) */
+    .view-scope-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 4px 16px 2px 16px;
+    }
+    .scope-toggle-group {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .scope-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      border-radius: 9999px;
+      padding: 4px 11px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .scope-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
     /* Single 3-Box Header KPI Ribbon */
     .mini-kpi-ribbon {
       display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 16px 0 16px;
@@ -246,7 +277,7 @@
     }
     .btn-libby { background: #50808e; color: #fff; }
     .btn-goodreads { background: var(--surface-elevated); color: #fff; border: 1px solid var(--border); }
-    .btn- { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-flag { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .btn-close { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
 
     .series-drawer-item {
@@ -257,14 +288,6 @@
     .series-drawer-thumb { width: 34px; height: 48px; border-radius: 4px; object-fit: cover; background: #1e2026; }
     .series-drawer-title { font-size: 0.85rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .report-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
-    .report-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; }
-    .report-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .report-btn {
-      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 8px;
-      padding: 10px; color: #fff; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-align: left;
-    }
-    .report-btn.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.2); }
   /* FLAG ACTION SHEET & TOAST */
   .flag-modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.75);
@@ -370,6 +393,13 @@
           <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
           <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
         </div>
+      </div>
+    </div>
+
+    <div class="view-scope-wrapper">
+      <div class="scope-toggle-group">
+        <button id="scopeTop100Btn" class="scope-btn active" onclick="setViewScope('top100')">Top 100</button>
+        <button id="scopeAllBtn" class="scope-btn" onclick="setViewScope('all')">Show All (<span id="categoryTotalCount">0</span>)</button>
       </div>
     </div>
   </header>
@@ -515,8 +545,21 @@
 
     let books = [];
     let selectedList = 'TOP100';
+    let currentViewScope = 'top100';
     let filterDerek = 'ALL';
     let filterKianna = 'ALL';
+
+    function setViewScope(scope) {
+      if (currentViewScope === scope) return;
+      currentViewScope = scope;
+
+      const topBtn = document.getElementById('scopeTop100Btn');
+      const allBtn = document.getElementById('scopeAllBtn');
+      if (topBtn) topBtn.classList.toggle('active', scope === 'top100');
+      if (allBtn) allBtn.classList.toggle('active', scope === 'all');
+
+      renderBooks();
+    }
     let searchQuery = '';
     let currentShelfUser = 'D';
     let deepFilterPredicate = null;
@@ -702,17 +745,18 @@
       grid.innerHTML = '';
 
       let scoped = [];
-      if (selectedList === 'TOP100') {
-        scoped = books.slice().sort((a,b) => b.numRatings - a.numRatings).slice(0, 100);
+      if (selectedList === 'TOP100' || selectedList === 'ALL') {
+        scoped = books.slice();
       } else if (selectedList === '1M') {
         scoped = books.filter(b => b.numRatings >= 1000000);
       } else if (selectedList === 'DNF') {
         scoped = books.filter(b => b.derekDnf);
-      } else if (selectedList === 'ALL') {
-        scoped = books.slice();
       } else {
         scoped = books.filter(b => (b.genres || '').toLowerCase().includes(selectedList.toLowerCase()));
       }
+
+      // Keep items ordered by total ratings volume
+      scoped.sort((a, b) => b.numRatings - a.numRatings);
 
       updateRibbon(scoped);
 
@@ -742,12 +786,19 @@
 
       filtered.sort((a,b) => b.numRatings - a.numRatings);
 
-      if (filtered.length === 0) {
+      // Update the total count badge on the Show All toggle pill
+      const countEl = document.getElementById('categoryTotalCount');
+      if (countEl) countEl.textContent = filtered.length;
+
+      // Slice to Top 100 when toggled, or show full list when set to all
+      const displayList = (currentViewScope === 'top100') ? filtered.slice(0, 100) : filtered;
+
+      if (displayList.length === 0) {
         grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No books match these filters.</div>';
         return;
       }
 
-      filtered.forEach(b => {
+      displayList.forEach(b => {
         const card = document.createElement('div');
         card.className = 'book-card';
         card.onclick = () => openModal(b);
