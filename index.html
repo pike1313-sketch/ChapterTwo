@@ -356,9 +356,8 @@
 
     <div class="controls-row" id="catalogControls">
      <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
-        <option value="TOP100" selected>🏆 Top 100 Most Rated</option>
+        <option value="ALL" selected>📚 All Books (Catalog)</option>
         <option value="1M">💎 1M+ Ratings Club</option>
-        <option value="ALL">📚 Complete Catalog</option>
         <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
         <option value="Fantasy">✨ Fantasy</option>
         <option value="Sci-Fi">🚀 Science Fiction</option>
@@ -544,7 +543,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxqHyaW5e9EFCaw7JcUqxiFGQ5zGq-Wc4LhzcFU_rwF4NXBmoznT7AzFF5B8QhgtzkJ/exec";
 
     let books = [];
-    let selectedList = 'TOP100';
+    let selectedList = 'ALL';
     let currentViewScope = 'top100';
     let filterDerek = 'ALL';
     let filterKianna = 'ALL';
@@ -744,8 +743,9 @@
       const grid = document.getElementById('booksGrid');
       grid.innerHTML = '';
 
+      // 1. Filter raw catalog by selected shelf or genre
       let scoped = [];
-      if (selectedList === 'TOP100' || selectedList === 'ALL') {
+      if (selectedList === 'ALL') {
         scoped = books.slice();
       } else if (selectedList === '1M') {
         scoped = books.filter(b => b.numRatings >= 1000000);
@@ -755,11 +755,7 @@
         scoped = books.filter(b => (b.genres || '').toLowerCase().includes(selectedList.toLowerCase()));
       }
 
-      // Keep items ordered by total ratings volume
-      scoped.sort((a, b) => b.numRatings - a.numRatings);
-
-      updateRibbon(scoped);
-
+      // 2. Apply Deep Filters, Search, and Read/Wish toggles
       const filtered = scoped.filter(b => {
         if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
 
@@ -784,14 +780,26 @@
         return true;
       });
 
-      filtered.sort((a,b) => b.numRatings - a.numRatings);
+      // 3. Ensure books are sorted by total ratings volume descending
+      filtered.sort((a, b) => b.numRatings - a.numRatings);
 
-      // Update the total count badge on the Show All toggle pill
+      // 4. Manage Scope Toggle Visibility (1M & DNF always show full list)
+      const scopeWrapper = document.querySelector('.view-scope-wrapper');
+      const isExemptShelf = (selectedList === '1M' || selectedList === 'DNF');
+      if (scopeWrapper) {
+        scopeWrapper.style.display = isExemptShelf ? 'none' : 'flex';
+      }
+
       const countEl = document.getElementById('categoryTotalCount');
       if (countEl) countEl.textContent = filtered.length;
 
-      // Slice to Top 100 when toggled, or show full list when set to all
-      const displayList = (currentViewScope === 'top100') ? filtered.slice(0, 100) : filtered;
+      // 5. Apply Top 100 slice unless viewing exempt shelves or user clicked 'Show All'
+      const displayList = (!isExemptShelf && currentViewScope === 'top100')
+        ? filtered.slice(0, 100)
+        : filtered;
+
+      // 6. Synchronize Ribbon KPIs to the exact visible list
+      updateRibbon(displayList);
 
       if (displayList.length === 0) {
         grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No books match these filters.</div>';
