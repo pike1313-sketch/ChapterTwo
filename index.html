@@ -422,10 +422,49 @@
     </div>
   </main>
 
+  <!-- TAB 3: Movies Catalog -->
+  <main id="tabMovies" class="tab-content">
+    <div style="padding: 10px 16px 0 16px;">
+      <div class="controls-row" style="margin-bottom:8px;">
+        <select id="movieListPicker" class="list-select" onchange="switchMovieCohort(this.value)">
+          <option value="All" selected>🏆 Top 100 Most Voted (Unwatched)</option>
+          <option value="Top 250">⭐ IMDb Top 250</option>
+          <option value="Disney Animated">🏰 Disney Animated Canon</option>
+          <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
+          <option value="Filmography: Jim Carrey">🎭 Jim Carrey Filmography</option>
+          <option value="100k Club">💎 100k+ Ratings Club</option>
+        </select>
+      </div>
+
+      <div class="mini-kpi-ribbon" style="margin: 0 0 10px 0;">
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag derek">Watched</span>
+          <span class="kpi-ribbon-val" id="mStatWatched">0</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag both">Hours</span>
+          <span class="kpi-ribbon-val" id="mStatHours">0 hrs</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag kianna">Unwatched</span>
+          <span class="kpi-ribbon-val" id="mStatRemaining">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-container" id="movieGrid">
+      <div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading Movies...</div>
+    </div>
+  </main>
+
   <nav class="bottom-nav">
     <button class="nav-item active" id="navCatalog" onclick="switchTab('catalog')">
       <div class="nav-icon">📚</div>
-      <div class="nav-label">Catalog</div>
+      <div class="nav-label">Books</div>
+    </button>
+    <button class="nav-item" id="navMovies" onclick="switchTab('movies')">
+      <div class="nav-icon">🎬</div>
+      <div class="nav-label">Movies</div>
     </button>
     <button class="nav-item" id="navShelf" onclick="switchTab('shelf')">
       <div class="nav-icon">📊</div>
@@ -533,15 +572,127 @@
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
+      const catControls = document.getElementById('catalogControls');
+      const scopeWrap = document.querySelector('.view-scope-wrapper');
+
       if (tab === 'catalog') {
         document.getElementById('navCatalog').classList.add('active');
         document.getElementById('tabCatalog').classList.add('active');
-        document.getElementById('catalogControls').style.display = 'flex';
+        if (catControls) catControls.style.display = 'flex';
+        if (scopeWrap) scopeWrap.style.display = 'flex';
+      } else if (tab === 'movies') {
+        document.getElementById('navMovies').classList.add('active');
+        document.getElementById('tabMovies').classList.add('active');
+        if (catControls) catControls.style.display = 'none';
+        if (scopeWrap) scopeWrap.style.display = 'none';
+        loadMovieData();
       } else {
         document.getElementById('navShelf').classList.add('active');
         document.getElementById('tabShelf').classList.add('active');
-        document.getElementById('catalogControls').style.display = 'none';
+        if (catControls) catControls.style.display = 'none';
+        if (scopeWrap) scopeWrap.style.display = 'none';
         renderShelf();
+      }
+    }
+
+    // ==========================================
+    // MOVIES CONTROLLER & 1-10 RATING
+    // ==========================================
+    let activeMovieCohortTag = 'All';
+
+    function loadMovieData() {
+      const activeUser = currentShelfUser === 'K' ? 'Kianna' : 'Derek';
+      
+      // Load overall movie metrics
+      fetch(`${API_URL}?action=getMovieCatalog&user=${activeUser}`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data || !data.stats) return;
+          document.getElementById('mStatWatched').textContent = data.stats.watchedCount || 0;
+          document.getElementById('mStatHours').textContent = `${data.stats.totalHours || 0} hrs`;
+          document.getElementById('mStatRemaining').textContent = data.stats.unwatchedCount || 0;
+        })
+        .catch(err => console.log('Catalog stats error:', err));
+
+      switchMovieCohort(activeMovieCohortTag);
+    }
+
+    function switchMovieCohort(tag) {
+      activeMovieCohortTag = tag;
+      const grid = document.getElementById('movieGrid');
+      grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">Filtering Unwatched Movies...</div>';
+
+      const activeUser = currentShelfUser === 'K' ? 'Kianna' : 'Derek';
+      fetch(`${API_URL}?action=getMovieCohort&user=${activeUser}&list=${encodeURIComponent(tag)}`)
+        .then(r => r.json())
+        .then(renderMovieCards)
+        .catch(err => {
+          grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #ef4444;">Error loading movies.</div>';
+          console.error(err);
+        });
+    }
+
+    function renderMovieCards(movies) {
+      const grid = document.getElementById('movieGrid');
+      if (!movies || movies.length === 0) {
+        grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #10b981;">🎉 You have watched every movie in this cohort!</div>';
+        return;
+      }
+
+      grid.innerHTML = movies.map(m => {
+        const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
+        return `
+          <div class="book-card" id="card-${m.imdbId}">
+            <div class="card-cover">
+              <img src="${posterSrc}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Poster';" />
+              ${m.avgRating ? `<div class="series-badge" style="background:rgba(0,0,0,0.85); color:#facc15; border-color:#eab308;">★ ${m.avgRating}</div>` : ''}
+            </div>
+            <div class="card-body">
+              <div>
+                <div class="card-title" title="${escapeHtml(m.title)}">${escapeHtml(m.title)}</div>
+                <div class="card-author">${m.releaseYear || ''} ${m.runtime ? '• ' + m.runtime : ''}</div>
+                <div style="font-size:0.68rem; color:#64748b; font-weight:800; margin-bottom:4px; text-transform:uppercase;">Rate (1-10)</div>
+                <div style="display:flex; gap:3px; flex-wrap:wrap; margin-bottom:8px;">
+                  ${[1,2,3,4,5,6,7,8,9,10].map(num => `
+                    <button type="button" 
+                            onclick="rateMovie('${m.imdbId}',${num})"
+                            style="flex:1; min-width:20px; background:#1e293b; color:#94a3b8; border:1px solid #334155; border-radius:4px; font-size:0.7rem; font-weight:800; padding:4px 0; cursor:pointer;">
+                      ${num}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="card-footer">
+                <a href="${m.justWatchUrl}" target="_blank" style="font-size:0.72rem; color:#38bdf8; text-decoration:none; font-weight:700;">Where to Watch ↗</a>
+                <div class="ratings-count-pill">${m.totalRatings >= 1000000 ? (m.totalRatings/1000000).toFixed(1) + 'M' : Math.round(m.totalRatings/1000) + 'k'} votes</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function rateMovie(imdbId, rating) {
+      const card = document.getElementById(`card-${imdbId}`);
+      if (card) {
+        card.style.opacity = '0.2';
+        card.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => card.remove(), 350);
+      }
+
+      showToast(`⭐ Rated ${rating}/10! Logged to catalog.`);
+
+      // Direct write back to backend
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.saveMovieRating(imdbId, rating, currentShelfUser === 'K' ? 'Kianna' : 'Derek');
+      } else {
+        // Fallback when hosted on external PWA via POST
+        fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'rateMovie', imdbId, rating, user: currentShelfUser === 'K' ? 'Kianna' : 'Derek' })
+        }).catch(() => {});
       }
     }
 
