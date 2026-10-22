@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
   <title>ChapterTwo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0b0c0e">
@@ -423,19 +424,48 @@
   </main>
 
   <!-- TAB 3: Movies Catalog -->
+  <!-- TAB 3: Movies Catalog -->
   <main id="tabMovies" class="tab-content">
     <div style="padding: 10px 16px 0 16px;">
-      <div class="controls-row" style="margin-bottom:8px;">
-        <select id="movieListPicker" class="list-select" onchange="switchMovieCohort(this.value)">
-          <option value="All" selected>🏆 Top 100 Most Voted (Unwatched)</option>
+      <!-- List & Genre Dropdowns -->
+      <div class="controls-row" style="margin-bottom:8px; display:flex; gap:8px;">
+        <select id="movieListPicker" class="list-select" onchange="applyMovieFilters()" style="flex:1;">
+          <option value="All" selected>🏆 Top 100 Most Voted</option>
           <option value="Top 250">⭐ IMDb Top 250</option>
           <option value="Disney Animated">🏰 Disney Animated Canon</option>
           <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
           <option value="Filmography: Jim Carrey">🎭 Jim Carrey Filmography</option>
-          <option value="100k Club">💎 100k+ Ratings Club</option>
+          <option value="100k Club">💎 100k+ Club</option>
+        </select>
+
+        <select id="movieGenrePicker" class="list-select" onchange="applyMovieFilters()" style="flex:1;">
+          <option value="All" selected>All Genres</option>
+          <option value="Action">Action</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Animation">Animation</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Crime">Crime</option>
+          <option value="Drama">Drama</option>
+          <option value="Family">Family</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Horror">Horror</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Romance">Romance</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Thriller">Thriller</option>
         </select>
       </div>
 
+      <!-- Watched / Unwatched Filter Pills -->
+      <div class="filter-pills-row" style="margin-bottom:8px;">
+        <div class="toggle-group">
+          <button class="toggle-pill active" id="pillMovieAll" onclick="setMovieWatchFilter('ALL')">All</button>
+          <button class="toggle-pill" id="pillMovieWatched" onclick="setMovieWatchFilter('WATCHED')">Watched</button>
+          <button class="toggle-pill" id="pillMovieUnwatched" onclick="setMovieWatchFilter('UNWATCHED')">Unwatched</button>
+        </div>
+      </div>
+
+      <!-- KPI Ribbon -->
       <div class="mini-kpi-ribbon" style="margin: 0 0 10px 0;">
         <div class="kpi-ribbon-card">
           <span class="kpi-ribbon-tag derek">Watched</span>
@@ -452,6 +482,7 @@
       </div>
     </div>
 
+    <!-- Movie Cards Grid -->
     <div class="grid-container" id="movieGrid">
       <div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading Movies...</div>
     </div>
@@ -596,8 +627,114 @@
     }
 
     // ==========================================
-    // MOVIES CONTROLLER & 1-10 RATING
+    // MOVIES CONTROLLER (WATCHED TOGGLE & METADATA)
     // ==========================================
+    let movieWatchFilter = 'ALL';
+
+    function loadMovieData() {
+      applyMovieFilters();
+    }
+
+    function setMovieWatchFilter(mode) {
+      movieWatchFilter = mode;
+      document.getElementById('pillMovieAll').classList.toggle('active', mode === 'ALL');
+      document.getElementById('pillMovieWatched').classList.toggle('active', mode === 'WATCHED');
+      document.getElementById('pillMovieUnwatched').classList.toggle('active', mode === 'UNWATCHED');
+      applyMovieFilters();
+    }
+
+    function applyMovieFilters() {
+      const list = document.getElementById('movieListPicker').value;
+      const genre = document.getElementById('movieGenrePicker').value;
+      const watched = movieWatchFilter === 'WATCHED';
+      const unwatched = movieWatchFilter === 'UNWATCHED';
+      const activeUser = currentShelfUser === 'K' ? 'Kianna' : 'Derek';
+
+      const grid = document.getElementById('movieGrid');
+      grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">Filtering Movies...</div>';
+
+      fetch(`${API_URL}?action=getFilteredMovies&user=${activeUser}&list=${encodeURIComponent(list)}&genre=${encodeURIComponent(genre)}&watched=${watched}&unwatched=${unwatched}`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.stats) {
+            document.getElementById('mStatWatched').textContent = res.stats.watchedCount || 0;
+            document.getElementById('mStatHours').textContent = `${res.stats.totalHours || 0} hrs`;
+            document.getElementById('mStatRemaining').textContent = res.stats.unwatchedCount || 0;
+          }
+          renderMovieCards(res.movies || []);
+        })
+        .catch(err => {
+          grid.innerHTML = '<div style="text-align:center; padding: 40px; color: #ef4444;">Error loading movies.</div>';
+          console.error(err);
+        });
+    }
+
+    function renderMovieCards(movies) {
+      const grid = document.getElementById('movieGrid');
+      if (!movies || movies.length === 0) {
+        grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No movies match this filter.</div>';
+        return;
+      }
+
+      grid.innerHTML = movies.map(m => {
+        const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
+        const watchedClass = m.isWatched ? 'style="background:rgba(16, 185, 129, 0.2); color:#10b981; border:1px solid #10b981;"' : 'style="background:#1e293b; color:#94a3b8; border:1px solid #334155;"';
+        const watchedText = m.isWatched ? '✓ Watched' : '+ Mark Watched';
+
+        return `
+          <div class="book-card" id="card-${m.imdbId}">
+            <div class="card-cover">
+              <img src="${posterSrc}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Poster';" />
+              ${m.avgRating ? `<div class="series-badge" style="background:rgba(0,0,0,0.85); color:#facc15; border-color:#eab308;">★ ${m.avgRating}</div>` : ''}
+            </div>
+            <div class="card-body">
+              <div>
+                <div class="card-title" title="${escapeHtml(m.title)}">${escapeHtml(m.title)}</div>
+                <div class="card-author">${m.releaseYear || ''} ${m.runtime ? '• ' + m.runtime : ''}</div>
+                <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.genres || 'Feature Film'}</div>
+              </div>
+
+              <div>
+                <button type="button" 
+                        onclick="toggleWatched('${m.imdbId}', ${!m.isWatched})"
+                        ${watchedClass}
+                        style="width:100%; border-radius:6px; font-size:0.75rem; font-weight:800; padding:6px 0; cursor:pointer; margin-bottom:8px;">
+                  ${watchedText}
+                </button>
+                <div class="card-footer">
+                  <a href="${m.justWatchUrl}" target="_blank" style="font-size:0.72rem; color:#38bdf8; text-decoration:none; font-weight:700;">Where to Watch ↗</a>
+                  <div class="ratings-count-pill">${m.totalRatings >= 1000000 ? (m.totalRatings/1000000).toFixed(1) + 'M' : Math.round(m.totalRatings/1000) + 'k'} votes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleWatched(imdbId, targetWatched) {
+      const card = document.getElementById(`card-${imdbId}`);
+      if (card && movieWatchFilter !== 'ALL') {
+        card.style.opacity = '0.2';
+        setTimeout(() => card.remove(), 350);
+      }
+
+      showToast(targetWatched ? '✓ Marked as Watched!' : 'Removed from Watched.');
+
+      const activeUser = currentShelfUser === 'K' ? 'Kianna' : 'Derek';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(() => applyMovieFilters())
+          .toggleMovieWatched(imdbId, targetWatched, activeUser);
+      } else {
+        fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'toggleMovieWatched', imdbId, makeWatched: targetWatched, user: activeUser })
+        }).then(() => setTimeout(applyMovieFilters, 600)).catch(() => {});
+      }
+    }
     let activeMovieCohortTag = 'All';
 
     function loadMovieData() {
