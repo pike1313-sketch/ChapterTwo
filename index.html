@@ -298,7 +298,6 @@
     </div>
 
     <!-- BOOK CONTROLS -->
-    <!-- BOOK CONTROLS -->
     <div class="controls-row" id="catalogControls">
       <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
         <option value="ALL" selected>📚 All Books (Catalog)</option>
@@ -714,12 +713,12 @@
       function handleRawMovieData(data) {
         if (!Array.isArray(data)) return;
         movies = data.map(m => Object.assign({}, m, {
-          totalRatings: parseInt(String(m.totalRatings || '0').replace(/,/g, ''), 10) || 0
+          totalRatings: Number(m.totalRatings) || 0
         }));
         try {
           localStorage.setItem('chaptertwo_movies_cache', JSON.stringify(movies));
         } catch (e) {
-          // Exceeds 5MB quota with 3,600+ movies; hold cleanly in active memory
+          // In-memory fallback prevents quota crash
         }
         renderMovies();
       }
@@ -772,7 +771,12 @@
         });
       }
 
-      scoped.sort((a, b) => b.totalRatings - a.totalRatings);
+      scoped.sort((a, b) => {
+        const votesA = Number(a.totalRatings) || 0;
+        const votesB = Number(b.totalRatings) || 0;
+        return votesB - votesA;
+      });
+
       updateScopeButtons(currentMovieScope, scoped.length);
 
       // Tier 2: Lock Top 250 Cohort BEFORE Status/Search Filtering
