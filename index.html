@@ -308,16 +308,25 @@
     <!-- MOVIE CONTROLS -->
     <div class="controls-row" id="movieControls" style="display:none;">
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)" style="flex:1; min-width:200px;">
-          <option value="Fill In Filmography" selected>🎞️ Fill In Filmography (Master)</option>
+        <!-- Primary Collection Picker -->
+        <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)" style="flex:1; min-width:170px;">
+          <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
           <option value="Top 250">⭐ IMDb Top 250</option>
+          <option value="Disney">🏰 Disney</option>
           <option value="Christmas">🎄 Christmas / Holiday</option>
           <option value="Halloween">🎃 Halloween / Spooky</option>
-          <option value="ALL">🎬 All Movies (100k+ Catalog)</option>
-          <option value="Disney Animated">🏰 Disney Animated Canon</option>
           <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
-          <option value="Filmography: Jim Carrey">🎭 Filmography: Jim Carrey</option>
-          <option value="100k Club">💎 100k Club</option>
+          <option value="100k Club">💎 100k Club (All Movies)</option>
+        </select>
+
+        <!-- Dynamic Year Sub-Filter (Visible only when Top 250 is selected) -->
+        <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; width:auto; min-width:135px; border-color:var(--gold);">
+          <option value="ALL" selected>⭐ All-Time Master</option>
+        </select>
+
+        <!-- Multi-Tag Stacking: Secondary Genre Selector -->
+        <select id="movieGenreStackPicker" class="list-select" onchange="onMovieGenreChange(this.value)" style="flex:1; min-width:130px; border-color:var(--accent);">
+          <option value="ALL" selected>🏷️ All Genres</option>
           <option value="Action">💥 Action</option>
           <option value="Adventure">🗺️ Adventure</option>
           <option value="Animation">🎨 Animation</option>
@@ -333,9 +342,10 @@
           <option value="Thriller">🔪 Thriller</option>
         </select>
 
-        <!-- Dynamic Year Sub-Filter (Visible only when Top 250 is selected) -->
-        <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; width:auto; min-width:145px; border-color:var(--gold);">
-          <option value="ALL" selected>📅 All Top 250 Editions</option>
+        <!-- Sort Order Switcher (Votes vs Avg Rating >=10k) -->
+        <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)" style="width:auto; min-width:125px; border-color:var(--emerald);">
+          <option value="VOTES" selected>🗳️ Total Votes</option>
+          <option value="RATING">⭐ Rating (10k+)</option>
         </select>
 
         <button type="button" class="btn-act btn-close" onclick="openMovieUploadModal()" style="flex:none; padding:8px 12px; font-size:0.75rem; border:1px solid var(--accent); color:#a5b4fc; white-space:nowrap;">
@@ -519,7 +529,26 @@
       </div>
     </div>
   </div>
-
+  <!-- Movie Detail Modal -->
+  <div class="modal-overlay" id="movieModal" onclick="if(event.target===this) closeMovieModal()">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div id="movieModalCover" style="width:85px; min-width:85px; height:125px; border-radius:8px; overflow:hidden; background:#181a20;"></div>
+        <div style="flex:1; overflow:hidden;">
+          <h2 class="modal-title" id="mvTitle"></h2>
+          <div class="modal-author" id="mvDirectorYear"></div>
+          <div class="ratings-row" id="mvRatings"></div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;" id="mvTagsWrap"></div>
+        </div>
+      </div>
+      <p class="modal-desc" id="mvOverview"></p>
+      <div class="modal-actions">
+        <a href="#" target="_blank" id="mvJustWatchBtn" class="btn-act btn-libby">Where to Watch ↗</a>
+        <a href="#" target="_blank" id="mvImdbBtn" class="btn-act btn-goodreads">IMDb Page ↗</a>
+        <button class="btn-act btn-close" onclick="closeMovieModal()">Close</button>
+      </div>
+    </div>
+  </div>
   <!-- Series Drawer Modal -->
   <div class="modal-overlay" id="seriesModal">
     <div class="modal-sheet">
@@ -547,19 +576,19 @@
     </div>
   </div>
 
-  <!-- In-App Movie CSV Ingest Modal -->
+  <!-- In-App Movie CSV Ingest Modal (Mobile-Optimized) -->
   <div id="movieUploadModal" class="flag-modal-overlay" style="display:none;" onclick="if(event.target===this) closeMovieUploadModal()">
-    <div class="flag-sheet" style="max-width:520px;">
+    <div class="flag-sheet" style="max-width:520px; max-height:90vh; overflow-y:auto;">
       <div class="flag-sheet-header">
         <span class="flag-sheet-title">📂 Ingest IMDb List or Ratings</span>
         <button class="flag-close-btn" onclick="closeMovieUploadModal()">✕</button>
       </div>
-      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:14px;">Select an exported IMDb CSV to update catalog metadata, add new titles, or sync watch lists.</p>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:14px;">Select an IMDb CSV file or paste the CSV text directly.</p>
 
       <div style="margin-bottom:12px;">
         <label style="display:block; font-size:0.75rem; font-weight:800; color:#fff; margin-bottom:6px; text-transform:uppercase;">1. Choose Mapping Action</label>
         <select id="ingestActionType" class="list-select" onchange="onIngestTypeChange(this.value)">
-          <option value="COLLECTION" selected>🏷️ Add / Tag Collection (e.g. Fill In Filmography)</option>
+          <option value="COLLECTION" selected>🏷️ Add / Tag Collection (e.g. Disney, Top 250 (1997))</option>
           <option value="DEREK_RATINGS">⭐ Sync Derek's Ratings & Watch Dates</option>
           <option value="KIANNA_RATINGS">⭐ Sync Kianna's Ratings & Watch Dates</option>
           <option value="DEREK_WISH">📌 Add to Derek's Wishlist / To-Watch</option>
@@ -569,12 +598,17 @@
 
       <div id="ingestCategoryWrap" style="margin-bottom:12px;">
         <label style="display:block; font-size:0.75rem; font-weight:800; color:#fff; margin-bottom:6px; text-transform:uppercase;">2. Category / List Name</label>
-        <input type="text" id="ingestCategoryName" class="search-sheet-input" value="Fill In Filmography" placeholder="e.g. Fill In Filmography, Pixar" style="padding:10px 12px; font-size:0.85rem;" />
+        <input type="text" id="ingestCategoryName" class="search-sheet-input" value="Disney" placeholder="e.g. Disney, Top 250 (1997), Fill In Filmography" style="padding:10px 12px; font-size:0.85rem;" />
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.75rem; font-weight:800; color:#fff; margin-bottom:6px; text-transform:uppercase;">3. Select CSV File (Option A)</label>
+        <input type="file" id="ingestCsvFileInput" accept=".csv,text/csv,text/plain" style="width:100%; font-size:0.82rem; color:var(--text-muted); background:var(--surface); padding:8px; border-radius:8px; border:1px solid var(--border);" />
       </div>
 
       <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:0.75rem; font-weight:800; color:#fff; margin-bottom:6px; text-transform:uppercase;">3. Select CSV File</label>
-        <input type="file" id="ingestCsvFileInput" accept=".csv" style="width:100%; font-size:0.82rem; color:var(--text-muted); background:var(--surface); padding:8px; border-radius:8px; border:1px solid var(--border);" />
+        <label style="display:block; font-size:0.75rem; font-weight:800; color:#fff; margin-bottom:6px; text-transform:uppercase;">OR Paste CSV Content (Option B - Mobile Fallback)</label>
+        <textarea id="ingestCsvDirectText" placeholder="Paste raw CSV text here if file picker is unavailable..." style="width:100%; height:80px; font-size:0.75rem; background:var(--surface); border:1px solid var(--border); border-radius:8px; color:#fff; padding:8px; font-family:monospace; resize:vertical;"></textarea>
       </div>
 
       <div style="display:flex; gap:10px;">
@@ -586,7 +620,7 @@
     </div>
   </div>
 
-  <div id="toastNotification" class="toast-notification"></div>
+ <div id="toastNotification" class="toast-notification"></div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxqHyaW5e9EFCaw7JcUqxiFGQ5zGq-Wc4LhzcFU_rwF4NXBmoznT7AzFF5B8QhgtzkJ/exec";
@@ -605,36 +639,62 @@
     let movies = [];
     let selectedMovieList = 'Fill In Filmography';
     let selectedTop250Year = 'ALL';
+    let selectedMovieGenre = 'ALL';
+    let movieSortMode = 'VOTES';
     let currentMovieScope = 'top100';
     let mFilterDerek = 'ALL';
     let mFilterKianna = 'ALL';
+    let activeMovie = null;
 
-    function onTop250YearChange(val) {
-      selectedTop250Year = val;
+    function onMovieGenreChange(val) {
+      selectedMovieGenre = val;
       renderMovies();
     }
 
-    function populateTop250YearOptions() {
-      const yearPicker = document.getElementById('top250YearPicker');
-      if (!yearPicker) return;
+    function onMovieSortChange(val) {
+      movieSortMode = val;
+      renderMovies();
+    }
 
-      const top250Movies = movies.filter(m => (m.lists || []).some(l => l.toLowerCase().includes('top 250')));
-      const editionsSet = new Set();
+    function openMovieModal(m) {
+      activeMovie = m;
+      document.getElementById('mvTitle').textContent = m.title || '';
+      document.getElementById('mvDirectorYear').textContent = (m.releaseYear || '') + (m.director ? ' • Dir: ' + m.director : '') + (m.runtime ? ' • ' + m.runtime : '');
+      document.getElementById('mvOverview').textContent = m.overview || 'No overview available for this title.';
 
-      top250Movies.forEach(m => {
-        (m.lists || []).forEach(l => {
-          if (l.toLowerCase().includes('top 250')) {
-            const match = l.match(/\b(19\d\d|20\d\d)\b/);
-            if (match) editionsSet.add(match[1]);
-          }
-        });
+      const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
+      document.getElementById('movieModalCover').innerHTML = '<img src="' + posterSrc + '" style="width:100%; height:100%; object-fit:cover;" />';
+
+      const dBadge = m.derekWatched ? '<div class="rating-badge badge-derek">Derek: Watched</div>' : '';
+      const kBadge = m.kiannaWatched ? '<div class="rating-badge badge-kianna">Kianna: Watched</div>' : '';
+      const imdbBadge = m.avgRating ? '<div class="rating-badge" style="background:#f59e0b; color:#000; font-weight:800;">★ ' + m.avgRating + ' (' + Number(m.totalRatings).toLocaleString() + ' votes)</div>' : '';
+      document.getElementById('mvRatings').innerHTML = dBadge + kBadge + imdbBadge;
+
+      const tagsWrap = document.getElementById('mvTagsWrap');
+      tagsWrap.innerHTML = '';
+      (m.lists || []).forEach(tag => {
+        const span = document.createElement('span');
+        span.style.cssText = 'font-size:0.68rem; background:rgba(99, 102, 241, 0.2); color:#a5b4fc; border:1px solid rgba(99,102,241,0.4); padding:2px 6px; border-radius:4px; font-weight:700;';
+        span.textContent = tag;
+        tagsWrap.appendChild(span);
       });
 
-      const sortedEditions = Array.from(editionsSet).sort((a, b) => b.localeCompare(a));
-      const cur = yearPicker.value;
-      yearPicker.innerHTML = '<option value="ALL">📅 All Editions</option>' +
-        sortedEditions.map(y => `<option value="${y}">${y} Edition</option>`).join('');
-      yearPicker.value = sortedEditions.includes(cur) ? cur : 'ALL';
+      if (m.genres) {
+        m.genres.split(',').forEach(g => {
+          const span = document.createElement('span');
+          span.style.cssText = 'font-size:0.68rem; background:rgba(16, 185, 129, 0.15); color:#6ee7b7; border:1px solid rgba(16,185,129,0.3); padding:2px 6px; border-radius:4px; font-weight:700;';
+          span.textContent = g.trim();
+          tagsWrap.appendChild(span);
+        });
+      }
+
+      document.getElementById('mvJustWatchBtn').href = m.justWatchUrl || ('https://www.justwatch.com/us/search?q=' + encodeURIComponent(m.title || ''));
+      document.getElementById('mvImdbBtn').href = m.imdbUrl || (m.imdbId ? ('https://www.imdb.com/title/' + m.imdbId + '/') : '#');
+      document.getElementById('movieModal').classList.add('open');
+    }
+
+    function closeMovieModal() {
+      document.getElementById('movieModal').classList.remove('open');
     }
 
     function openMovieUploadModal() { document.getElementById('movieUploadModal').style.display = 'flex'; }
@@ -650,50 +710,86 @@
 
     function submitMovieCsvIngest() {
       const fileInput = document.getElementById('ingestCsvFileInput');
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showToast('⚠️ Please select a CSV file first.');
+      const directText = (document.getElementById('ingestCsvDirectText').value || '').trim();
+
+      if ((!fileInput.files || fileInput.files.length === 0) && !directText) {
+        showToast('⚠️ Select a file or paste CSV text first.');
         return;
       }
-      const file = fileInput.files[0];
+
       const importType = document.getElementById('ingestActionType').value;
       const categoryName = document.getElementById('ingestCategoryName').value.trim() || 'Fill In Filmography';
       const btn = document.getElementById('btnSubmitIngest');
       const btnText = document.getElementById('btnSubmitIngestText');
-      btn.disabled = true;
-      btnText.textContent = '⏳ Processing CSV in Background...';
-      showToast('⏳ Uploading and processing...');
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const payload = { action: 'ingestMovieCsv', csvString: e.target.result, importType: importType, category: categoryName };
+      btn.disabled = true;
+      btnText.textContent = '⏳ Ingesting...';
+      showToast('⏳ Processing CSV data...');
+
+      function executeIngest(csvData) {
+        const payload = {
+          action: 'ingestMovieCsv',
+          csvString: csvData,
+          importType: importType,
+          category: categoryName
+        };
+
         function onComplete(res) {
           closeMovieUploadModal();
+          document.getElementById('ingestCsvDirectText').value = '';
+          fileInput.value = '';
           if (res && res.success) {
             showToast(`✅ Ingest Complete! ${res.updated} updated, ${res.inserted} added.`);
             try { localStorage.removeItem('chaptertwo_movies_cache'); } catch (err) {}
             movies = [];
             loadMovieData();
           } else {
-            showToast('❌ Ingest Error: ' + (res?.error || 'Unknown error'));
+            showToast('❌ Error: ' + (res?.error || 'Ingest failed'));
           }
         }
 
         if (typeof google !== 'undefined' && google.script && google.script.run) {
-          google.script.run.withSuccessHandler(onComplete).withFailureHandler(err => {
-            btn.disabled = false;
-            btnText.textContent = '🚀 Start Ingest';
-            showToast('❌ Error: ' + err.toString());
-          }).apiIngestCsv(payload);
-        } else {
-          fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-            .then(r => r.json()).then(onComplete).catch(err => {
+          google.script.run
+            .withSuccessHandler(onComplete)
+            .withFailureHandler(err => {
               btn.disabled = false;
               btnText.textContent = '🚀 Start Ingest';
-              showToast('❌ Network Error: ' + err.toString());
-            });
+              showToast('❌ Server Error: ' + err.toString());
+            })
+            .apiIngestMovieCsv(payload);
+        } else {
+          fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+          })
+          .then(r => r.json())
+          .then(onComplete)
+          .catch(err => {
+            btn.disabled = false;
+            btnText.textContent = '🚀 Start Ingest';
+            showToast('❌ Network Error: ' + err.toString());
+          });
         }
-      };
-      reader.readAsText(file);
+      }
+
+      // Option B: Direct text paste
+      if (directText) {
+        executeIngest(directText);
+      } else {
+        // Option A: File picker with binary/text fallback for mobile iOS/Android
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          executeIngest(e.target.result);
+        };
+        reader.onerror = function() {
+          btn.disabled = false;
+          btnText.textContent = '🚀 Start Ingest';
+          showToast('❌ File read error. Try pasting CSV text below.');
+        };
+        reader.readAsText(file);
+      }
     }
 
     function switchTab(tab) {
@@ -823,48 +919,56 @@
     }
 
     function getFilteredMoviePool() {
-      if (selectedMovieList === 'ALL') return movies.slice();
+      let pool = movies.slice();
       const target = selectedMovieList.toLowerCase().trim();
 
+      // 1. Primary Collection Tag Filtering
       if (target === 'top 250') {
-        return movies.filter(m => {
+        pool = pool.filter(m => {
           const inTop250 = (m.lists || []).some(l => l.toLowerCase().includes('top 250'));
           if (!inTop250) return false;
-
           if (selectedTop250Year === 'ALL') return true;
+          return (m.lists || []).some(l => l.toLowerCase().includes('top 250') && l.includes(selectedTop250Year));
+        });
+      } else if (target !== 'all') {
+        pool = pool.filter(m => {
+          const inLists = (m.lists || []).some(l => {
+            const lLower = l.toLowerCase();
+            if (target.includes('filmography')) return lLower.includes('filmography');
+            if (target === 'disney') return lLower.includes('disney');
+            if (target.includes('100k')) return lLower.includes('100k');
+            if (target === 'movie puzzle') return lLower.includes('movie puzzle') || lLower.includes('the movies');
+            if (target === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
+            if (target === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
+            return lLower.includes(target);
+          });
 
-          const matchesHistoricalListTag = (m.lists || []).some(l => l.includes(selectedTop250Year));
-          const matchesReleaseYear = String(m.releaseYear) === selectedTop250Year;
-          return matchesHistoricalListTag || matchesReleaseYear;
+          let inContent = false;
+          if (target === 'christmas') {
+            inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
+          } else if (target === 'halloween') {
+            inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
+          }
+
+          return inLists || inContent;
         });
       }
 
-      const isCollection = [
-        'fill in filmography', 'filmography',
-        'disney animated', 'movie puzzle', '100k club', 
-        'christmas', 'halloween'
-      ].some(c => target.includes(c));
+      // 2. Secondary Genre Stacking (e.g. Horror within Fill In Filmography)
+      if (selectedMovieGenre !== 'ALL') {
+        const genreTarget = selectedMovieGenre.toLowerCase().trim();
+        pool = pool.filter(m => (m.genres || '').toLowerCase().includes(genreTarget));
+      }
 
-      return movies.filter(m => {
-        const inLists = (m.lists || []).some(l => {
-          const lLower = l.toLowerCase();
-          if (target.includes('filmography')) return lLower.includes('filmography');
-          if (target === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
-          if (target === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
-          return lLower.includes(target);
-        });
+      // 3. Sorting Mode: Votes vs Avg Rating (min 10k ratings threshold)
+      if (movieSortMode === 'RATING') {
+        pool = pool.filter(m => Number(m.totalRatings) >= 10000);
+        pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0));
+      } else {
+        pool.sort((a, b) => (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0));
+      }
 
-        const inGenres = (m.genres || '').toLowerCase().includes(target);
-
-        let inContent = false;
-        if (target === 'christmas') {
-          inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
-        } else if (target === 'halloween') {
-          inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
-        }
-
-        return inLists || inGenres || inContent;
-      });
+      return pool;
     }
 
     // ==========================================
@@ -933,7 +1037,6 @@
       grid.innerHTML = '';
 
       let scoped = getFilteredMoviePool();
-      scoped.sort((a, b) => (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0));
       updateScopeButtons(currentMovieScope, scoped.length);
 
       let targetCohort = scoped;
@@ -970,6 +1073,7 @@
         const card = document.createElement('div');
         card.className = 'book-card';
         card.id = 'card-' + m.imdbId;
+        card.onclick = () => openMovieModal(m); // Click card to open Movie Detail Modal
 
         const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
         card.innerHTML = `
@@ -985,7 +1089,7 @@
             </div>
             <div>
               <div class="card-footer">
-                <a href="${m.justWatchUrl}" target="_blank" style="font-size:0.72rem; color:#38bdf8; text-decoration:none; font-weight:700;">Where to Watch ↗</a>
+                <a href="${m.justWatchUrl}" target="_blank" onclick="event.stopPropagation();" style="font-size:0.72rem; color:#38bdf8; text-decoration:none; font-weight:700;">Where to Watch ↗</a>
                 <div class="ratings-count-pill">${m.totalRatings >= 1000000 ? (m.totalRatings/1000000).toFixed(1) + 'M' : Math.round(m.totalRatings/1000) + 'k'} votes</div>
               </div>
             </div>
