@@ -263,28 +263,36 @@
 
     <!-- BOOK CONTROLS -->
     <div class="controls-row" id="catalogControls">
-      <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
-        <option value="ALL" selected>📚 All Books (Catalog)</option>
-        <option value="1M">💎 1M+ Ratings Club</option>
-        <option value="Christmas">🎄 Christmas / Holiday</option>
-        <option value="Halloween">🎃 Halloween / Gothic</option>
-        <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
-        <option value="Fantasy">✨ Fantasy</option>
-        <option value="Sci-Fi">🚀 Science Fiction</option>
-        <option value="Thriller">🔪 Thriller</option>
-        <option value="Mystery">🔍 Mystery</option>
-        <option value="Crime">🕵️ Crime</option>
-        <option value="Romance">💘 Romance</option>
-        <option value="Spicy">🌶️ Spicy / Romantasy</option>
-        <option value="Horror">🩸 Horror</option>
-        <option value="Dystopian">👁️ Dystopian</option>
-        <option value="Classics">🏛️ Classics</option>
-        <option value="Historical Fiction">⏳ Historical Fiction</option>
-        <option value="Young Adult">🎒 Young Adult</option>
-        <option value="Children">🧸 Children's Books</option>
-        <option value="Nonfiction">🧠 Nonfiction</option>
-        <option value="Memoir">📖 Memoir & Biography</option>
-      </select>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <!-- Primary Collection Picker -->
+        <select id="listPicker" class="list-select" onchange="onListChange(this.value)" style="flex:1; min-width:160px;">
+          <option value="ALL" selected>📚 All Books (Catalog)</option>
+          <option value="1M">💎 1M+ Ratings Club</option>
+          <option value="Christmas">🎄 Christmas / Holiday</option>
+          <option value="Halloween">🎃 Halloween / Gothic</option>
+          <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
+        </select>
+
+        <!-- Secondary Genre Stacking Picker -->
+        <select id="bookGenreStackPicker" class="list-select" onchange="onBookGenreChange(this.value)" style="flex:1; min-width:140px; border-color:var(--accent);">
+          <option value="ALL" selected>🏷️ All Genres</option>
+          <option value="Fantasy">✨ Fantasy</option>
+          <option value="Sci-Fi">🚀 Science Fiction</option>
+          <option value="Thriller">🔪 Thriller</option>
+          <option value="Mystery">🔍 Mystery</option>
+          <option value="Crime">🕵️ Crime</option>
+          <option value="Romance">💘 Romance</option>
+          <option value="Spicy">🌶️ Spicy / Romantasy</option>
+          <option value="Horror">🩸 Horror</option>
+          <option value="Dystopian">👁️ Dystopian</option>
+          <option value="Classics">🏛️ Classics</option>
+          <option value="Historical Fiction">⏳ Historical Fiction</option>
+          <option value="Young Adult">🎒 Young Adult</option>
+          <option value="Children">🧸 Children's Books</option>
+          <option value="Nonfiction">🧠 Nonfiction</option>
+          <option value="Memoir">📖 Memoir & Biography</option>
+        </select>
+      </div>
 
       <div class="filter-pills-row">
         <div class="toggle-group">
@@ -292,6 +300,7 @@
           <button class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
           <button class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
           <button class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
+          <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Unrated</button>
           <button class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
         </div>
 
@@ -300,6 +309,7 @@
           <button class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
           <button class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
           <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
+          <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Unrated</button>
           <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
         </div>
       </div>
@@ -358,6 +368,8 @@
           <span class="toggle-label label-derek">Derek</span>
           <button class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
           <button class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Watched</button>
+          <button class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
+          <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Unrated</button>
           <button class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unwatched</button>
         </div>
 
@@ -365,6 +377,8 @@
           <span class="toggle-label label-kianna">Kianna</span>
           <button class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
           <button class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Watched</button>
+          <button class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
+          <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Unrated</button>
           <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
         </div>
       </div>
@@ -509,26 +523,47 @@
   </div>
 
   <!-- Book Modal -->
-  <div class="modal-overlay" id="bookModal">
+  <div class="modal-overlay" id="bookModal" onclick="if(event.target===this) closeModal()">
     <div class="modal-sheet">
       <div class="modal-header">
         <div id="modalCover" style="width:85px; min-width:85px; height:125px; border-radius:8px; overflow:hidden;"></div>
-        <div>
+        <div style="flex:1; overflow:hidden;">
           <h2 class="modal-title" id="mTitle"></h2>
           <div class="modal-author" id="mAuthor"></div>
           <div class="ratings-row" id="mRatings"></div>
-          <div class="audio-pill" id="mAudio" style="display:none;"></div>
+          <div id="bookUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
+          <div class="audio-pill" id="mAudio" style="display:none; margin-top:6px;"></div>
         </div>
       </div>
       <p class="modal-desc" id="mDesc"></p>
+
+      <!-- Interactive Toggles (Books) -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 12px 0 6px 0;">
+        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
+          <div style="display:flex; gap:6px;">
+            <button id="btnDReadToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'STATUS')">📖 Read</button>
+            <button id="btnDWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'WISH')">📌 Wish</button>
+          </div>
+        </div>
+        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
+          <div style="display:flex; gap:6px;">
+            <button id="btnKReadToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'STATUS')">📖 Read</button>
+            <button id="btnKWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'WISH')">📌 Wish</button>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <a href="#" target="_blank" id="mLibbyBtn" class="btn-act btn-libby">Open Libby</a>
-        <a href="#" target="_blank" id="mGrBtn" class="btn-act btn-goodreads">Goodreads</a>
+        <a href="#" target="_blank" id="mGrBtn" class="btn-act btn-goodreads">Goodreads ↗</a>
         <button class="btn-act btn-flag" onclick="openQuickFlagModal()">⚠️ Flag</button>
         <button class="btn-act btn-close" onclick="closeModal()">Close</button>
       </div>
     </div>
   </div>
+
   <!-- Movie Detail Modal -->
   <div class="modal-overlay" id="movieModal" onclick="if(event.target===this) closeMovieModal()">
     <div class="modal-sheet">
@@ -538,10 +573,30 @@
           <h2 class="modal-title" id="mvTitle"></h2>
           <div class="modal-author" id="mvDirectorYear"></div>
           <div class="ratings-row" id="mvRatings"></div>
+          <div id="movieUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;" id="mvTagsWrap"></div>
         </div>
       </div>
       <p class="modal-desc" id="mvOverview"></p>
+
+      <!-- Interactive Toggles (Movies) -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 12px 0 6px 0;">
+        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
+          <div style="display:flex; gap:6px;">
+            <button id="btnDWatchToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'STATUS')">👁️ Watched</button>
+            <button id="btnDMovWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'WISH')">📌 Wish</button>
+          </div>
+        </div>
+        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
+          <div style="display:flex; gap:6px;">
+            <button id="btnKWatchToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'STATUS')">👁️ Watched</button>
+            <button id="btnKMovWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'WISH')">📌 Wish</button>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <a href="#" target="_blank" id="mvJustWatchBtn" class="btn-act btn-libby">Where to Watch ↗</a>
         <a href="#" target="_blank" id="mvImdbBtn" class="btn-act btn-goodreads">IMDb Page ↗</a>
@@ -627,6 +682,7 @@
 
     let books = [];
     let selectedList = 'ALL';
+    let selectedBookGenre = 'ALL';
     let currentViewScope = 'top100';
     let filterDerek = 'ALL';
     let filterKianna = 'ALL';
@@ -634,6 +690,11 @@
     let currentShelfUser = 'D';
     let deepFilterPredicate = null;
     let activeBook = null;
+
+    function onBookGenreChange(val) {
+      selectedBookGenre = val;
+      renderBooks();
+    }
 
     let currentTab = 'catalog';
     let movies = [];
@@ -665,10 +726,7 @@
       const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
       document.getElementById('movieModalCover').innerHTML = '<img src="' + posterSrc + '" style="width:100%; height:100%; object-fit:cover;" />';
 
-      const dBadge = m.derekWatched ? '<div class="rating-badge badge-derek">Derek: Watched</div>' : '';
-      const kBadge = m.kiannaWatched ? '<div class="rating-badge badge-kianna">Kianna: Watched</div>' : '';
-      const imdbBadge = m.avgRating ? '<div class="rating-badge" style="background:#f59e0b; color:#000; font-weight:800;">★ ' + m.avgRating + ' (' + Number(m.totalRatings).toLocaleString() + ' votes)</div>' : '';
-      document.getElementById('mvRatings').innerHTML = dBadge + kBadge + imdbBadge;
+      renderMovieModalState();
 
       const tagsWrap = document.getElementById('mvTagsWrap');
       tagsWrap.innerHTML = '';
@@ -691,6 +749,127 @@
       document.getElementById('mvJustWatchBtn').href = m.justWatchUrl || ('https://www.justwatch.com/us/search?q=' + encodeURIComponent(m.title || ''));
       document.getElementById('mvImdbBtn').href = m.imdbUrl || (m.imdbId ? ('https://www.imdb.com/title/' + m.imdbId + '/') : '#');
       document.getElementById('movieModal').classList.add('open');
+    }
+
+    function renderMovieModalState() {
+      const m = activeMovie;
+      if (!m) return;
+
+      const dRateBadge = m.derekRating > 0 ? '<div class="rating-badge badge-derek">D: ★ ' + m.derekRating + '</div>' : (m.derekWatched ? '<div class="rating-badge badge-derek">D: Watched</div>' : (m.derekWishlist ? '<div class="rating-badge badge-wish">D: Wish</div>' : ''));
+      const kRateBadge = m.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + m.kiannaRating + '</div>' : (m.kiannaWatched ? '<div class="rating-badge badge-kianna">K: Watched</div>' : (m.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : ''));
+      const imdbBadge = m.avgRating ? '<div class="rating-badge" style="background:#f59e0b; color:#000; font-weight:800;">★ ' + m.avgRating + ' (' + Number(m.totalRatings).toLocaleString() + ' votes)</div>' : '';
+      document.getElementById('mvRatings').innerHTML = dRateBadge + kRateBadge + imdbBadge;
+
+      const unratedBanner = document.getElementById('movieUnratedBanner');
+      const dNeeds = m.derekWatched && m.derekRating === 0;
+      const kNeeds = m.kiannaWatched && m.kiannaRating === 0;
+      if (dNeeds || kNeeds) {
+        unratedBanner.style.display = 'block';
+        unratedBanner.textContent = '⚠️ ' + (dNeeds && kNeeds ? 'Both Watched' : (dNeeds ? 'Derek Watched' : 'Kianna Watched')) + ' • Unrated on IMDb (Tap "IMDb Page ↗" below)';
+      } else {
+        unratedBanner.style.display = 'none';
+      }
+
+      const dIsWatched = m.derekWatched || m.derekRating > 0;
+      const kIsWatched = m.kiannaWatched || m.kiannaRating > 0;
+      styleToggleBtn(document.getElementById('btnDWatchToggle'), dIsWatched, 'var(--derek)');
+      styleToggleBtn(document.getElementById('btnDMovWishToggle'), m.derekWishlist, 'var(--accent)');
+      styleToggleBtn(document.getElementById('btnKWatchToggle'), kIsWatched, 'var(--kianna)');
+      styleToggleBtn(document.getElementById('btnKMovWishToggle'), m.kiannaWishlist, 'var(--accent)');
+    }
+
+    function styleToggleBtn(el, isActive, color) {
+      if (!el) return;
+      if (isActive) {
+        el.style.background = color;
+        el.style.color = '#000';
+        el.style.borderColor = color;
+        el.style.fontWeight = '900';
+      } else {
+        el.style.background = 'transparent';
+        el.style.color = '#fff';
+        el.style.borderColor = 'var(--border)';
+        el.style.fontWeight = '700';
+      }
+    }
+
+    function toggleClientStatus(itemType, user, field) {
+      const isDerek = user === 'Derek';
+      const isMovie = itemType === 'MOVIE';
+      const item = isMovie ? activeMovie : activeBook;
+      if (!item) return;
+
+      if (field === 'STATUS') {
+        if (isMovie) {
+          if (isDerek) {
+            item.derekWatched = !item.derekWatched;
+            if (item.derekWatched) item.derekWishlist = false;
+          } else {
+            item.kiannaWatched = !item.kiannaWatched;
+            if (item.kiannaWatched) item.kiannaWishlist = false;
+          }
+        } else {
+          if (isDerek) {
+            item.derekRead = !item.derekRead;
+            if (item.derekRead) item.derekWishlist = false;
+          } else {
+            item.kiannaRead = !item.kiannaRead;
+            if (item.kiannaRead) item.kiannaWishlist = false;
+          }
+        }
+      } else if (field === 'WISH') {
+        if (isMovie) {
+          if (isDerek) {
+            item.derekWishlist = !item.derekWishlist;
+            if (item.derekWishlist) item.derekWatched = false;
+          } else {
+            item.kiannaWishlist = !item.kiannaWishlist;
+            if (item.kiannaWishlist) item.kiannaWatched = false;
+          }
+        } else {
+          if (isDerek) {
+            item.derekWishlist = !item.derekWishlist;
+            if (item.derekWishlist) item.derekRead = false;
+          } else {
+            item.kiannaWishlist = !item.kiannaWishlist;
+            if (item.kiannaWishlist) item.kiannaRead = false;
+          }
+        }
+      }
+
+      if (isMovie) {
+        renderMovieModalState();
+        renderMovies();
+      } else {
+        renderBookModalState();
+        renderBooks();
+      }
+
+      const activeVal = (field === 'STATUS')
+        ? (isMovie ? (isDerek ? item.derekWatched : item.kiannaWatched) : (isDerek ? item.derekRead : item.kiannaRead))
+        : (isDerek ? item.derekWishlist : item.kiannaWishlist);
+
+      const targetId = isMovie ? item.imdbId : item.rowIndex;
+      showToast('⚡ Syncing status: ' + (activeVal ? 'Logged' : 'Cleared'));
+
+      const payload = {
+        action: 'toggleItemStatus',
+        itemType: itemType,
+        id: targetId,
+        user: user,
+        field: field,
+        val: activeVal
+      };
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.apiToggleItemStatus(itemType, targetId, user, field, activeVal);
+      } else {
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(err => console.error('Status sync error:', err));
+      }
     }
 
     function closeMovieModal() {
@@ -850,12 +1029,128 @@
       }
     }
 
+    function getFilteredBookPool() {
+      let pool = books.slice();
+
+      if (selectedList === '1M') {
+        pool = pool.filter(b => b.numRatings >= 1000000);
+      } else if (selectedList === 'DNF') {
+        pool = pool.filter(b => b.derekDnf);
+      } else if (selectedList === 'Christmas') {
+        pool = pool.filter(b => {
+          const g = (b.genres || '').toLowerCase();
+          const t = (b.title || '').toLowerCase();
+          return g.includes('christmas') || g.includes('holiday') || t.includes('christmas');
+        });
+      } else if (selectedList === 'Halloween') {
+        pool = pool.filter(b => {
+          const g = (b.genres || '').toLowerCase();
+          const t = (b.title || '').toLowerCase();
+          return g.includes('halloween') || g.includes('gothic') || g.includes('horror') || t.includes('halloween');
+        });
+      }
+
+      if (selectedBookGenre !== 'ALL') {
+        const targetG = selectedBookGenre.toLowerCase().trim();
+        pool = pool.filter(b => {
+          const g = (b.genres || '').toLowerCase();
+          if (targetG === 'sci-fi') return g.includes('sci-fi') || g.includes('science fiction');
+          return g.includes(targetG);
+        });
+      }
+
+      pool.sort((a, b) => b.numRatings - a.numRatings);
+      return pool;
+    }
+
     function getBookScopedCount() {
-      if (selectedList === 'ALL') return books.length;
-      if (selectedList === '1M') return books.filter(b => b.numRatings >= 1000000).length;
-      if (selectedList === 'DNF') return books.filter(b => b.derekDnf).length;
-      if (selectedList === 'Sci-Fi') return books.filter(b => (b.genres || '').toLowerCase().includes('sci-fi')).length;
-      return books.filter(b => (b.genres || '').toLowerCase().includes(selectedList.toLowerCase())).length;
+      return getFilteredBookPool().length;
+    }
+
+    function renderBooks() {
+      const grid = document.getElementById('booksGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      let scoped = getFilteredBookPool();
+      updateScopeButtons(currentViewScope, scoped.length);
+
+      const scopeWrapper = document.querySelector('.view-scope-wrapper');
+      const isExemptShelf = (selectedList === 'DNF');
+      if (scopeWrapper) scopeWrapper.style.display = isExemptShelf ? 'none' : 'flex';
+
+      let targetCohort = scoped;
+      if (!isExemptShelf && currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
+
+      updateRibbon(targetCohort);
+
+      const displayList = targetCohort.filter(b => {
+        if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
+        if (searchQuery) {
+          const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
+          const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
+          const matchSeries = (b.series || '').toLowerCase().includes(searchQuery);
+          const matchGenre = (b.genres || '').toLowerCase().includes(searchQuery);
+          if (!matchTitle && !matchAuthor && !matchSeries && !matchGenre) return false;
+        }
+
+        const dRead = b.derekRead || b.derekRating > 0;
+        const kRead = b.kiannaRead || b.kiannaRating > 0;
+
+        if (filterDerek === 'READ' && !dRead) return false;
+        if (filterDerek === 'WISH' && !b.derekWishlist) return false;
+        if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
+        if (filterDerek === 'UNREAD' && dRead) return false;
+
+        if (filterKianna === 'READ' && !kRead) return false;
+        if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
+        if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
+        if (filterKianna === 'UNREAD' && kRead) return false;
+
+        return true;
+      });
+
+      if (displayList.length === 0) {
+        grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No books match these filters.</div>';
+        return;
+      }
+
+      displayList.forEach(b => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.onclick = () => openModal(b);
+
+        const coverSrc = b.coverUrl || (b.isbn ? 'https://covers.openlibrary.org/b/isbn/' + b.isbn + '-M.jpg' : '');
+        const coverHtml = coverSrc
+          ? '<img src="' + coverSrc + '" loading="lazy" />'
+          : '<div class="cover-fallback-jacket"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
+
+        let seriesPill = '';
+        if (b.seriesNumber) {
+          seriesPill = '<button class="series-badge" onclick="event.stopPropagation(); openSeriesDrawer(\'' + escapeHtml(b.series) + '\', \'' + escapeHtml(b.title) + '\')">#' + escapeHtml(b.seriesNumber) + '</button>';
+        }
+
+        const dBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">D: ★ ' + b.derekRating + '</div>' : (b.derekRead ? '<div class="rating-badge badge-derek">D: Read</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">D: Wish</div>' : ''));
+        const kBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">K: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : ''));
+        const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
+        const audio = b.audioLength ? '<div class="audio-pill">🎧 ' + b.audioLength + '</div>' : '<div></div>';
+
+        card.innerHTML = `
+          <div class="card-cover">${coverHtml}${seriesPill}</div>
+          <div class="card-body">
+            <div>
+              <div class="card-title">${escapeHtml(b.title)}</div>
+              <div class="card-author">${escapeHtml(b.author)}</div>
+              <div class="ratings-row">${dBadge}${kBadge}${grBadge}</div>
+            </div>
+            <div class="card-footer">
+              ${audio}
+              <div class="ratings-count-pill">${b.numRatings >= 1000000 ? (b.numRatings/1000000).toFixed(1) + 'M' : Math.round(b.numRatings/1000) + 'k'}</div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
     }
 
     function populateTop250YearOptions() {
@@ -1053,12 +1348,17 @@
           if (!matchTitle && !matchDirector) return false;
         }
 
-        const dWatched = m.derekWatched;
-        const kWatched = m.kiannaWatched;
+        const dWatched = m.derekWatched || m.derekRating > 0;
+        const kWatched = m.kiannaWatched || m.kiannaRating > 0;
 
         if (mFilterDerek === 'WATCHED' && !dWatched) return false;
+        if (mFilterDerek === 'WISH' && !m.derekWishlist) return false;
+        if (mFilterDerek === 'UNRATED' && (!dWatched || m.derekRating > 0)) return false;
         if (mFilterDerek === 'UNWATCHED' && dWatched) return false;
+
         if (mFilterKianna === 'WATCHED' && !kWatched) return false;
+        if (mFilterKianna === 'WISH' && !m.kiannaWishlist) return false;
+        if (mFilterKianna === 'UNRATED' && (!kWatched || m.kiannaRating > 0)) return false;
         if (mFilterKianna === 'UNWATCHED' && kWatched) return false;
 
         return true;
@@ -1141,7 +1441,10 @@
     function filterByChallengeYear(year) {
       switchTab('catalog');
       selectedList = 'ALL';
+      selectedBookGenre = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
+      const bgPicker = document.getElementById('bookGenreStackPicker');
+      if (bgPicker) bgPicker.value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = (currentShelfUser === 'D' ? 'Derek' : (currentShelfUser === 'K' ? 'Kianna' : 'Both')) + ' ' + year + ' Challenge Reads';
 
@@ -1156,7 +1459,10 @@
     function filterByAllReads() {
       switchTab('catalog');
       selectedList = 'ALL';
+      selectedBookGenre = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
+      const bgPicker = document.getElementById('bookGenreStackPicker');
+      if (bgPicker) bgPicker.value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = 'Total Reads';
 
@@ -1186,7 +1492,10 @@
     function filterByMutualReads() {
       switchTab('catalog');
       selectedList = 'ALL';
+      selectedBookGenre = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
+      const bgPicker = document.getElementById('bookGenreStackPicker');
+      if (bgPicker) bgPicker.value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = 'Shared / Mutual Reads';
       deepFilterPredicate = (b) => (b.derekRead || b.derekRating > 0) && (b.kiannaRead || b.kiannaRating > 0);
@@ -1232,9 +1541,12 @@
 
         if (filterDerek === 'READ' && !dRead) return false;
         if (filterDerek === 'WISH' && !b.derekWishlist) return false;
+        if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
         if (filterDerek === 'UNREAD' && dRead) return false;
+
         if (filterKianna === 'READ' && !kRead) return false;
         if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
+        if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
         if (filterKianna === 'UNREAD' && kRead) return false;
 
         return true;
@@ -1439,11 +1751,7 @@
       const coverBox = document.getElementById('modalCover');
       coverBox.innerHTML = coverSrc ? '<img src="' + coverSrc + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="cover-fallback-jacket" style="height:100%;"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
 
-      const ratings = document.getElementById('mRatings');
-      ratings.innerHTML =
-        (b.derekRating > 0 ? '<div class="rating-badge badge-derek">Derek: ★ ' + b.derekRating + '</div>' : '') +
-        (b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">Kianna: ★ ' + b.kiannaRating + '</div>' : '') +
-        (Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '');
+      renderBookModalState();
 
       const audio = document.getElementById('mAudio');
       if (b.audioLength) {
@@ -1456,6 +1764,33 @@
       document.getElementById('mLibbyBtn').href = b.libbyUrl || '#';
       document.getElementById('mGrBtn').href = b.url || '#';
       document.getElementById('bookModal').classList.add('open');
+    }
+
+    function renderBookModalState() {
+      const b = activeBook;
+      if (!b) return;
+
+      const dRateBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">Derek: ★ ' + b.derekRating + '</div>' : (b.derekRead ? '<div class="rating-badge badge-derek">Derek: Read</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">Derek: Wish</div>' : ''));
+      const kRateBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">Kianna: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">Kianna: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">Kianna: Wish</div>' : ''));
+      const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
+      document.getElementById('mRatings').innerHTML = dRateBadge + kRateBadge + grBadge;
+
+      const unratedBanner = document.getElementById('bookUnratedBanner');
+      const dNeeds = b.derekRead && b.derekRating === 0;
+      const kNeeds = b.kiannaRead && b.kiannaRating === 0;
+      if (dNeeds || kNeeds) {
+        unratedBanner.style.display = 'block';
+        unratedBanner.textContent = '⚠️ ' + (dNeeds && kNeeds ? 'Both Read' : (dNeeds ? 'Derek Read' : 'Kianna Read')) + ' • Unrated on Goodreads (Tap "Goodreads ↗" below)';
+      } else {
+        unratedBanner.style.display = 'none';
+      }
+
+      const dIsRead = b.derekRead || b.derekRating > 0;
+      const kIsRead = b.kiannaRead || b.kiannaRating > 0;
+      styleToggleBtn(document.getElementById('btnDReadToggle'), dIsRead, 'var(--derek)');
+      styleToggleBtn(document.getElementById('btnDWishToggle'), b.derekWishlist, 'var(--accent)');
+      styleToggleBtn(document.getElementById('btnKReadToggle'), kIsRead, 'var(--kianna)');
+      styleToggleBtn(document.getElementById('btnKWishToggle'), b.kiannaWishlist, 'var(--accent)');
     }
 
     function closeModal() { document.getElementById('bookModal').classList.remove('open'); }
