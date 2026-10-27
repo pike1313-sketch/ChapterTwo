@@ -1513,7 +1513,10 @@
 
     function initData() {
       const cached = localStorage.getItem('chaptertwo_books_cache');
-      if (cached) {
+      const cacheTimestamp = localStorage.getItem('chaptertwo_books_cache_time');
+      const isStale = !cacheTimestamp || (Date.now() - parseInt(cacheTimestamp, 10)) > (24 * 60 * 60 * 1000);
+
+      if (cached && !isStale) {
         try {
           books = JSON.parse(cached);
           renderBooks();
@@ -1543,7 +1546,10 @@
             numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
           };
         });
-        try { localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books)); } catch (e) {}
+        try {
+          localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books));
+          localStorage.setItem('chaptertwo_books_cache_time', String(Date.now()));
+        } catch (e) {}
         renderBooks();
         renderShelf();
       }
