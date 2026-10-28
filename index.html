@@ -266,6 +266,7 @@
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <select id="listPicker" class="list-select" onchange="onListChange(this.value)" style="flex:1; min-width:160px;">
           <option value="ALL" selected>📚 All Books (Catalog)</option>
+          <option value="ADAPTATION">🎬 Movie Adaptations</option>
           <option value="1M">💎 1M+ Ratings Club</option>
           <option value="Christmas">🎄 Christmas / Holiday</option>
           <option value="Halloween">🎃 Halloween / Gothic</option>
@@ -318,6 +319,7 @@
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)" style="flex:1; min-width:170px;">
           <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
+          <option value="Book Adaptation">📚 Based on Books</option>
           <option value="Top 250">⭐ IMDb Top 250</option>
           <option value="Disney">🏰 Disney</option>
           <option value="Christmas">🎄 Christmas / Holiday</option>
@@ -688,6 +690,8 @@
 
     let currentTab = 'catalog';
     let movies = [];
+    let movieTitleSet = new Set();
+    let bookTitleSet = new Set();
     let selectedMovieList = 'Fill In Filmography';
     let selectedTop250Year = 'ALL';
     let selectedMovieGenre = 'ALL';
@@ -696,6 +700,16 @@
     let mFilterDerek = 'ALL';
     let mFilterKianna = 'ALL';
     let activeMovie = null;
+
+    function cleanTitleForMatch(t) {
+      return String(t || '')
+        .toLowerCase()
+        .replace(/\s*\([^)]*\)/g, '')
+        .replace(/[:\-–—].*$/, '')
+        .replace(/^(the|a|an)\s+/i, '')
+        .replace(/[^a-z0-9]/g, '')
+        .trim();
+    }
 
     function onBookGenreChange(val) {
       selectedBookGenre = val;
@@ -753,10 +767,14 @@
       const m = activeMovie;
       if (!m) return;
 
+      const cleanKey = (m.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const hasBookAdapt = books.some(b => (b.title || '').toLowerCase().replace(/[^a-z0-9]/g, '') === cleanKey);
+      const adaptBadge = hasBookAdapt ? '<div class="rating-badge" style="background:rgba(99,102,241,0.25); color:#a5b4fc; border:1px solid #6366f1; cursor:pointer;" onclick="jumpToBookAdaptation(\'' + escapeHtml(m.title) + '\')">📚 Based on Book ↗</div>' : '';
+
       const dRateBadge = m.derekRating > 0 ? '<div class="rating-badge badge-derek">D: ★ ' + m.derekRating + '</div>' : (m.derekWatched ? '<div class="rating-badge badge-derek">D: Watched</div>' : (m.derekWishlist ? '<div class="rating-badge badge-wish">D: Wish</div>' : ''));
       const kRateBadge = m.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + m.kiannaRating + '</div>' : (m.kiannaWatched ? '<div class="rating-badge badge-kianna">K: Watched</div>' : (m.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : ''));
       const imdbBadge = m.avgRating ? '<div class="rating-badge" style="background:#f59e0b; color:#000; font-weight:800;">★ ' + m.avgRating + ' (' + Number(m.totalRatings).toLocaleString() + ' votes)</div>' : '';
-      document.getElementById('mvRatings').innerHTML = dRateBadge + kRateBadge + imdbBadge;
+      document.getElementById('mvRatings').innerHTML = dRateBadge + kRateBadge + imdbBadge + adaptBadge;
 
       const unratedBanner = document.getElementById('movieUnratedBanner');
       const dNeeds = m.derekWatched && m.derekRating === 0;
@@ -869,7 +887,31 @@
         }).catch(err => console.error('Status sync error:', err));
       }
     }
+    function jumpToMovieAdaptation(bookTitle) {
+      closeModal();
+      switchTab('movies');
+      const cleanTarget = bookTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const match = movies.find(m => (m.title || '').toLowerCase().replace(/[^a-z0-9]/g, '') === cleanTarget);
+      if (match) {
+        setTimeout(() => openMovieModal(match), 150);
+      } else {
+        searchQuery = cleanBookTitle(bookTitle).toLowerCase();
+        renderMovies();
+      }
+    }
 
+    function jumpToBookAdaptation(movieTitle) {
+      closeMovieModal();
+      switchTab('catalog');
+      const cleanTarget = movieTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const match = books.find(b => (b.title || '').toLowerCase().replace(/[^a-z0-9]/g, '') === cleanTarget);
+      if (match) {
+        setTimeout(() => openModal(match), 150);
+      } else {
+        searchQuery = movieTitle.toLowerCase();
+        renderBooks();
+      }
+    }
     function closeMovieModal() {
       document.getElementById('movieModal').classList.remove('open');
     }
@@ -1028,7 +1070,14 @@
     function getFilteredBookPool() {
       let pool = books.slice();
 
-      if (selectedList === '1M') {
+      if (selectedList === 'ADAPTATION') {
+        if (!movies.length) loadMovieData();
+        pool = pool.filter(b => {
+          const inSeries = (b.series || '').toLowerCase().includes('movie adaptation');
+          const bKey = cleanTitleForMatch(b.title);
+          return inSeries || (bKey && movieTitleSet.has(bKey));
+        });
+      } else if (selectedList === '1M') {
         pool = pool.filter(b => b.numRatings >= 1000000);
       } else if (selectedList === 'DNF') {
         pool = pool.filter(b => b.derekDnf);
@@ -1121,10 +1170,13 @@
         card.className = 'book-card';
         card.onclick = () => openModal(b);
 
-        const coverSrc = b.coverUrl || (b.isbn ? 'https://covers.openlibrary.org/b/isbn/' + b.isbn + '-M.jpg' : '');
-        const coverHtml = coverSrc
-          ? '<img src="' + coverSrc + '" loading="lazy" />'
-          : '<div class="cover-fallback-jacket"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
+        const validCover = (b.coverUrl && !b.coverUrl.includes('nophoto') && !b.coverUrl.includes('placeholder')) ? b.coverUrl : '';
+        const fallbackJacket = '<div class="cover-fallback-jacket"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
+
+        let coverHtml = fallbackJacket;
+        if (validCover) {
+          coverHtml = '<img src="' + validCover + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\';" onload="if(this.naturalWidth < 10 || this.naturalHeight < 10){ this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\'; }" />';
+        }
 
         let seriesPill = '';
         if (b.seriesNumber) {
@@ -1214,7 +1266,13 @@
       let pool = movies.slice();
       const target = selectedMovieList.toLowerCase().trim();
 
-      if (target === 'top 250') {
+      if (target === 'book adaptation') {
+        pool = pool.filter(m => {
+          const inList = (m.lists || []).some(l => l.toLowerCase().includes('book adaptation'));
+          const mKey = cleanTitleForMatch(m.title);
+          return inList || (mKey && bookTitleSet.has(mKey));
+        });
+      } else if (target === 'top 250') {
         pool = pool.filter(m => {
           const inTop250 = (m.lists || []).some(l => l.toLowerCase().includes('top 250'));
           if (!inTop250) return false;
@@ -1267,9 +1325,13 @@
       }
 
       const cached = localStorage.getItem('chaptertwo_movies_cache');
-      if (cached) {
+      const cacheTimestamp = localStorage.getItem('chaptertwo_movies_cache_time');
+      const isStale = !cacheTimestamp || (Date.now() - parseInt(cacheTimestamp, 10)) > (24 * 60 * 60 * 1000);
+
+      if (cached && !isStale) {
         try {
           movies = JSON.parse(cached);
+          movieTitleSet = new Set(movies.map(m => cleanTitleForMatch(m.title)).filter(Boolean));
           populateTop250YearOptions();
           renderMovies();
         } catch(e) {}
@@ -1278,7 +1340,11 @@
       function handleRawMovieData(data) {
         if (!Array.isArray(data)) return;
         movies = data.map(m => Object.assign({}, m, { totalRatings: Number(m.totalRatings) || 0 }));
-        try { localStorage.setItem('chaptertwo_movies_cache', JSON.stringify(movies)); } catch (e) {}
+        movieTitleSet = new Set(movies.map(m => cleanTitleForMatch(m.title)).filter(Boolean));
+        try {
+          localStorage.setItem('chaptertwo_movies_cache', JSON.stringify(movies));
+          localStorage.setItem('chaptertwo_movies_cache_time', String(Date.now()));
+        } catch (e) {}
         populateTop250YearOptions();
         renderMovies();
       }
@@ -1369,7 +1435,7 @@
         const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
         card.innerHTML = `
           <div class="card-cover">
-            <img src="${posterSrc}" loading="lazy" />
+            <img src="${posterSrc}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Poster';" />
             ${m.avgRating ? `<div class="series-badge" style="background:rgba(0,0,0,0.85); color:#facc15; border-color:#eab308;">★ ${m.avgRating}</div>` : ''}
           </div>
           <div class="card-body">
@@ -1539,7 +1605,7 @@
       }
 
       const currentYear = '2026';
-      const readThisYear = active.filter(b => b.targetDate && b.targetDate.startsWith(currentYear)).length;
+      const readThisYear = active.filter(b => b.targetRating > 0 && b.targetDate && b.targetDate.startsWith(currentYear)).length;
       document.getElementById('shelfGoalTitle').textContent = currentYear + ' Reading Challenge';
       document.getElementById('shelfGoalCount').textContent = readThisYear + ' / ' + goalTarget;
       
@@ -1589,13 +1655,12 @@
 
       const yearMap = {};
       active.forEach(b => {
+        if (!b.targetRating || b.targetRating <= 0) return; // Only count authentic rated books in reading challenge history
         const y = b.targetDate ? b.targetDate.slice(0, 4) : 'Prior';
         if (!yearMap[y]) yearMap[y] = { count: 0, sum: 0, ratedCount: 0 };
         yearMap[y].count++;
-        if (b.targetRating > 0) {
-          yearMap[y].sum += b.targetRating;
-          yearMap[y].ratedCount++;
-        }
+        yearMap[y].sum += b.targetRating;
+        yearMap[y].ratedCount++;
       });
 
       const years = Object.keys(yearMap).sort((a,b) => b.localeCompare(a));
@@ -1646,9 +1711,11 @@
       document.getElementById('mAuthor').textContent = b.author;
       document.getElementById('mDesc').textContent = b.description || 'No description available.';
 
-      const coverSrc = b.coverUrl || (b.isbn ? 'https://covers.openlibrary.org/b/isbn/' + b.isbn + '-L.jpg' : '');
+      const validModalCover = (b.coverUrl && !b.coverUrl.includes('nophoto') && !b.coverUrl.includes('placeholder')) ? b.coverUrl : '';
       const coverBox = document.getElementById('modalCover');
-      coverBox.innerHTML = coverSrc ? '<img src="' + coverSrc + '" style="width:100%;height:100%;object-fit:cover;">' : '<div class="cover-fallback-jacket" style="height:100%;"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
+      coverBox.innerHTML = validModalCover
+        ? '<img src="' + validModalCover + '" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\';" onload="if(this.naturalWidth < 10 || this.naturalHeight < 10){ this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\'; }" />'
+        : '<div class="cover-fallback-jacket" style="height:100%;"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
 
       renderBookModalState();
 
@@ -1669,11 +1736,14 @@
       const b = activeBook;
       if (!b) return;
 
-      const dRateBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">Derek: ★ ' + b.derekRating + '</div>' : (b.derekRead ? '<div class="rating-badge badge-derek">Derek: Read</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">Derek: Wish</div>' : ''));
-      const kRateBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">K: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : ''));
-      const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
-      document.getElementById('mRatings').innerHTML = dRateBadge + kRateBadge + grBadge;
+      const cleanKey = (b.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const hasMovieAdapt = movies.some(m => (m.title || '').toLowerCase().replace(/[^a-z0-9]/g, '') === cleanKey);
+      const adaptBadge = hasMovieAdapt ? '<div class="rating-badge" style="background:rgba(99,102,241,0.25); color:#a5b4fc; border:1px solid #6366f1; cursor:pointer;" onclick="jumpToMovieAdaptation(\'' + escapeHtml(b.title) + '\')">🎬 Has Movie Adaptation ↗</div>' : '';
 
+      const dRateBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">Derek: ★ ' + b.derekRating + '</div>' : (b.derekRead ? '<div class="rating-badge badge-derek">Derek: Read</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">Derek: Wish</div>' : ''));
+      const kRateBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">Kianna: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">Kianna: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">Kianna: Wish</div>' : ''));
+      const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
+      document.getElementById('mRatings').innerHTML = dRateBadge + kRateBadge + grBadge + adaptBadge;
       const unratedBanner = document.getElementById('bookUnratedBanner');
       const dNeeds = b.derekRead && b.derekRating === 0;
       const kNeeds = b.kiannaRead && b.kiannaRating === 0;
@@ -1780,12 +1850,14 @@
             numRatings: parseInt(String(b.totalRatings || '0').replace(/,/g, ''), 10) || 0
           };
         });
+        bookTitleSet = new Set(books.map(b => cleanTitleForMatch(b.title)).filter(Boolean));
         try {
           localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books));
           localStorage.setItem('chaptertwo_books_cache_time', String(Date.now()));
         } catch (e) {}
         renderBooks();
         renderShelf();
+        if (!movies.length) loadMovieData();
       }
 
       if (typeof google !== 'undefined' && google.script && google.script.run) {
