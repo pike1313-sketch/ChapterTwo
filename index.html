@@ -264,7 +264,6 @@
     <!-- BOOK CONTROLS -->
     <div class="controls-row" id="catalogControls">
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <!-- Primary Collection Picker -->
         <select id="listPicker" class="list-select" onchange="onListChange(this.value)" style="flex:1; min-width:160px;">
           <option value="ALL" selected>📚 All Books (Catalog)</option>
           <option value="1M">💎 1M+ Ratings Club</option>
@@ -273,7 +272,6 @@
           <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
         </select>
 
-        <!-- Secondary Genre Stacking Picker -->
         <select id="bookGenreStackPicker" class="list-select" onchange="onBookGenreChange(this.value)" style="flex:1; min-width:140px; border-color:var(--accent);">
           <option value="ALL" selected>🏷️ All Genres</option>
           <option value="Fantasy">✨ Fantasy</option>
@@ -318,7 +316,6 @@
     <!-- MOVIE CONTROLS -->
     <div class="controls-row" id="movieControls" style="display:none;">
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <!-- Primary Collection Picker -->
         <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)" style="flex:1; min-width:170px;">
           <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
           <option value="Top 250">⭐ IMDb Top 250</option>
@@ -329,12 +326,10 @@
           <option value="100k Club">💎 100k Club (All Movies)</option>
         </select>
 
-        <!-- Dynamic Year Sub-Filter (Visible only when Top 250 is selected) -->
         <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; width:auto; min-width:135px; border-color:var(--gold);">
           <option value="ALL" selected>⭐ All-Time Master</option>
         </select>
 
-        <!-- Multi-Tag Stacking: Secondary Genre Selector -->
         <select id="movieGenreStackPicker" class="list-select" onchange="onMovieGenreChange(this.value)" style="flex:1; min-width:130px; border-color:var(--accent);">
           <option value="ALL" selected>🏷️ All Genres</option>
           <option value="Action">💥 Action</option>
@@ -352,7 +347,6 @@
           <option value="Thriller">🔪 Thriller</option>
         </select>
 
-        <!-- Sort Order Switcher (Votes vs Avg Rating >=10k) -->
         <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)" style="width:auto; min-width:125px; border-color:var(--emerald);">
           <option value="VOTES" selected>🗳️ Total Votes</option>
           <option value="RATING">⭐ Rating (10k+)</option>
@@ -604,6 +598,7 @@
       </div>
     </div>
   </div>
+
   <!-- Series Drawer Modal -->
   <div class="modal-overlay" id="seriesModal">
     <div class="modal-sheet">
@@ -631,7 +626,7 @@
     </div>
   </div>
 
-  <!-- In-App Movie CSV Ingest Modal (Mobile-Optimized) -->
+  <!-- In-App Movie CSV Ingest Modal -->
   <div id="movieUploadModal" class="flag-modal-overlay" style="display:none;" onclick="if(event.target===this) closeMovieUploadModal()">
     <div class="flag-sheet" style="max-width:520px; max-height:90vh; overflow-y:auto;">
       <div class="flag-sheet-header">
@@ -675,7 +670,7 @@
     </div>
   </div>
 
- <div id="toastNotification" class="toast-notification"></div>
+  <div id="toastNotification" class="toast-notification"></div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxqHyaW5e9EFCaw7JcUqxiFGQ5zGq-Wc4LhzcFU_rwF4NXBmoznT7AzFF5B8QhgtzkJ/exec";
@@ -691,11 +686,6 @@
     let deepFilterPredicate = null;
     let activeBook = null;
 
-    function onBookGenreChange(val) {
-      selectedBookGenre = val;
-      renderBooks();
-    }
-
     let currentTab = 'catalog';
     let movies = [];
     let selectedMovieList = 'Fill In Filmography';
@@ -706,6 +696,14 @@
     let mFilterDerek = 'ALL';
     let mFilterKianna = 'ALL';
     let activeMovie = null;
+
+    function onBookGenreChange(val) {
+      selectedBookGenre = val;
+      deepFilterPredicate = null;
+      const ind = document.getElementById('filterIndicator');
+      if (ind) ind.style.display = 'none';
+      renderBooks();
+    }
 
     function onMovieGenreChange(val) {
       selectedMovieGenre = val;
@@ -952,11 +950,9 @@
         }
       }
 
-      // Option B: Direct text paste
       if (directText) {
         executeIngest(directText);
       } else {
-        // Option A: File picker with binary/text fallback for mobile iOS/Android
         const file = fileInput.files[0];
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -1050,11 +1046,16 @@
         });
       }
 
-      if (selectedBookGenre !== 'ALL') {
+      if (selectedBookGenre && selectedBookGenre !== 'ALL') {
         const targetG = selectedBookGenre.toLowerCase().trim();
         pool = pool.filter(b => {
-          const g = (b.genres || '').toLowerCase();
+          const g = String(b.genres || '').toLowerCase();
           if (targetG === 'sci-fi') return g.includes('sci-fi') || g.includes('science fiction');
+          if (targetG === 'children') return g.includes('children') || g.includes('kids') || g.includes('middle grade');
+          if (targetG === 'young adult') return g.includes('young adult') || g.includes('ya');
+          if (targetG === 'spicy') return g.includes('spicy') || g.includes('romantasy') || g.includes('erotica');
+          if (targetG === 'memoir') return g.includes('memoir') || g.includes('biography');
+          if (targetG === 'classics') return g.includes('classic');
           return g.includes(targetG);
         });
       }
@@ -1157,7 +1158,6 @@
       const yearPicker = document.getElementById('top250YearPicker');
       if (!yearPicker) return;
 
-      // Count actual matching movies for each historical edition year found in Column O
       const editionCounts = {};
 
       movies.forEach(m => {
@@ -1173,12 +1173,10 @@
         });
       });
 
-      // Filter strictly for years that have at least 1 movie present in the catalog
       const validYears = Object.keys(editionCounts)
         .filter(yr => editionCounts[yr] > 0)
         .sort((a, b) => b.localeCompare(a));
 
-      // Hide the picker if no historical editions exist in the catalog
       if (validYears.length === 0) {
         yearPicker.innerHTML = '<option value="ALL">⭐ All-Time Master</option>';
         yearPicker.style.display = 'none';
@@ -1186,7 +1184,6 @@
         return;
       }
 
-      // Show picker only if Top 250 is the currently selected list
       yearPicker.style.display = (selectedMovieList === 'Top 250') ? 'inline-block' : 'none';
 
       const allTop250Count = movies.filter(m => (m.lists || []).some(l => l.toLowerCase().includes('top 250'))).length;
@@ -1217,7 +1214,6 @@
       let pool = movies.slice();
       const target = selectedMovieList.toLowerCase().trim();
 
-      // 1. Primary Collection Tag Filtering
       if (target === 'top 250') {
         pool = pool.filter(m => {
           const inTop250 = (m.lists || []).some(l => l.toLowerCase().includes('top 250'));
@@ -1249,13 +1245,11 @@
         });
       }
 
-      // 2. Secondary Genre Stacking (e.g. Horror within Fill In Filmography)
       if (selectedMovieGenre !== 'ALL') {
         const genreTarget = selectedMovieGenre.toLowerCase().trim();
         pool = pool.filter(m => (m.genres || '').toLowerCase().includes(genreTarget));
       }
 
-      // 3. Sorting Mode: Votes vs Avg Rating (min 10k ratings threshold)
       if (movieSortMode === 'RATING') {
         pool = pool.filter(m => Number(m.totalRatings) >= 10000);
         pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0));
@@ -1266,9 +1260,6 @@
       return pool;
     }
 
-    // ==========================================
-    // MOVIES CONTROLLER
-    // ==========================================
     function loadMovieData() {
       if (movies.length > 0) {
         renderMovies();
@@ -1373,7 +1364,7 @@
         const card = document.createElement('div');
         card.className = 'book-card';
         card.id = 'card-' + m.imdbId;
-        card.onclick = () => openMovieModal(m); // Click card to open Movie Detail Modal
+        card.onclick = () => openMovieModal(m);
 
         const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
         card.innerHTML = `
@@ -1399,13 +1390,11 @@
       });
     }
 
-    // ==========================================
-    // BOOKS CONTROLLER
-    // ==========================================
     function onListChange(val) {
       selectedList = val;
       deepFilterPredicate = null;
-      document.getElementById('filterIndicator').style.display = 'none';
+      const ind = document.getElementById('filterIndicator');
+      if (ind) ind.style.display = 'none';
       renderBooks();
     }
 
@@ -1477,7 +1466,10 @@
     function filterByFiveStars() {
       switchTab('catalog');
       selectedList = 'ALL';
+      selectedBookGenre = 'ALL';
       document.getElementById('listPicker').value = 'ALL';
+      const bgPicker = document.getElementById('bookGenreStackPicker');
+      if (bgPicker) bgPicker.value = 'ALL';
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = '5-Star Favorites (★ 5.0)';
 
@@ -1500,99 +1492,6 @@
       document.getElementById('filterIndicatorText').textContent = 'Shared / Mutual Reads';
       deepFilterPredicate = (b) => (b.derekRead || b.derekRating > 0) && (b.kiannaRead || b.kiannaRating > 0);
       renderBooks();
-    }
-
-    function renderBooks() {
-      const grid = document.getElementById('booksGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      let scoped = [];
-      if (selectedList === 'ALL') scoped = books.slice();
-      else if (selectedList === '1M') scoped = books.filter(b => b.numRatings >= 1000000);
-      else if (selectedList === 'DNF') scoped = books.filter(b => b.derekDnf);
-      else if (selectedList === 'Sci-Fi') scoped = books.filter(b => (b.genres || '').toLowerCase().includes('science fiction') || (b.genres || '').toLowerCase().includes('sci-fi'));
-      else scoped = books.filter(b => (b.genres || '').toLowerCase().includes(selectedList.toLowerCase()));
-
-      scoped.sort((a, b) => b.numRatings - a.numRatings);
-      const countEl = document.getElementById('categoryTotalCount');
-      if (countEl) countEl.textContent = scoped.length;
-
-      const scopeWrapper = document.querySelector('.view-scope-wrapper');
-      const isExemptShelf = (selectedList === '1M' || selectedList === 'DNF');
-      if (scopeWrapper) scopeWrapper.style.display = isExemptShelf ? 'none' : 'flex';
-
-      let targetCohort = scoped;
-      if (!isExemptShelf && currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
-
-      updateRibbon(targetCohort);
-
-      const displayList = targetCohort.filter(b => {
-        if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
-        if (searchQuery) {
-          const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
-          const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
-          const matchSeries = (b.series || '').toLowerCase().includes(searchQuery);
-          if (!matchTitle && !matchAuthor && !matchSeries) return false;
-        }
-
-        const dRead = b.derekRead || b.derekRating > 0;
-        const kRead = b.kiannaRead || b.kiannaRating > 0;
-
-        if (filterDerek === 'READ' && !dRead) return false;
-        if (filterDerek === 'WISH' && !b.derekWishlist) return false;
-        if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
-        if (filterDerek === 'UNREAD' && dRead) return false;
-
-        if (filterKianna === 'READ' && !kRead) return false;
-        if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
-        if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
-        if (filterKianna === 'UNREAD' && kRead) return false;
-
-        return true;
-      });
-
-      if (displayList.length === 0) {
-        grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No books match these filters.</div>';
-        return;
-      }
-
-      displayList.forEach(b => {
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.onclick = () => openModal(b);
-
-        const coverSrc = b.coverUrl || (b.isbn ? 'https://covers.openlibrary.org/b/isbn/' + b.isbn + '-M.jpg' : '');
-        const coverHtml = coverSrc
-          ? '<img src="' + coverSrc + '" loading="lazy" />'
-          : '<div class="cover-fallback-jacket"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
-
-        let seriesPill = '';
-        if (b.seriesNumber) {
-          seriesPill = '<button class="series-badge" onclick="event.stopPropagation(); openSeriesDrawer(\'' + escapeHtml(b.series) + '\', \'' + escapeHtml(b.title) + '\')">#' + escapeHtml(b.seriesNumber) + '</button>';
-        }
-
-        const dBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">D: ★ ' + b.derekRating + '</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">D: Wish</div>' : '');
-        const kBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + b.kiannaRating + '</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : '');
-        const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
-        const audio = b.audioLength ? '<div class="audio-pill">🎧 ' + b.audioLength + '</div>' : '<div></div>';
-
-        card.innerHTML = `
-          <div class="card-cover">${coverHtml}${seriesPill}</div>
-          <div class="card-body">
-            <div>
-              <div class="card-title">${escapeHtml(b.title)}</div>
-              <div class="card-author">${escapeHtml(b.author)}</div>
-              <div class="ratings-row">${dBadge}${kBadge}${grBadge}</div>
-            </div>
-            <div class="card-footer">
-              ${audio}
-              <div class="ratings-count-pill">${b.numRatings >= 1000000 ? (b.numRatings/1000000).toFixed(1) + 'M' : Math.round(b.numRatings/1000) + 'k'}</div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
     }
 
     function updateRibbon(list) {
@@ -1771,7 +1670,7 @@
       if (!b) return;
 
       const dRateBadge = b.derekRating > 0 ? '<div class="rating-badge badge-derek">Derek: ★ ' + b.derekRating + '</div>' : (b.derekRead ? '<div class="rating-badge badge-derek">Derek: Read</div>' : (b.derekWishlist ? '<div class="rating-badge badge-wish">Derek: Wish</div>' : ''));
-      const kRateBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">Kianna: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">Kianna: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">Kianna: Wish</div>' : ''));
+      const kRateBadge = b.kiannaRating > 0 ? '<div class="rating-badge badge-kianna">K: ★ ' + b.kiannaRating + '</div>' : (b.kiannaRead ? '<div class="rating-badge badge-kianna">K: Read</div>' : (b.kiannaWishlist ? '<div class="rating-badge badge-wish">K: Wish</div>' : ''));
       const grBadge = Number(b.avgRating) > 0 ? '<div class="rating-badge">GR: ★ ' + b.avgRating + '</div>' : '';
       document.getElementById('mRatings').innerHTML = dRateBadge + kRateBadge + grBadge;
 
