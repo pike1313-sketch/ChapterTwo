@@ -33,8 +33,65 @@
     }
 
     .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .logo { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
+    .logo { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; color: #fff; display: inline-flex; align-items: center; cursor: pointer; user-select: none; }
     .logo span { color: var(--accent); }
+    .stealth-pulse-dot {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: #10b981; margin-left: 6px; opacity: 0.45;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .logo:active .stealth-pulse-dot { opacity: 1; transform: scale(1.4); }
+
+    /* Covert Telemetry Drawer */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(6px);
+      z-index: 105; display: none; align-items: flex-end; justify-content: center;
+    }
+    .drawer-overlay.open { display: flex; }
+    .drawer-sheet {
+      background: #121318; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 640px; max-height: 85vh; display: flex; flex-direction: column;
+      padding: 18px 20px calc(20px + var(--safe-bottom)) 20px;
+    }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .drawer-title { font-size: 1.05rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .drawer-scroll-body { overflow-y: auto; padding-right: 4px; }
+    .drawer-scroll-body::-webkit-scrollbar { width: 4px; }
+    .drawer-scroll-body::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: 4px; }
+
+    .health-meter-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
+    }
+    .health-meter-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+    }
+    .health-meter-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .health-progress-wrap { width: 100%; height: 6px; background: var(--surface-elevated); border-radius: 99px; overflow: hidden; margin: 6px 0; }
+    .health-progress-fill { height: 100%; border-radius: 99px; }
+    .health-stat-line { font-size: 0.7rem; color: #cbd5e1; display: flex; justify-content: space-between; margin-top: 3px; }
+
+    .pipeline-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .pipeline-row {
+      display: flex; justify-content: space-between; align-items: center; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
+    }
+    .pipeline-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .pipeline-sched { font-size: 0.68rem; color: var(--text-muted); }
+    .pipeline-status-badge {
+      font-size: 0.68rem; font-weight: 800; padding: 2px 7px; border-radius: 4px;
+      background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .feed-list { display: flex; flex-direction: column; gap: 6px; }
+    .feed-item {
+      background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;
+      padding: 7px 10px; font-size: 0.74rem; display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .feed-item.ADD { border-left-color: #38bdf8; }
+    .feed-item.HEAL { border-left-color: #34d399; }
+    .feed-item.STATS { border-left-color: #fbbf24; }
+    .feed-item-time { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; margin-left: 8px; }
 
     .controls-row { display: flex; flex-direction: column; gap: 8px; }
     .list-select {
@@ -258,7 +315,9 @@
 
   <header>
     <div class="top-bar">
-      <div class="logo">CHAPTER<span>TWO</span></div>
+      <div class="logo" id="stealthLogoBtn" onclick="onStealthLogoTap()" title="ChapterTwo">
+        CHAPTER<span>TWO</span><div class="stealth-pulse-dot" id="stealthDot"></div>
+      </div>
     </div>
 
     <!-- BOOK CONTROLS -->
@@ -668,6 +727,88 @@
           <span id="btnSubmitIngestText">🚀 Start Ingest</span>
         </button>
         <button type="button" class="btn-act btn-close" onclick="closeMovieUploadModal()" style="flex:none; padding:10px 18px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Covert System Health & Diagnostic Drawer -->
+  <div class="drawer-overlay" id="healthDrawerOverlay" onclick="if(event.target===this) closeHealthDrawer()">
+    <div class="drawer-sheet">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span style="font-size:1.1rem;">⚡</span>
+          <span>System Telemetry & Self-Healing</span>
+        </div>
+        <button class="flag-close-btn" onclick="closeHealthDrawer()">✕</button>
+      </div>
+
+      <div class="drawer-scroll-body">
+        <!-- Catalog Completeness -->
+        <div class="health-meter-row">
+          <div class="health-meter-card">
+            <div class="health-meter-label">📚 Book Catalog (<span id="shbTotal">0</span>)</div>
+            <div class="health-progress-wrap">
+              <div class="health-progress-fill" id="shbBar" style="width:100%; background:#38bdf8;"></div>
+            </div>
+            <div class="health-stat-line"><span>Covers Healed:</span><strong id="shbCovers">100%</strong></div>
+            <div class="health-stat-line"><span>Audio Length:</span><strong id="shbAudio">100%</strong></div>
+            <div class="health-stat-line"><span>Descriptions:</span><strong id="shbDesc">100%</strong></div>
+            <div class="health-stat-line"><span>Libby Direct:</span><strong id="shbLibby">100%</strong></div>
+          </div>
+
+          <div class="health-meter-card">
+            <div class="health-meter-label">🎬 Movie Catalog (<span id="shmTotal">0</span>)</div>
+            <div class="health-progress-wrap">
+              <div class="health-progress-fill" id="shmBar" style="width:100%; background:#f472b6;"></div>
+            </div>
+            <div class="health-stat-line"><span>Posters Healed:</span><strong id="shmPosters">100%</strong></div>
+            <div class="health-stat-line"><span>Runtimes:</span><strong id="shmRuntimes">100%</strong></div>
+            <div class="health-stat-line"><span>Directors:</span><strong id="shmDirectors">100%</strong></div>
+            <div class="health-stat-line"><span>Overviews:</span><strong id="shmOverviews">100%</strong></div>
+          </div>
+        </div>
+
+        <!-- Autonomous Discovered & Ingested Counters -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:16px;">
+          <div style="background:var(--surface); border:1px solid rgba(56, 189, 248, 0.3); border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:10px;">
+            <div style="font-size:1.4rem;">📥</div>
+            <div>
+              <div style="font-size:0.68rem; font-weight:800; color:#38bdf8; text-transform:uppercase;">Books Discovered / Added</div>
+              <div style="font-size:1.15rem; font-weight:900; color:#fff;" id="shbAddedCount">+0 new</div>
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;" id="shbAddedSub">Past 30 days via RSS & Harvester</div>
+            </div>
+          </div>
+
+          <div style="background:var(--surface); border:1px solid rgba(244, 114, 182, 0.3); border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:10px;">
+            <div style="font-size:1.4rem;">🎬</div>
+            <div>
+              <div style="font-size:0.68rem; font-weight:800; color:#f472b6; text-transform:uppercase;">Movies Discovered / Ingested</div>
+              <div style="font-size:1.15rem; font-weight:900; color:#fff;" id="shmAddedCount">+0 new</div>
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;" id="shmAddedSub">Past 30 days via TMDb & Drops</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automated Pipelines Status -->
+        <div style="font-size:0.75rem; font-weight:800; color:#fff; text-transform:uppercase; margin-bottom:8px;">
+          Autonomous Cron Engines (8 Scheduled)
+        </div>
+        <div class="pipeline-grid" id="pipelineGridContainer">
+          <div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">Loading schedule...</div>
+        </div>
+
+        <!-- Recent Self-Healing & Ingestion Stream -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin: 14px 0 8px 0;">
+          <div style="font-size:0.75rem; font-weight:800; color:#fff; text-transform:uppercase;">
+            Recent Telemetry Stream
+          </div>
+          <button type="button" onclick="triggerQuickDiagnostic()" style="background:transparent; border:1px solid var(--border); color:#a5b4fc; font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
+            Audit Now ↻
+          </button>
+        </div>
+        <div class="feed-list" id="telemetryFeedContainer">
+          <div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">No recent events recorded.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1815,6 +1956,131 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
+    // Stealth Logo & Health Telemetry Engine
+    let stealthTapCount = 0;
+    let stealthTapTimer = null;
+
+    function onStealthLogoTap() {
+      stealthTapCount++;
+      clearTimeout(stealthTapTimer);
+      stealthTapTimer = setTimeout(() => { stealthTapCount = 0; }, 400);
+
+      if (stealthTapCount >= 2) {
+        stealthTapCount = 0;
+        openHealthDrawer();
+      }
+    }
+
+    function openHealthDrawer() {
+      const drawer = document.getElementById('healthDrawerOverlay');
+      if (drawer) drawer.classList.add('open');
+      loadHealthTelemetry();
+    }
+
+    function closeHealthDrawer() {
+      const drawer = document.getElementById('healthDrawerOverlay');
+      if (drawer) drawer.classList.remove('open');
+    }
+
+    function loadHealthTelemetry() {
+      function renderTelemetry(data) {
+        if (!data || !data.success) return;
+
+        // Books completeness & discoveries
+        if (data.books) {
+          document.getElementById('shbTotal').textContent = data.books.total.toLocaleString();
+          document.getElementById('shbCovers').textContent = data.books.coversPct + '%';
+          document.getElementById('shbAudio').textContent = data.books.audioPct + '%';
+          document.getElementById('shbDesc').textContent = data.books.descPct + '%';
+          document.getElementById('shbLibby').textContent = data.books.libbyPct + '%';
+          document.getElementById('shbBar').style.width = Math.min(data.books.coversPct, data.books.descPct) + '%';
+
+          const bAdded = data.books.added30d || 0;
+          document.getElementById('shbAddedCount').textContent = `+${bAdded} new`;
+          document.getElementById('shbAddedSub').textContent = `+${data.books.added7d || 0} this week • RSS & Harvester`;
+        }
+
+        // Movies completeness & discoveries
+        if (data.movies) {
+          document.getElementById('shmTotal').textContent = data.movies.total.toLocaleString();
+          document.getElementById('shmPosters').textContent = data.movies.postersPct + '%';
+          document.getElementById('shmRuntimes').textContent = data.movies.runtimesPct + '%';
+          document.getElementById('shmDirectors').textContent = data.movies.directorsPct + '%';
+          document.getElementById('shmOverviews').textContent = data.movies.overviewsPct + '%';
+          document.getElementById('shmBar').style.width = Math.min(data.movies.postersPct, data.movies.overviewsPct) + '%';
+
+          const mAdded = data.movies.added30d || 0;
+          document.getElementById('shmAddedCount').textContent = `+${mAdded} new`;
+          document.getElementById('shmAddedSub').textContent = `+${data.movies.added7d || 0} this week • TMDb & Drops`;
+        }
+
+        // Pipelines
+        const pContainer = document.getElementById('pipelineGridContainer');
+        if (pContainer && Array.isArray(data.pipelines)) {
+          pContainer.innerHTML = '';
+          data.pipelines.forEach(p => {
+            const row = document.createElement('div');
+            row.className = 'pipeline-row';
+            row.innerHTML = `
+              <div>
+                <div class="pipeline-name">${p.name}</div>
+                <div class="pipeline-sched">${p.schedule}</div>
+              </div>
+              <div class="pipeline-status-badge">${p.lastRun}</div>
+            `;
+            pContainer.appendChild(row);
+          });
+        }
+
+        // Recent activity feed
+        const fContainer = document.getElementById('telemetryFeedContainer');
+        if (fContainer && Array.isArray(data.recentActivity)) {
+          fContainer.innerHTML = '';
+          if (data.recentActivity.length === 0) {
+            fContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">Pipeline active. Awaiting first scheduled run.</div>';
+          } else {
+            data.recentActivity.forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'feed-item ' + (item.type || 'HEAL');
+              div.innerHTML = `
+                <div>
+                  <strong style="color:#fff;">[${item.source}]</strong>
+                  <span style="color:#cbd5e1; margin-left:4px;">${escapeHtml(item.text)}</span>
+                </div>
+                <span class="feed-item-time">${item.time}</span>
+              `;
+              fContainer.appendChild(div);
+            });
+          }
+        }
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(renderTelemetry)
+          .withFailureHandler(err => console.error('Health fetch failed:', err))
+          .apiGetSystemHealth();
+      } else {
+        fetch(API_URL + '?action=getSystemHealth')
+          .then(r => r.json())
+          .then(renderTelemetry)
+          .catch(err => console.error('Health network error:', err));
+      }
+    }
+
+    function triggerQuickDiagnostic() {
+      showToast('⚡ Running diagnostic pass...');
+      function onDone(res) {
+        showToast('✅ Diagnostic complete');
+        loadHealthTelemetry();
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(onDone).apiTriggerQuickAudit();
+      } else {
+        loadHealthTelemetry();
+      }
+    }
     function initData() {
       const cached = localStorage.getItem('chaptertwo_books_cache');
       const cacheTimestamp = localStorage.getItem('chaptertwo_books_cache_time');
