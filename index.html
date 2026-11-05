@@ -238,12 +238,39 @@
     .shelf-kpi-val { font-size: 1.5rem; font-weight: 900; color: #fff; }
     .shelf-kpi-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
 
-    .dash-heading { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: #fff; }
-    .yoy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-    .yoy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; }
-    .yoy-year { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); }
-    .yoy-books { font-size: 1.25rem; font-weight: 900; color: #fff; margin: 2px 0; }
-    .yoy-avg { font-size: 0.72rem; color: var(--gold); font-weight: 700; }
+    .dash-heading { font-size: 0.95rem; font-weight: 800; margin: 20px 0 10px 0; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+    .yoy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 20px; }
+    .yoy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.15s; }
+    .yoy-card:active { transform: scale(0.97); border-color: var(--accent); }
+    .yoy-year { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); }
+    .yoy-books { font-size: 1.15rem; font-weight: 900; color: #fff; margin: 2px 0; }
+    .yoy-avg { font-size: 0.7rem; color: var(--gold); font-weight: 700; }
+
+    /* Deep Dive Dashboard Extensions */
+    .shelf-stat-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .shelf-stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+    .shelf-stat-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .shelf-stat-num { font-size: 1.2rem; font-weight: 900; color: #fff; }
+    .shelf-stat-sub { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+    .clash-card-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .clash-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.15s;
+    }
+    .clash-card:active { transform: scale(0.98); border-color: var(--accent); }
+    .clash-title { font-size: 0.82rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
+    .clash-sub { font-size: 0.68rem; color: var(--text-muted); margin-top: 1px; }
+    .clash-badge-row { display: flex; align-items: center; gap: 6px; }
+    .clash-delta { font-size: 0.72rem; font-weight: 900; color: #f87171; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 6px; border-radius: 4px; }
+    .crown-delta { font-size: 0.72rem; font-weight: 900; color: #fbbf24; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); padding: 2px 6px; border-radius: 4px; }
+
+    .top-list-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .top-list-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+    .top-list-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.72rem; }
+    .top-list-item:last-child { border-bottom: none; }
+    .top-list-name { font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+    .top-list-val { font-weight: 800; color: var(--accent); }
 
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + var(--safe-bottom));
@@ -481,12 +508,14 @@
   <!-- TAB 2: Our Shelf Dashboard -->
   <main id="tabShelf" class="tab-content">
     <div class="dashboard-container">
+      <!-- User Perspective Deck -->
       <div class="user-deck">
         <button class="deck-btn active" data-user="D" onclick="setShelfUser('D')">Derek</button>
         <button class="deck-btn" data-user="K" onclick="setShelfUser('K')">Kianna</button>
-        <button class="deck-btn" data-user="BOTH" onclick="setShelfUser('BOTH')">Both</button>
+        <button class="deck-btn" data-user="BOTH" onclick="setShelfUser('BOTH')">Both / Mutual</button>
       </div>
 
+      <!-- Reading Challenge -->
       <div class="goal-card" onclick="filterByChallengeYear('2026')">
         <div class="goal-top">
           <div class="goal-title" id="shelfGoalTitle">2026 Reading Challenge</div>
@@ -498,6 +527,7 @@
         <div class="pace-text" id="shelfPaceText">Calculating pace...</div>
       </div>
 
+      <!-- Core KPIs Grid -->
       <div class="kpi-cards-grid">
         <div class="shelf-kpi-card" onclick="filterByAllReads()">
           <div class="shelf-kpi-title">Total Read</div>
@@ -516,6 +546,51 @@
         </div>
       </div>
 
+      <!-- Critic Index & Total Hours Consumed -->
+      <div class="shelf-stat-duo">
+        <div class="shelf-stat-box">
+          <div class="shelf-stat-title">⚖️ The Critic Index</div>
+          <div class="shelf-stat-num" id="shCriticWinner">Derek</div>
+          <div class="shelf-stat-sub" id="shCriticScores">D: ★ 0.0 vs K: ★ 0.0</div>
+        </div>
+        <div class="shelf-stat-box">
+          <div class="shelf-stat-title">⏱️ Time Invested</div>
+          <div class="shelf-stat-num" id="shTimeInvested">0 hrs</div>
+          <div class="shelf-stat-sub" id="shTimeSub">Audiobooks & Movies</div>
+        </div>
+      </div>
+
+      <!-- The Battleground: Biggest Taste Disagreements -->
+      <h3 class="dash-heading">
+        <span>⚔️ The Battleground (Taste Clashes)</span>
+        <span style="font-size:0.68rem; color:var(--text-muted); font-weight:600;">Tap to view</span>
+      </h3>
+      <div class="clash-card-list" id="clashListContainer">
+        <div style="font-size:0.75rem; color:var(--text-muted); padding:8px;">Analyzing agreement...</div>
+      </div>
+
+      <!-- Crown Favorites: Mutual Perfection -->
+      <h3 class="dash-heading">
+        <span>👑 Mutual Crown Favorites</span>
+        <span style="font-size:0.68rem; color:var(--text-muted); font-weight:600;">Both Loved</span>
+      </h3>
+      <div class="clash-card-list" id="crownListContainer">
+        <div style="font-size:0.75rem; color:var(--text-muted); padding:8px;">Finding top shared gems...</div>
+      </div>
+
+      <!-- Top Genres & Creators -->
+      <div class="top-list-grid">
+        <div class="top-list-card">
+          <div class="shelf-stat-title" style="margin-bottom:8px;">🏷️ Top Genres</div>
+          <div id="topGenresContainer"></div>
+        </div>
+        <div class="top-list-card">
+          <div class="shelf-stat-title" style="margin-bottom:8px;" id="topCreatorTitle">✍️ Top Authors</div>
+          <div id="topCreatorsContainer"></div>
+        </div>
+      </div>
+
+      <!-- YoY Reading History -->
       <h3 class="dash-heading">Year-Over-Year History</h3>
       <div class="yoy-grid" id="yoyGrid"></div>
     </div>
@@ -784,7 +859,7 @@
             <div>
               <div style="font-size:0.68rem; font-weight:800; color:#f472b6; text-transform:uppercase;">Movies Discovered / Ingested</div>
               <div style="font-size:1.15rem; font-weight:900; color:#fff;" id="shmAddedCount">+0 new</div>
-              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;" id="shmAddedSub">Past 30 days via TMDb & Drops</div>
+              <div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;" id="shmAddedSub">Past 30 days via Wikidata & Drops</div>
             </div>
           </div>
         </div>
@@ -1727,6 +1802,8 @@
 
     function renderShelf() {
       if (!books.length) return;
+      if (!movies.length) loadMovieData();
+
       let active = [];
       let goalTarget = 54;
       let accent = 'var(--derek)';
@@ -1745,11 +1822,12 @@
         accent = 'var(--both)';
       }
 
+      // 1. Reading Challenge
       const currentYear = '2026';
       const readThisYear = active.filter(b => b.targetRating > 0 && b.targetDate && b.targetDate.startsWith(currentYear)).length;
       document.getElementById('shelfGoalTitle').textContent = currentYear + ' Reading Challenge';
       document.getElementById('shelfGoalCount').textContent = readThisYear + ' / ' + goalTarget;
-      
+
       const pct = Math.min(100, Math.round((readThisYear / goalTarget) * 100));
       const bar = document.getElementById('shelfProgressBar');
       bar.style.width = pct + '%';
@@ -1765,28 +1843,223 @@
       else paceHtml = '<span style="color:#f87171;">' + Math.abs(delta) + ' books behind</span> pace (' + pct + '%)';
       document.getElementById('shelfPaceText').innerHTML = paceHtml;
 
+      // 2. Core Shelf Totals
       document.getElementById('shTotalRead').textContent = active.length;
       document.getElementById('shTotalPct').textContent = ((active.length / books.length) * 100).toFixed(1) + '% of Catalog';
-
-      const rated = active.filter(b => b.targetRating > 0);
-      const sum = rated.reduce((s, b) => s + b.targetRating, 0);
-      const avgEl = document.getElementById('shAvgRating');
-      if (avgEl) avgEl.textContent = rated.length ? (sum / rated.length).toFixed(2) : '0.00';
 
       const fiveStars = active.filter(b => b.targetRating >= 4.9).length;
       document.getElementById('shFavorites').textContent = fiveStars;
 
-      const mutual = books.filter(b => (b.derekRating > 0 || b.derekRead) && (b.kiannaRating > 0 || b.kiannaRead));
-      const mutualRated = books.filter(b => b.derekRating > 0 && b.kiannaRating > 0);
+      const mutualBooks = books.filter(b => (b.derekRating > 0 || b.derekRead) && (b.kiannaRating > 0 || b.kiannaRead));
+      const mutualRatedBooks = books.filter(b => b.derekRating > 0 && b.kiannaRating > 0);
       let match = 0;
-      if (mutualRated.length > 0) {
-        const d = mutualRated.reduce((s, b) => s + Math.abs(b.derekRating - b.kiannaRating), 0);
-        match = Math.max(0, Math.round((1 - (d / (mutualRated.length * 4))) * 100));
+      if (mutualRatedBooks.length > 0) {
+        const d = mutualRatedBooks.reduce((s, b) => s + Math.abs(b.derekRating - b.kiannaRating), 0);
+        match = Math.max(0, Math.round((1 - (d / (mutualRatedBooks.length * 4))) * 100));
       }
       document.getElementById('shMutualScore').textContent = match + '%';
-      document.getElementById('shMutualSub').textContent = mutual.length + ' shared reads';
+      document.getElementById('shMutualSub').textContent = mutualBooks.length + ' shared reads';
 
+      // 3. Critic Index
+      const dBookRated = books.filter(b => b.derekRating > 0);
+      const kBookRated = books.filter(b => b.kiannaRating > 0);
+      const dAvg = dBookRated.length ? (dBookRated.reduce((s, b) => s + b.derekRating, 0) / dBookRated.length).toFixed(2) : '0.00';
+      const kAvg = kBookRated.length ? (kBookRated.reduce((s, b) => s + b.kiannaRating, 0) / kBookRated.length).toFixed(2) : '0.00';
+
+      const criticWinnerEl = document.getElementById('shCriticWinner');
+      const criticScoresEl = document.getElementById('shCriticScores');
+      if (parseFloat(dAvg) < parseFloat(kAvg)) {
+        criticWinnerEl.textContent = 'Derek (Tougher)';
+        criticWinnerEl.style.color = 'var(--derek)';
+      } else if (parseFloat(kAvg) < parseFloat(dAvg)) {
+        criticWinnerEl.textContent = 'Kianna (Tougher)';
+        criticWinnerEl.style.color = 'var(--kianna)';
+      } else {
+        criticWinnerEl.textContent = 'Tied Critics';
+        criticWinnerEl.style.color = 'var(--gold)';
+      }
+      criticScoresEl.textContent = `Derek ★ ${dAvg} • Kianna ★ ${kAvg}`;
+
+      // 4. Time Invested Aggregation
+      let totalAudioMins = 0;
+      active.forEach(b => {
+        if (b.audioLength) {
+          const hm = b.audioLength.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/i);
+          if (hm) {
+            const h = parseInt(hm[1] || '0', 10);
+            const m = parseInt(hm[2] || '0', 10);
+            totalAudioMins += (h * 60) + m;
+          }
+        }
+      });
+
+      let totalMovieMins = 0;
+      if (movies.length) {
+        movies.forEach(m => {
+          const isWatched = (currentShelfUser === 'D' && m.derekWatched) ||
+                            (currentShelfUser === 'K' && m.kiannaWatched) ||
+                            (currentShelfUser === 'BOTH' && m.derekWatched && m.kiannaWatched);
+          if (isWatched && m.runtime) {
+            const rMatch = m.runtime.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/i);
+            if (rMatch) {
+              const h = parseInt(rMatch[1] || '0', 10);
+              const min = parseInt(rMatch[2] || '0', 10);
+              totalMovieMins += (h * 60) + min;
+            }
+          }
+        });
+      }
+
+      const totalHours = Math.round((totalAudioMins + totalMovieMins) / 60);
+      const totalDays = (totalHours / 24).toFixed(1);
+      document.getElementById('shTimeInvested').textContent = `${totalHours.toLocaleString()} hrs`;
+      document.getElementById('shTimeSub').textContent = `~${totalDays} days across books & films`;
+
+      // 5. The Battleground: Disagreements & Clashes
+      renderClashesAndCrowns();
+
+      // 6. Top Genres & Top Creators
+      renderTopGenresAndCreators(active);
+
+      // 7. Year-over-Year
       renderYoyGrid(active);
+    }
+
+    function renderClashesAndCrowns() {
+      const clashContainer = document.getElementById('clashListContainer');
+      const crownContainer = document.getElementById('crownListContainer');
+      if (!clashContainer || !crownContainer) return;
+
+      const clashes = [];
+      const crowns = [];
+
+      // Inspect books
+      books.forEach(b => {
+        if (b.derekRating > 0 && b.kiannaRating > 0) {
+          const delta = Math.abs(b.derekRating - b.kiannaRating);
+          if (delta >= 1.5) {
+            clashes.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, delta });
+          }
+          if (b.derekRating >= 4.0 && b.kiannaRating >= 4.0) {
+            crowns.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, avg: (b.derekRating + b.kiannaRating) / 2 });
+          }
+        }
+      });
+
+      // Inspect movies
+      movies.forEach(m => {
+        if (m.derekRating > 0 && m.kiannaRating > 0) {
+          const delta = Math.abs(m.derekRating - m.kiannaRating);
+          if (delta >= 2.0) {
+            clashes.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, delta });
+          }
+          if (m.derekRating >= 8.0 && m.kiannaRating >= 8.0) {
+            crowns.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, avg: (m.derekRating + m.kiannaRating) / 2 });
+          }
+        }
+      });
+
+      clashes.sort((a, b) => b.delta - a.delta);
+      crowns.sort((a, b) => b.avg - a.avg);
+
+      // Render Clashes
+      clashContainer.innerHTML = '';
+      if (clashes.length === 0) {
+        clashContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">No major disagreements! You both agree on almost everything.</div>';
+      } else {
+        clashes.slice(0, 4).forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'clash-card';
+          card.onclick = () => { if (c.type === 'BOOK') openModal(c.item); else openMovieModal(c.item); };
+          card.innerHTML = `
+            <div>
+              <div class="clash-title">${c.type === 'BOOK' ? '📚' : '🎬'} ${escapeHtml(c.title)}</div>
+              <div class="clash-sub">${escapeHtml(c.sub)}</div>
+            </div>
+            <div class="clash-badge-row">
+              <span style="font-size:0.7rem; font-weight:800; color:var(--derek);">D: ★${c.dRate}</span>
+              <span style="font-size:0.7rem; font-weight:800; color:var(--kianna);">K: ★${c.kRate}</span>
+              <span class="clash-delta">Δ ${c.delta}</span>
+            </div>
+          `;
+          clashContainer.appendChild(card);
+        });
+      }
+
+      // Render Crowns
+      crownContainer.innerHTML = '';
+      if (crowns.length === 0) {
+        crownContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">Rate more books & movies together to unlock crowns!</div>';
+      } else {
+        crowns.slice(0, 4).forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'clash-card';
+          card.onclick = () => { if (c.type === 'BOOK') openModal(c.item); else openMovieModal(c.item); };
+          card.innerHTML = `
+            <div>
+              <div class="clash-title">${c.type === 'BOOK' ? '📚' : '🎬'} ${escapeHtml(c.title)}</div>
+              <div class="clash-sub">${escapeHtml(c.sub)}</div>
+            </div>
+            <div class="clash-badge-row">
+              <span style="font-size:0.7rem; font-weight:800; color:var(--gold);">★ ${c.avg.toFixed(1)}</span>
+              <span class="crown-delta">👑 Top Pick</span>
+            </div>
+          `;
+          crownContainer.appendChild(card);
+        });
+      }
+    }
+
+    function renderTopGenresAndCreators(activeBooks) {
+      const gContainer = document.getElementById('topGenresContainer');
+      const cContainer = document.getElementById('topCreatorsContainer');
+      if (!gContainer || !cContainer) return;
+
+      const genreCounts = {};
+      activeBooks.forEach(b => {
+        if (b.genres) {
+          b.genres.split(',').forEach(g => {
+            const cleanG = g.trim();
+            if (cleanG && cleanG !== 'General Fiction') {
+              genreCounts[cleanG] = (genreCounts[cleanG] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      const topGenres = Object.keys(genreCounts).sort((a, b) => genreCounts[b] - genreCounts[a]).slice(0, 5);
+      gContainer.innerHTML = '';
+      if (topGenres.length === 0) {
+        gContainer.innerHTML = '<div style="font-size:0.7rem; color:var(--text-muted);">No genre data yet.</div>';
+      } else {
+        topGenres.forEach(g => {
+          const div = document.createElement('div');
+          div.className = 'top-list-item';
+          div.innerHTML = `<span class="top-list-name">${escapeHtml(g)}</span><span class="top-list-val">${genreCounts[g]} reads</span>`;
+          gContainer.appendChild(div);
+        });
+      }
+
+      const authorCounts = {};
+      activeBooks.forEach(b => {
+        const a = (b.author || '').trim();
+        if (a && a !== 'Unknown') {
+          authorCounts[a] = (authorCounts[a] || 0) + 1;
+        }
+      });
+
+      const topAuthors = Object.keys(authorCounts).sort((a, b) => authorCounts[b] - authorCounts[a]).slice(0, 5);
+      cContainer.innerHTML = '';
+      if (topAuthors.length === 0) {
+        cContainer.innerHTML = '<div style="font-size:0.7rem; color:var(--text-muted);">No author data yet.</div>';
+      } else {
+        topAuthors.forEach(a => {
+          const div = document.createElement('div');
+          div.className = 'top-list-item';
+          div.innerHTML = `<span class="top-list-name">${escapeHtml(a)}</span><span class="top-list-val">${authorCounts[a]} books</span>`;
+          cContainer.appendChild(div);
+        });
+      }
     }
 
     function renderYoyGrid(active) {
@@ -2011,7 +2284,7 @@
 
           const mAdded = data.movies.added30d || 0;
           document.getElementById('shmAddedCount').textContent = `+${mAdded} new`;
-          document.getElementById('shmAddedSub').textContent = `+${data.movies.added7d || 0} this week • TMDb & Drops`;
+          document.getElementById('shmAddedSub').textContent = `+${data.movies.added7d || 0} this week • Wikidata & Drops`;
         }
 
         // Pipelines
