@@ -2311,24 +2311,13 @@
       }
 
       const isExemptShelf = (selectedList === 'DNF');
-      const isNotRatedMode = (filterDerek === 'NOT_RATED' || filterKianna === 'NOT_RATED');
-
-      let workingPool = scoped;
-      if (isNotRatedMode) {
-        workingPool = scoped.filter(b => {
-          if (filterDerek === 'NOT_RATED' && b.derekRating > 0) return false;
-          if (filterKianna === 'NOT_RATED' && b.kiannaRating > 0) return false;
-          return true;
-        });
-      }
-
-      let targetCohort = workingPool;
+      let targetCohort = scoped;
       if (!isExemptShelf) {
-        if (currentViewScope === 'top100') targetCohort = workingPool.slice(0, 100);
-        else if (currentViewScope === 'top250') targetCohort = workingPool.slice(0, 250);
+        if (currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
+        else if (currentViewScope === 'top250') targetCohort = scoped.slice(0, 250);
       }
 
-      updateRibbon(isNotRatedMode ? scoped.slice(0, currentViewScope === 'top100' ? 100 : (currentViewScope === 'top250' ? 250 : scoped.length)) : targetCohort);
+      updateRibbon(targetCohort);
 
       const displayList = targetCohort.filter(b => {
         if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
@@ -2606,21 +2595,11 @@
         updateFilterBadgeCount();
       }
 
-      const isMNotRated = (mFilterDerek === 'NOT_RATED' || mFilterKianna === 'NOT_RATED');
-      let workingPool = scoped;
-      if (isMNotRated) {
-        workingPool = scoped.filter(m => {
-          if (mFilterDerek === 'NOT_RATED' && m.derekRating > 0) return false;
-          if (mFilterKianna === 'NOT_RATED' && m.kiannaRating > 0) return false;
-          return true;
-        });
-      }
+      let targetCohort = scoped;
+      if (currentMovieScope === 'top100') targetCohort = scoped.slice(0, 100);
+      else if (currentMovieScope === 'top250') targetCohort = scoped.slice(0, 250);
 
-      let targetCohort = workingPool;
-      if (currentMovieScope === 'top100') targetCohort = workingPool.slice(0, 100);
-      else if (currentMovieScope === 'top250') targetCohort = workingPool.slice(0, 250);
-
-      updateMovieRibbon(isMNotRated ? scoped.slice(0, currentMovieScope === 'top100' ? 100 : (currentMovieScope === 'top250' ? 250 : scoped.length)) : targetCohort);
+      updateMovieRibbon(targetCohort);
 
       const displayList = targetCohort.filter(m => {
         if (searchQuery) {
