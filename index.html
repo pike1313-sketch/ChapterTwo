@@ -1355,10 +1355,27 @@
 
         <!-- Derek & Kianna Quick 1-10 Restaurant Ratings (Shown when visited, or expandable) -->
         <div class="dk-rating-card" id="rmDkRatingCard" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
             <span style="font-size:0.78rem; font-weight:900; color:#fff;">⭐ Overall Restaurant Rating (1–10)</span>
-            <span style="font-size:0.66rem; color:var(--text-muted);">Separate from individual dishes</span>
+            <button type="button" onclick="toggleRatingGuide()" style="background:rgba(99,102,241,0.18); border:1px solid rgba(99,102,241,0.4); color:#c7d2fe; font-size:0.68rem; font-weight:800; padding:3px 8px; border-radius:999px; cursor:pointer; white-space:nowrap;">📖 Rating Guide</button>
           </div>
+
+          <!-- Collapsible 1-10 Rating Guide -->
+          <div id="ratingGuideBox" style="display:none; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 11px; margin-bottom:12px; font-size:0.72rem; line-height:1.45; color:#cbd5e1;">
+            <div style="font-size:0.72rem; font-weight:800; color:#fbbf24; margin-bottom:6px;">💡 Rate pure food & experience only — Cost & Drive Time already add up to 40 bonus points to the /100 score!</div>
+            <div style="display:grid; grid-template-columns:1fr; gap:3px;">
+              <div><strong style="color:#34d399;">10 — All-Time Favorite:</strong> The gold standard (e.g. Piada). Would go out of our way for it.</div>
+              <div><strong style="color:#34d399;">9 — Crave-Worthy:</strong> Top tier. Almost always a home run.</div>
+              <div><strong style="color:#38bdf8;">8 — Really Great:</strong> Consistently delicious; happy to go anytime.</div>
+              <div><strong style="color:#38bdf8;">7 — Good:</strong> Enjoyable meal, solid go-to option.</div>
+              <div><strong style="color:#fbbf24;">6 — Solid / Hits the Spot:</strong> Dependable & satisfying (e.g. Little Caesars — cheap + close already boosts its /100!).</div>
+              <div><strong style="color:#fbbf24;">5 — Average / Fine:</strong> Totally fine, nothing memorable.</div>
+              <div><strong style="color:#fb7185;">4 — Below Average:</strong> Only if super convenient.</div>
+              <div><strong style="color:#fb7185;">3 — Disappointing:</strong> Probably skipping next time.</div>
+              <div><strong style="color:#f43f5e;">1–2 — Never Again:</strong> Hard pass.</div>
+            </div>
+          </div>
+
           <div class="rate-row-head">
             <span style="color:var(--derek);">Derek</span>
             <span id="rmDRateVal" style="color:var(--derek);">Not rated</span>
@@ -3855,8 +3872,8 @@
       // Render Derek & Kianna 1-10 Quick-Tap Rating Strips
       const dVal = Number(r.derekRating) || 0;
       const kVal = Number(r.kiannaRating) || 0;
-      document.getElementById('rmDRateVal').textContent = dVal > 0 ? `★ ${dVal} / 10` : 'Tap 1–10';
-      document.getElementById('rmKRateVal').textContent = kVal > 0 ? `★ ${kVal} / 10` : 'Tap 1–10';
+      document.getElementById('rmDRateVal').textContent = dVal > 0 ? `★ ${dVal}/10 • ${getRatingLabel(dVal)}` : 'Tap 1–10';
+      document.getElementById('rmKRateVal').textContent = kVal > 0 ? `★ ${kVal}/10 • ${getRatingLabel(kVal)}` : 'Tap 1–10';
 
       const dStrip = document.getElementById('rmDRateStrip');
       const kStrip = document.getElementById('rmKRateStrip');
@@ -4004,6 +4021,29 @@
           renderDining();
         }
       });
+    }
+
+    const RATING_GUIDE_LABELS = {
+      10: 'All-Time Favorite',
+      9: 'Crave-Worthy',
+      8: 'Really Great',
+      7: 'Good',
+      6: 'Solid / Hits the Spot',
+      5: 'Average / Fine',
+      4: 'Below Average',
+      3: 'Disappointing',
+      2: 'Never Again',
+      1: 'Never Again'
+    };
+
+    function getRatingLabel(n) {
+      return RATING_GUIDE_LABELS[Math.round(n)] || '';
+    }
+
+    function toggleRatingGuide() {
+      const box = document.getElementById('ratingGuideBox');
+      if (!box) return;
+      box.style.display = (box.style.display === 'none') ? 'block' : 'none';
     }
 
     function setRestaurantQuickRating(field, score) {
