@@ -1149,7 +1149,41 @@
           <button type="button" id="btnRmDateToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('dateNight')">🥂 Date Night</button>
         </div>
 
+        <div id="rmKidsNotesBox" style="display:none; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); border-radius:10px; padding:9px 11px; margin-bottom:10px;">
+          <div style="font-size:0.68rem; font-weight:900; color:#34d399; text-transform:uppercase; margin-bottom:3px;">🧒 Kids Ordering Tip</div>
+          <div id="rmKidsNotesText" style="font-size:0.78rem; color:#e2e8f0; line-height:1.4;"></div>
+        </div>
+
         <p id="rmNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
+
+        <!-- Visit History -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0 6px 0;">
+          <div style="font-size:0.82rem; font-weight:900; color:#fff;" id="rmVisitHeader">🗓️ Visit Log</div>
+          <button type="button" class="dining-add-btn" style="padding:5px 10px; font-size:0.72rem; background:var(--surface-elevated); border:1px solid var(--emerald); color:#34d399;" onclick="toggleVisitForm()">+ Log Visit</button>
+        </div>
+
+        <div id="addVisitFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--emerald); border-radius:10px; padding:10px; margin-bottom:10px;">
+          <div class="form-row-2">
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Date *</label>
+              <input type="date" id="visitDateInput" class="form-input">
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Who Went</label>
+              <input type="text" id="visitCompanionsInput" class="form-input" placeholder="e.g. Family + Grandma & Grandpa" value="Family">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Visit Notes</label>
+            <input type="text" id="visitNotesInput" class="form-input" placeholder="e.g. Grandma and Grandpa loved it!">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="btnSaveVisit" class="btn-act" style="background:var(--emerald); color:#000; font-weight:800;" onclick="submitNewVisit()">Save Visit</button>
+            <button type="button" class="btn-act btn-close" style="flex:none; padding:8px 14px;" onclick="toggleVisitForm(false)">Cancel</button>
+          </div>
+        </div>
+
+        <div class="dish-list" id="rmVisitList" style="max-height:170px; margin-bottom:12px;"></div>
 
         <!-- What We Ate / Dish Log -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
@@ -1302,7 +1336,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Notes</label>
+          <label class="form-label">🧒 Kids Ordering Notes / Tips</label>
+          <textarea id="rfKidsNotes" class="form-input" rows="2" placeholder="e.g. Order kids meal with 3 sides (2x mac & cheese), comes with Jello & roll"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">General Notes</label>
           <textarea id="rfNotes" class="form-input" rows="2" placeholder="Kids eat free Tuesdays, great patio, etc."></textarea>
         </div>
       </div>
@@ -3000,7 +3039,8 @@
 
         if (searchQuery) {
           const dishText = (r.dishes || []).map(d => d.name + ' ' + (d.notes || '')).join(' ');
-          const haystack = `${r.name} ${r.category} ${r.location} ${r.address} ${r.notes} ${dishText}`.toLowerCase();
+          const visitText = (r.visits || []).map(v => (v.companions || '') + ' ' + (v.notes || '') + ' ' + (v.date || '')).join(' ');
+          const haystack = `${r.name} ${r.category} ${r.location} ${r.address} ${r.notes} ${r.kidsNotes || ''} ${dishText} ${visitText}`.toLowerCase();
           if (!haystack.includes(searchQuery)) return false;
         }
         return true;
@@ -3163,7 +3203,7 @@
               </div>
             </div>
             <div class="card-footer">
-              <span class="ratings-count-pill">${(r.dishes || []).length} dish${(r.dishes || []).length === 1 ? '' : 'es'} logged</span>
+              <span class="ratings-count-pill">${(r.dishes || []).length} dish${(r.dishes || []).length === 1 ? '' : 'es'}${(r.visits && r.visits.length) ? ' • Last: ' + r.visits[0].date : ''}</span>
               <a href="${r.googleMapsUrl}" target="_blank" onclick="event.stopPropagation();" class="audio-pill" style="text-decoration:none;">📍 Maps ↗</a>
             </div>
           </div>
@@ -3185,6 +3225,7 @@
     function openRestaurantModal(r) {
       activeRestaurant = restaurants.find(x => x.id === r.id) || r;
       toggleDishForm(false);
+      toggleVisitForm(false);
       renderRestaurantModal();
       document.getElementById('restaurantModal').classList.add('open');
     }
@@ -3230,6 +3271,14 @@
       styleToggleBtn(document.getElementById('btnRmFamilyToggle'), !!r.familyFriendly, 'var(--emerald)');
       styleToggleBtn(document.getElementById('btnRmDateToggle'), !!r.dateNight, 'var(--kianna)');
 
+      const kidsBox = document.getElementById('rmKidsNotesBox');
+      if (r.kidsNotes) {
+        kidsBox.style.display = 'block';
+        document.getElementById('rmKidsNotesText').textContent = r.kidsNotes;
+      } else {
+        kidsBox.style.display = 'none';
+      }
+
       const notesEl = document.getElementById('rmNotes');
       if (r.notes) {
         notesEl.style.display = 'block';
@@ -3239,6 +3288,28 @@
       }
 
       document.getElementById('rmMapsBtn').href = r.googleMapsUrl || '#';
+
+      // Visit Log
+      const visits = r.visits || [];
+      document.getElementById('rmVisitHeader').textContent = `🗓️ Visit Log (${visits.length})`;
+      const visitWrap = document.getElementById('rmVisitList');
+      if (!visits.length) {
+        visitWrap.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:4px;">No visits logged yet. Tap <strong>+ Log Visit</strong> when you eat here!</div>';
+      } else {
+        visitWrap.innerHTML = '';
+        visits.forEach(v => {
+          const vItem = document.createElement('div');
+          vItem.className = 'dish-item';
+          vItem.innerHTML = `
+            <div class="dish-info">
+              <div class="dish-name">📅 ${escapeHtml(v.date || '')} <span style="font-size:0.7rem; font-weight:700; color:#34d399; margin-left:6px;">${escapeHtml(v.companions || 'Family')}</span></div>
+              ${v.notes ? `<div class="dish-meta">${escapeHtml(v.notes)}</div>` : ''}
+            </div>
+            <button type="button" class="dish-del-btn" title="Delete visit" onclick="deleteVisitItem('${v.id}')">✕</button>
+          `;
+          visitWrap.appendChild(vItem);
+        });
+      }
 
       // Dishes list
       const dishWrap = document.getElementById('rmDishList');
@@ -3276,6 +3347,67 @@
 
       const payload = { action: 'saveRestaurant', ...activeRestaurant };
       postRestaurantApi(payload, () => showToast('✅ Updated ' + (flagName === 'familyFriendly' ? 'Family' : 'Date Night') + ' tag'));
+    }
+
+    function toggleVisitForm(forceState) {
+      const box = document.getElementById('addVisitFormBox');
+      if (!box) return;
+      const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
+      box.style.display = show ? 'block' : 'none';
+      if (show) {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        document.getElementById('visitDateInput').value = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('visitCompanionsInput').value = 'Family';
+        document.getElementById('visitNotesInput').value = '';
+      }
+    }
+
+    function submitNewVisit() {
+      if (!activeRestaurant) return;
+      const date = document.getElementById('visitDateInput').value;
+      const companions = document.getElementById('visitCompanionsInput').value.trim() || 'Family';
+      const notes = document.getElementById('visitNotesInput').value.trim();
+      if (!date) { showToast('⚠️ Pick a date'); return; }
+
+      const btn = document.getElementById('btnSaveVisit');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      postRestaurantApi({
+        action: 'addVisit',
+        restaurantId: activeRestaurant.id,
+        date,
+        companions,
+        notes
+      }, (res) => {
+        btn.disabled = false;
+        btn.textContent = 'Save Visit';
+        if (res && res.success && res.visit) {
+          if (!Array.isArray(activeRestaurant.visits)) activeRestaurant.visits = [];
+          activeRestaurant.visits.unshift(res.visit);
+          activeRestaurant.visits.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+          activeRestaurant.visited = true;
+          saveRestaurantsCache();
+          toggleVisitForm(false);
+          renderRestaurantModal();
+          renderDining();
+          showToast('✅ Visit logged!');
+        } else {
+          showToast('❌ Could not save visit');
+        }
+      });
+    }
+
+    function deleteVisitItem(visitId) {
+      if (!activeRestaurant || !confirm('Remove this visit?')) return;
+      activeRestaurant.visits = (activeRestaurant.visits || []).filter(v => v.id !== visitId);
+      saveRestaurantsCache();
+      renderRestaurantModal();
+      renderDining();
+      postRestaurantApi({ action: 'deleteVisit', id: visitId }, () => showToast('🗑️ Visit removed'));
     }
 
     function toggleDishForm(forceState) {
@@ -3391,6 +3523,7 @@
       document.getElementById('rfTotalAvg').value = (isEdit && existing.totalAvg !== null && existing.totalAvg !== undefined) ? existing.totalAvg : '';
       document.getElementById('rfFamilyFriendly').checked = isEdit ? !!existing.familyFriendly : true;
       document.getElementById('rfDateNight').checked = isEdit ? !!existing.dateNight : true;
+      document.getElementById('rfKidsNotes').value = isEdit ? (existing.kidsNotes || '') : '';
       document.getElementById('rfNotes').value = isEdit ? (existing.notes || '') : '';
       document.getElementById('rfPhotoInput').value = '';
       document.getElementById('btnDeleteRestaurant').style.display = isEdit ? 'inline-block' : 'none';
@@ -3458,6 +3591,7 @@
         dateNight: document.getElementById('rfDateNight').checked,
         visited: true,
         lists: existingObj ? (existingObj.lists || []) : [],
+        kidsNotes: document.getElementById('rfKidsNotes').value.trim(),
         notes: document.getElementById('rfNotes').value.trim(),
         photoUrl: existingObj ? (existingObj.photoUrl || '') : '',
         photoBase64: compressed ? compressed.base64 : '',
@@ -3468,7 +3602,11 @@
         btn.disabled = false;
         btn.textContent = '💾 Save Spot';
         if (res && res.success && res.restaurant) {
-          const saved = { ...res.restaurant, dishes: existingObj ? (existingObj.dishes || []) : [] };
+          const saved = {
+            ...res.restaurant,
+            dishes: existingObj ? (existingObj.dishes || []) : [],
+            visits: existingObj ? (existingObj.visits || []) : []
+          };
           const idx = restaurants.findIndex(r => r.id === saved.id);
           if (idx !== -1) restaurants[idx] = saved;
           else restaurants.unshift(saved);
@@ -3504,6 +3642,8 @@
         else if (payload.action === 'deleteRestaurant') runner.apiDeleteRestaurant(payload.id);
         else if (payload.action === 'addDish') runner.apiAddDish(payload);
         else if (payload.action === 'deleteDish') runner.apiDeleteDish(payload.id);
+        else if (payload.action === 'addVisit') runner.apiAddVisit(payload);
+        else if (payload.action === 'deleteVisit') runner.apiDeleteVisit(payload.id);
       } else {
         fetch(API_URL, {
           method: 'POST',
