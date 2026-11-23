@@ -591,6 +591,9 @@
         <button type="button" class="header-filter-btn" id="deviceUserBtn" onclick="openWhoModal()" title="Switch Phone User" style="padding:6px 10px;">
           👤 <span id="deviceUserLabel">?</span>
         </button>
+        <button type="button" class="header-filter-btn" id="headerSearchBtn" onclick="openSearchSheet()" title="Search this tab" style="padding:6px 10px;">
+          🔍
+        </button>
         <button type="button" class="header-filter-btn" id="headerFilterBtn" onclick="openFilterDrawer()">
           ⚙️ Filters <span class="filter-badge-dot" id="headerFilterCount">0</span>
         </button>
@@ -1073,10 +1076,6 @@
     <button class="nav-item" id="navShelf" onclick="switchTab('shelf')">
       <div class="nav-icon">📊</div>
       <div class="nav-label">Our Shelf</div>
-    </button>
-    <button class="nav-item" onclick="openSearchSheet()">
-      <div class="nav-icon">🔍</div>
-      <div class="nav-label">Search</div>
     </button>
   </nav>
 
@@ -2155,10 +2154,19 @@
       const movieControls = document.getElementById('movieControls');
       const diningControls = document.getElementById('diningControls');
       const filterBtn = document.getElementById('headerFilterBtn');
+      const searchBtn = document.getElementById('headerSearchBtn');
       const addRestBtn = document.getElementById('headerAddRestBtn');
       const csvBtn = document.getElementById('headerCsvBtn');
 
+      if (searchQuery) {
+        searchQuery = '';
+        const sIn = document.getElementById('searchSheetInput');
+        if (sIn) sIn.value = '';
+        if (searchBtn) searchBtn.classList.remove('has-active');
+      }
+
       if (filterBtn) filterBtn.style.display = (tab === 'shelf') ? 'none' : 'inline-flex';
+      if (searchBtn) searchBtn.style.display = (tab === 'shelf') ? 'none' : 'inline-flex';
       if (addRestBtn) addRestBtn.style.display = (tab === 'dining') ? 'inline-block' : 'none';
       if (csvBtn) csvBtn.style.display = (tab === 'movies') ? 'inline-block' : 'none';
 
@@ -3492,6 +3500,13 @@
     function openSearchSheet() {
       document.getElementById('searchSheetOverlay').classList.add('open');
       const input = document.getElementById('searchSheetInput');
+      if (currentTab === 'dining') {
+        input.placeholder = 'Search restaurants, cities, categories, or dishes...';
+      } else if (currentTab === 'movies') {
+        input.placeholder = 'Search movies or directors...';
+      } else {
+        input.placeholder = 'Search books, authors, series, or genres...';
+      }
       input.value = searchQuery;
       input.focus();
     }
@@ -3500,11 +3515,13 @@
       document.getElementById('searchSheetOverlay').classList.remove('open');
       if (currentTab === 'movies') renderMovies();
       else if (currentTab === 'dining') renderDining();
-      else switchTab('catalog');
+      else renderBooks();
     }
 
     document.getElementById('searchSheetInput').addEventListener('input', function(e) {
       searchQuery = e.target.value.toLowerCase().trim();
+      const sBtn = document.getElementById('headerSearchBtn');
+      if (sBtn) sBtn.classList.toggle('has-active', searchQuery.length > 0);
       if (currentTab === 'movies') {
         renderMovies();
         document.getElementById('searchResultCount').textContent = document.querySelectorAll('#movieGrid .book-card').length + ' movies found';
