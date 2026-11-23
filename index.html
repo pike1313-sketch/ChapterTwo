@@ -723,13 +723,17 @@
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
           </select>
 
-          <div class="filter-section-label">Holiday / Theme (Combines with List!)</div>
-          <select id="movieHolidayPicker" class="list-select" onchange="onMovieHolidayChange(this.value)">
-            <option value="ALL" selected>✨ Any Holiday / Theme</option>
-            <option value="Christmas">🎄 Christmas / Holiday</option>
-            <option value="Halloween">🎃 Halloween / Spooky</option>
-            <option value="Disney">🏰 Disney</option>
-          </select>
+          <div class="filter-section-label">Combine Lists / Categories (Multi-Select AND)</div>
+          <div id="movieListChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Fill In Filmography" onclick="toggleMovieListChip(this)">🎞️ Filmography Poster</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Movie Puzzle" onclick="toggleMovieListChip(this)">🧩 Movie Puzzle</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Disney" onclick="toggleMovieListChip(this)">🏰 Disney Super List</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Top 250" onclick="toggleMovieListChip(this)">⭐ IMDb Top 250</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Book Adaptation" onclick="toggleMovieListChip(this)">📚 Based on Books</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Christmas" onclick="toggleMovieListChip(this)">🎄 Christmas</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Halloween" onclick="toggleMovieListChip(this)">🎃 Halloween</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="100k Club" onclick="toggleMovieListChip(this)">💎 100k Club</button>
+          </div>
 
           <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; margin-top:8px; border-color:var(--gold);">
             <option value="ALL" selected>⭐ All-Time Master</option>
@@ -1682,7 +1686,7 @@
     let movieTitleSet = new Set();
     let bookTitleSet = new Set();
     let selectedMovieList = 'Fill In Filmography';
-    let selectedMovieHoliday = 'ALL';
+    let selectedMovieExtraLists = new Set();
     let selectedTop250Year = 'ALL';
     let selectedMovieGenre = 'ALL';
     let movieSortMode = 'VOTES';
@@ -1720,8 +1724,26 @@
       renderMovies();
     }
 
-    function onMovieHolidayChange(val) {
-      selectedMovieHoliday = val;
+    function toggleMovieListChip(btn) {
+      const val = btn.dataset.mlist;
+      if (!val) return;
+      if (selectedMovieExtraLists.has(val)) {
+        selectedMovieExtraLists.delete(val);
+        btn.classList.remove('active');
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'var(--border)';
+        btn.style.color = 'var(--text-muted)';
+      } else {
+        selectedMovieExtraLists.add(val);
+        btn.classList.add('active');
+        btn.style.background = 'rgba(99, 102, 241, 0.28)';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = '#fff';
+      }
+      const yearPicker = document.getElementById('top250YearPicker');
+      if (yearPicker) {
+        yearPicker.style.display = (selectedMovieList === 'Top 250' || selectedMovieExtraLists.has('Top 250')) ? 'inline-block' : 'none';
+      }
       renderMovies();
     }
 
@@ -1767,7 +1789,7 @@
         if (currentViewScope !== 'top100') count++;
       } else if (currentTab === 'movies') {
         if (movieSortMode !== 'VOTES') count++;
-        if (selectedMovieHoliday !== 'ALL') count++;
+        count += selectedMovieExtraLists.size;
         if (selectedMovieGenre !== 'ALL') count++;
         if (selectedTop250Year !== 'ALL') count++;
         if (mFilterDerek !== 'ALL') count++;
@@ -1809,14 +1831,19 @@
         renderBooks();
       } else if (currentTab === 'movies') {
         movieSortMode = 'VOTES';
-        selectedMovieHoliday = 'ALL';
+        selectedMovieExtraLists.clear();
         selectedMovieGenre = 'ALL';
         selectedTop250Year = 'ALL';
         currentMovieScope = 'top100';
         mFilterDerek = 'ALL';
         mFilterKianna = 'ALL';
         document.getElementById('movieSortPicker').value = 'VOTES';
-        document.getElementById('movieHolidayPicker').value = 'ALL';
+        document.querySelectorAll('#movieListChips button').forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'transparent';
+          b.style.borderColor = 'var(--border)';
+          b.style.color = 'var(--text-muted)';
+        });
         document.getElementById('movieGenreStackPicker').value = 'ALL';
         document.querySelectorAll('.toggle-pill[data-mfilter]').forEach(p => {
           p.classList.remove('active', 'd-on', 'k-on');
@@ -2424,66 +2451,52 @@
       renderMovies();
     }
 
+    function movieMatchesCollection(m, rawTag) {
+      const target = String(rawTag || '').toLowerCase().trim();
+      if (!target || target === 'all') return true;
+      if (target === 'book adaptation') {
+        const inList = (m.lists || []).some(l => l.toLowerCase().includes('book adaptation'));
+        const mKey = cleanTitleForMatch(m.title);
+        return inList || (mKey && bookTitleSet.has(mKey));
+      }
+      if (target === 'top 250') {
+        const inTop250 = (m.lists || []).some(l => l.toLowerCase().includes('top 250'));
+        if (!inTop250) return false;
+        if (selectedTop250Year === 'ALL') return true;
+        return (m.lists || []).some(l => l.toLowerCase().includes('top 250') && l.includes(selectedTop250Year));
+      }
+      const inLists = (m.lists || []).some(l => {
+        const lLower = l.toLowerCase();
+        if (target.includes('filmography')) return lLower.includes('filmography');
+        if (target === 'disney') return lLower.includes('disney');
+        if (target.includes('100k')) return lLower.includes('100k');
+        if (target === 'movie puzzle') return lLower.includes('movie puzzle') || lLower.includes('the movies');
+        if (target === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
+        if (target === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
+        return lLower.includes(target);
+      });
+      let inContent = false;
+      if (target === 'christmas') {
+        inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
+      } else if (target === 'halloween') {
+        inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
+      }
+      return inLists || inContent;
+    }
+
     function getFilteredMoviePool() {
       let pool = movies.slice();
-      const target = selectedMovieList.toLowerCase().trim();
-
-      if (target === 'book adaptation') {
-        pool = pool.filter(m => {
-          const inList = (m.lists || []).some(l => l.toLowerCase().includes('book adaptation'));
-          const mKey = cleanTitleForMatch(m.title);
-          return inList || (mKey && bookTitleSet.has(mKey));
-        });
-      } else if (target === 'top 250') {
-        pool = pool.filter(m => {
-          const inTop250 = (m.lists || []).some(l => l.toLowerCase().includes('top 250'));
-          if (!inTop250) return false;
-          if (selectedTop250Year === 'ALL') return true;
-          return (m.lists || []).some(l => l.toLowerCase().includes('top 250') && l.includes(selectedTop250Year));
-        });
-      } else if (target !== 'all') {
-        pool = pool.filter(m => {
-          const inLists = (m.lists || []).some(l => {
-            const lLower = l.toLowerCase();
-            if (target.includes('filmography')) return lLower.includes('filmography');
-            if (target === 'disney') return lLower.includes('disney');
-            if (target.includes('100k')) return lLower.includes('100k');
-            if (target === 'movie puzzle') return lLower.includes('movie puzzle') || lLower.includes('the movies');
-            if (target === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
-            if (target === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
-            return lLower.includes(target);
-          });
-
-          let inContent = false;
-          if (target === 'christmas') {
-            inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
-          } else if (target === 'halloween') {
-            inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
-          }
-
-          return inLists || inContent;
-        });
+      const activeTags = [];
+      if (selectedMovieList && selectedMovieList.toLowerCase() !== 'all') {
+        activeTags.push(selectedMovieList);
       }
+      selectedMovieExtraLists.forEach(tag => {
+        if (!activeTags.includes(tag)) activeTags.push(tag);
+      });
 
-      if (selectedMovieHoliday && selectedMovieHoliday !== 'ALL') {
-        const hTarget = selectedMovieHoliday.toLowerCase().trim();
-        pool = pool.filter(m => {
-          const inLists = (m.lists || []).some(l => {
-            const lLower = l.toLowerCase();
-            if (hTarget === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
-            if (hTarget === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
-            if (hTarget === 'disney') return lLower.includes('disney');
-            return lLower.includes(hTarget);
-          });
-          let inContent = false;
-          if (hTarget === 'christmas') {
-            inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
-          } else if (hTarget === 'halloween') {
-            inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
-          }
-          return inLists || inContent;
-        });
-      }
+      activeTags.forEach(tag => {
+        pool = pool.filter(m => movieMatchesCollection(m, tag));
+      });
 
       if (selectedMovieGenre !== 'ALL') {
         const genreTarget = selectedMovieGenre.toLowerCase().trim();
