@@ -893,6 +893,13 @@
   <!-- TAB 2: Our Shelf Dashboard -->
   <main id="tabShelf" class="tab-content">
     <div class="dashboard-container">
+      <!-- Pillar Selector: Books | Movies | Dining -->
+      <div class="segmented-3" id="shelfPillarDeck" style="margin-bottom:10px; background:var(--surface);">
+        <button type="button" class="seg-btn active" data-pillar="BOOKS" onclick="setShelfPillar('BOOKS')">📚 Books</button>
+        <button type="button" class="seg-btn" data-pillar="MOVIES" onclick="setShelfPillar('MOVIES')">🎬 Movies</button>
+        <button type="button" class="seg-btn" data-pillar="DINING" onclick="setShelfPillar('DINING')">🍽️ Dining</button>
+      </div>
+
       <!-- User Perspective Deck -->
       <div class="user-deck">
         <button class="deck-btn active" data-user="D" onclick="setShelfUser('D')">Derek</button>
@@ -900,8 +907,8 @@
         <button class="deck-btn" data-user="BOTH" onclick="setShelfUser('BOTH')">Both / Mutual</button>
       </div>
 
-      <!-- Reading Challenge -->
-      <div class="goal-card" onclick="filterByChallengeYear('2026')">
+      <!-- Progress / Challenge Card -->
+      <div class="goal-card" id="shelfGoalCard" onclick="onShelfGoalClick()">
         <div class="goal-top">
           <div class="goal-title" id="shelfGoalTitle">2026 Reading Challenge</div>
           <div class="goal-count" id="shelfGoalCount">0 / 54</div>
@@ -912,26 +919,31 @@
         <div class="pace-text" id="shelfPaceText">Calculating pace...</div>
       </div>
 
-      <!-- Core KPIs Grid -->
+      <!-- Core KPIs Grid (2x2 balanced!) -->
       <div class="kpi-cards-grid">
-        <div class="shelf-kpi-card" onclick="filterByAllReads()">
-          <div class="shelf-kpi-title">Total Read</div>
+        <div class="shelf-kpi-card" onclick="onShelfKpi1Click()">
+          <div class="shelf-kpi-title" id="shKpi1Title">Total Read</div>
           <div class="shelf-kpi-val" id="shTotalRead">0</div>
           <div class="shelf-kpi-sub" id="shTotalPct">0% of Catalog</div>
         </div>
-        <div class="shelf-kpi-card" onclick="filterByFiveStars()">
-          <div class="shelf-kpi-title">5-Star Favorites</div>
+        <div class="shelf-kpi-card" onclick="onShelfKpi2Click()">
+          <div class="shelf-kpi-title" id="shKpi2Title">5-Star Favorites</div>
           <div class="shelf-kpi-val" id="shFavorites">0</div>
-          <div class="shelf-kpi-sub">Tap to view ★ 5.0</div>
+          <div class="shelf-kpi-sub" id="shFavoritesSub">Tap to view ★ 5.0</div>
         </div>
-        <div class="shelf-kpi-card" onclick="filterByMutualReads()">
-          <div class="shelf-kpi-title">Mutual Agreement</div>
+        <div class="shelf-kpi-card" onclick="onShelfKpi3Click()">
+          <div class="shelf-kpi-title" id="shKpi3Title">Mutual Agreement</div>
           <div class="shelf-kpi-val" id="shMutualScore">0%</div>
           <div class="shelf-kpi-sub" id="shMutualSub">0 shared reads</div>
         </div>
+        <div class="shelf-kpi-card" onclick="onShelfKpi4Click()">
+          <div class="shelf-kpi-title" id="shKpi4Title">Avg Rating</div>
+          <div class="shelf-kpi-val" id="shKpi4Val">★ --</div>
+          <div class="shelf-kpi-sub" id="shKpi4Sub">0 rated</div>
+        </div>
       </div>
 
-      <!-- Critic Index & Total Hours Consumed -->
+      <!-- Critic Index & Secondary Metric -->
       <div class="shelf-stat-duo">
         <div class="shelf-stat-box">
           <div class="shelf-stat-title">⚖️ The Critic Index</div>
@@ -939,7 +951,7 @@
           <div class="shelf-stat-sub" id="shCriticScores">D: ★ 0.0 vs K: ★ 0.0</div>
         </div>
         <div class="shelf-stat-box">
-          <div class="shelf-stat-title">⏱️ Time Invested</div>
+          <div class="shelf-stat-title" id="shStat2Title">⏱️ Time Invested</div>
           <div class="shelf-stat-num" id="shTimeInvested">0 hrs</div>
           <div class="shelf-stat-sub" id="shTimeSub">Audiobooks & Movies</div>
         </div>
@@ -963,10 +975,10 @@
         <div style="font-size:0.75rem; color:var(--text-muted); padding:8px;">Finding top shared gems...</div>
       </div>
 
-      <!-- Top Genres & Creators -->
+      <!-- Top Genres/Categories & Creators/Areas -->
       <div class="top-list-grid">
         <div class="top-list-card">
-          <div class="shelf-stat-title" style="margin-bottom:8px;">🏷️ Top Genres</div>
+          <div class="shelf-stat-title" style="margin-bottom:8px;" id="topGenreTitle">🏷️ Top Genres</div>
           <div id="topGenresContainer"></div>
         </div>
         <div class="top-list-card">
@@ -975,8 +987,8 @@
         </div>
       </div>
 
-      <!-- YoY Reading History -->
-      <h3 class="dash-heading">Year-Over-Year History</h3>
+      <!-- YoY / Decade / Recent Visits Section -->
+      <h3 class="dash-heading" id="yoyHeading">Year-Over-Year History</h3>
       <div class="yoy-grid" id="yoyGrid"></div>
     </div>
   </main>
@@ -2656,6 +2668,61 @@
       renderBooks();
     }
 
+    let currentShelfPillar = 'BOOKS'; // 'BOOKS' | 'MOVIES' | 'DINING'
+
+    function setShelfPillar(pillar) {
+      currentShelfPillar = pillar;
+      document.querySelectorAll('#shelfPillarDeck .seg-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.pillar === pillar);
+      });
+      if (pillar === 'MOVIES' && !movies.length) loadMovieData();
+      if (pillar === 'DINING' && !restaurants.length) loadRestaurantsData();
+      renderShelf();
+    }
+
+    function onShelfGoalClick() {
+      if (currentShelfPillar === 'BOOKS') filterByChallengeYear('2026');
+      else if (currentShelfPillar === 'MOVIES') switchTab('movies');
+      else switchTab('dining');
+    }
+
+    function onShelfKpi1Click() {
+      if (currentShelfPillar === 'BOOKS') filterByAllReads();
+      else if (currentShelfPillar === 'MOVIES') switchTab('movies');
+      else switchTab('dining');
+    }
+
+    function onShelfKpi2Click() {
+      if (currentShelfPillar === 'BOOKS') filterByFiveStars();
+      else if (currentShelfPillar === 'MOVIES') {
+        movieSortMode = 'OUR_TOP';
+        if (document.getElementById('movieSortPicker')) document.getElementById('movieSortPicker').value = 'OUR_TOP';
+        switchTab('movies');
+        renderMovies();
+      } else {
+        if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'OUR_TOP';
+        if (document.getElementById('diningVisitedPicker')) document.getElementById('diningVisitedPicker').value = 'VISITED';
+        switchTab('dining');
+        renderDining();
+      }
+    }
+
+    function onShelfKpi3Click() {
+      if (currentShelfPillar === 'BOOKS') filterByMutualReads();
+      else if (currentShelfPillar === 'MOVIES') switchTab('movies');
+      else switchTab('dining');
+    }
+
+    function onShelfKpi4Click() {
+      if (currentShelfPillar === 'BOOKS') {
+        bookSortMode = 'OUR_TOP';
+        if (document.getElementById('bookSortPicker')) document.getElementById('bookSortPicker').value = 'OUR_TOP';
+        switchTab('catalog');
+        renderBooks();
+      } else if (currentShelfPillar === 'MOVIES') switchTab('movies');
+      else switchTab('dining');
+    }
+
     function setShelfUser(u) {
       currentShelfUser = u;
       document.querySelectorAll('.deck-btn').forEach(b => b.classList.remove('active'));
@@ -2777,6 +2844,58 @@
     }
 
     function renderShelf() {
+      if (currentShelfPillar === 'MOVIES') {
+        renderShelfMovies();
+        return;
+      }
+      if (currentShelfPillar === 'DINING') {
+        renderShelfDining();
+        return;
+      }
+      renderShelfBooks();
+    }
+
+    function renderShelfCriticBox(dAvgNum, kAvgNum, scaleMax) {
+      const criticWinnerEl = document.getElementById('shCriticWinner');
+      const criticScoresEl = document.getElementById('shCriticScores');
+      const dStr = dAvgNum > 0 ? dAvgNum.toFixed(2) : '--';
+      const kStr = kAvgNum > 0 ? kAvgNum.toFixed(2) : '--';
+      if (dAvgNum > 0 && kAvgNum > 0) {
+        if (dAvgNum < kAvgNum) {
+          criticWinnerEl.textContent = 'Derek (Tougher)';
+          criticWinnerEl.style.color = 'var(--derek)';
+        } else if (kAvgNum < dAvgNum) {
+          criticWinnerEl.textContent = 'Kianna (Tougher)';
+          criticWinnerEl.style.color = 'var(--kianna)';
+        } else {
+          criticWinnerEl.textContent = 'Tied Critics';
+          criticWinnerEl.style.color = 'var(--gold)';
+        }
+      } else {
+        criticWinnerEl.textContent = 'Need Both';
+        criticWinnerEl.style.color = 'var(--text-muted)';
+      }
+      criticScoresEl.textContent = `D: ★ ${dStr} • K: ★ ${kStr} (/${scaleMax})`;
+    }
+
+    function renderShelfTopList(containerId, countMap, unitLabel) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const top = Object.keys(countMap).sort((a, b) => countMap[b] - countMap[a]).slice(0, 5);
+      el.innerHTML = '';
+      if (!top.length) {
+        el.innerHTML = '<div style="font-size:0.7rem; color:var(--text-muted);">No data yet.</div>';
+        return;
+      }
+      top.forEach(k => {
+        const div = document.createElement('div');
+        div.className = 'top-list-item';
+        div.innerHTML = `<span class="top-list-name">${escapeHtml(k)}</span><span class="top-list-val">${countMap[k]} ${unitLabel}</span>`;
+        el.appendChild(div);
+      });
+    }
+
+    function renderShelfBooks() {
       if (!books.length) return;
       if (!movies.length) loadMovieData();
 
@@ -2819,12 +2938,15 @@
       else paceHtml = '<span style="color:#f87171;">' + Math.abs(delta) + ' books behind</span> pace (' + pct + '%)';
       document.getElementById('shelfPaceText').innerHTML = paceHtml;
 
-      // 2. Core Shelf Totals
+      // 2. Core KPIs
+      document.getElementById('shKpi1Title').textContent = 'Total Read';
       document.getElementById('shTotalRead').textContent = active.length;
       document.getElementById('shTotalPct').textContent = ((active.length / books.length) * 100).toFixed(1) + '% of Catalog';
 
       const fiveStars = active.filter(b => b.targetRating >= 4.9).length;
+      document.getElementById('shKpi2Title').textContent = '5-Star Favorites';
       document.getElementById('shFavorites').textContent = fiveStars;
+      document.getElementById('shFavoritesSub').textContent = 'Tap to view ★ 5.0';
 
       const mutualBooks = books.filter(b => (b.derekRating > 0 || b.derekRead) && (b.kiannaRating > 0 || b.kiannaRead));
       const mutualRatedBooks = books.filter(b => b.derekRating > 0 && b.kiannaRating > 0);
@@ -2833,75 +2955,264 @@
         const d = mutualRatedBooks.reduce((s, b) => s + Math.abs(b.derekRating - b.kiannaRating), 0);
         match = Math.max(0, Math.round((1 - (d / (mutualRatedBooks.length * 4))) * 100));
       }
+      document.getElementById('shKpi3Title').textContent = 'Mutual Agreement';
       document.getElementById('shMutualScore').textContent = match + '%';
       document.getElementById('shMutualSub').textContent = mutualBooks.length + ' shared reads';
+
+      const ratedActive = active.filter(b => b.targetRating > 0);
+      const avgActive = ratedActive.length ? (ratedActive.reduce((s, b) => s + b.targetRating, 0) / ratedActive.length).toFixed(2) : '--';
+      document.getElementById('shKpi4Title').textContent = 'Avg Book Rating';
+      document.getElementById('shKpi4Val').textContent = '★ ' + avgActive;
+      document.getElementById('shKpi4Sub').textContent = ratedActive.length + ' rated books';
 
       // 3. Critic Index
       const dBookRated = books.filter(b => b.derekRating > 0);
       const kBookRated = books.filter(b => b.kiannaRating > 0);
-      const dAvg = dBookRated.length ? (dBookRated.reduce((s, b) => s + b.derekRating, 0) / dBookRated.length).toFixed(2) : '0.00';
-      const kAvg = kBookRated.length ? (kBookRated.reduce((s, b) => s + b.kiannaRating, 0) / kBookRated.length).toFixed(2) : '0.00';
+      const dAvgNum = dBookRated.length ? (dBookRated.reduce((s, b) => s + b.derekRating, 0) / dBookRated.length) : 0;
+      const kAvgNum = kBookRated.length ? (kBookRated.reduce((s, b) => s + b.kiannaRating, 0) / kBookRated.length) : 0;
+      renderShelfCriticBox(dAvgNum, kAvgNum, 5);
 
-      const criticWinnerEl = document.getElementById('shCriticWinner');
-      const criticScoresEl = document.getElementById('shCriticScores');
-      if (parseFloat(dAvg) < parseFloat(kAvg)) {
-        criticWinnerEl.textContent = 'Derek (Tougher)';
-        criticWinnerEl.style.color = 'var(--derek)';
-      } else if (parseFloat(kAvg) < parseFloat(dAvg)) {
-        criticWinnerEl.textContent = 'Kianna (Tougher)';
-        criticWinnerEl.style.color = 'var(--kianna)';
-      } else {
-        criticWinnerEl.textContent = 'Tied Critics';
-        criticWinnerEl.style.color = 'var(--gold)';
-      }
-      criticScoresEl.textContent = `Derek ★ ${dAvg} • Kianna ★ ${kAvg}`;
-
-      // 4. Time Invested Aggregation
+      // 4. Time Invested (Audiobooks)
       let totalAudioMins = 0;
       active.forEach(b => {
         if (b.audioLength) {
           const hm = b.audioLength.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/i);
-          if (hm) {
-            const h = parseInt(hm[1] || '0', 10);
-            const m = parseInt(hm[2] || '0', 10);
-            totalAudioMins += (h * 60) + m;
-          }
+          if (hm) totalAudioMins += (parseInt(hm[1] || '0', 10) * 60) + parseInt(hm[2] || '0', 10);
         }
       });
-
-      let totalMovieMins = 0;
-      if (movies.length) {
-        movies.forEach(m => {
-          const isWatched = (currentShelfUser === 'D' && m.derekWatched) ||
-                            (currentShelfUser === 'K' && m.kiannaWatched) ||
-                            (currentShelfUser === 'BOTH' && m.derekWatched && m.kiannaWatched);
-          if (isWatched && m.runtime) {
-            const rMatch = m.runtime.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/i);
-            if (rMatch) {
-              const h = parseInt(rMatch[1] || '0', 10);
-              const min = parseInt(rMatch[2] || '0', 10);
-              totalMovieMins += (h * 60) + min;
-            }
-          }
-        });
-      }
-
-      const totalHours = Math.round((totalAudioMins + totalMovieMins) / 60);
+      const totalHours = Math.round(totalAudioMins / 60);
       const totalDays = (totalHours / 24).toFixed(1);
+      document.getElementById('shStat2Title').textContent = '🎧 Audiobook Time';
       document.getElementById('shTimeInvested').textContent = `${totalHours.toLocaleString()} hrs`;
-      document.getElementById('shTimeSub').textContent = `~${totalDays} days across books & films`;
+      document.getElementById('shTimeSub').textContent = `~${totalDays} days of reading`;
 
-      // 5. The Battleground: Disagreements & Clashes
-      renderClashesAndCrowns();
+      // 5. Clashes & Crowns (Books)
+      renderClashesAndCrowns('BOOKS');
 
-      // 6. Top Genres & Top Creators
+      // 6. Top Genres & Authors
+      document.getElementById('topGenreTitle').textContent = '🏷️ Top Genres';
+      document.getElementById('topCreatorTitle').textContent = '✍️ Top Authors';
       renderTopGenresAndCreators(active);
 
-      // 7. Year-over-Year
+      // 7. YoY Reading History
+      document.getElementById('yoyHeading').textContent = 'Year-Over-Year Reading History';
       renderYoyGrid(active);
     }
 
-    function renderClashesAndCrowns() {
+    function renderShelfMovies() {
+      const accent = currentShelfUser === 'D' ? 'var(--derek)' : (currentShelfUser === 'K' ? 'var(--kianna)' : 'var(--both)');
+      const active = movies.filter(m => {
+        const dW = m.derekWatched || m.derekRating > 0;
+        const kW = m.kiannaWatched || m.kiannaRating > 0;
+        if (currentShelfUser === 'D') return dW;
+        if (currentShelfUser === 'K') return kW;
+        return dW && kW;
+      }).map(m => ({
+        ...m,
+        targetRating: currentShelfUser === 'D' ? m.derekRating : (currentShelfUser === 'K' ? m.kiannaRating : ((m.derekRating > 0 && m.kiannaRating > 0) ? (m.derekRating + m.kiannaRating) / 2 : (m.derekRating || m.kiannaRating || 0)))
+      }));
+
+      // 1. Filmography / Catalog Progress
+      const totalMov = movies.length || 1;
+      const pct = Math.min(100, Math.round((active.length / totalMov) * 100));
+      document.getElementById('shelfGoalTitle').textContent = '🎬 Movie Catalog Progress';
+      document.getElementById('shelfGoalCount').textContent = `${active.length} / ${movies.length}`;
+      const bar = document.getElementById('shelfProgressBar');
+      bar.style.width = pct + '%';
+      bar.style.background = accent;
+      const wishCount = movies.filter(m => currentShelfUser === 'D' ? m.derekWishlist : (currentShelfUser === 'K' ? m.kiannaWishlist : (m.derekWishlist || m.kiannaWishlist))).length;
+      document.getElementById('shelfPaceText').innerHTML = `<span>${pct}% watched</span> • ${wishCount} on Watchlist`;
+
+      // 2. Core KPIs
+      document.getElementById('shKpi1Title').textContent = 'Total Watched';
+      document.getElementById('shTotalRead').textContent = active.length;
+      document.getElementById('shTotalPct').textContent = `${pct}% of Catalog`;
+
+      const topFavs = active.filter(m => m.targetRating >= 9).length;
+      document.getElementById('shKpi2Title').textContent = '9–10★ Masterpieces';
+      document.getElementById('shFavorites').textContent = topFavs;
+      document.getElementById('shFavoritesSub').textContent = 'Tap to view Top Rated';
+
+      const mutualMovies = movies.filter(m => (m.derekWatched || m.derekRating > 0) && (m.kiannaWatched || m.kiannaRating > 0));
+      const mutualRated = movies.filter(m => m.derekRating > 0 && m.kiannaRating > 0);
+      let match = 0;
+      if (mutualRated.length > 0) {
+        const d = mutualRated.reduce((s, m) => s + Math.abs(m.derekRating - m.kiannaRating), 0);
+        match = Math.max(0, Math.round((1 - (d / (mutualRated.length * 9))) * 100));
+      }
+      document.getElementById('shKpi3Title').textContent = 'Mutual Agreement';
+      document.getElementById('shMutualScore').textContent = match + '%';
+      document.getElementById('shMutualSub').textContent = mutualMovies.length + ' watched together';
+
+      const ratedActive = active.filter(m => m.targetRating > 0);
+      const avgActive = ratedActive.length ? (ratedActive.reduce((s, m) => s + m.targetRating, 0) / ratedActive.length).toFixed(1) : '--';
+      document.getElementById('shKpi4Title').textContent = 'Avg Movie Rating';
+      document.getElementById('shKpi4Val').textContent = '★ ' + avgActive;
+      document.getElementById('shKpi4Sub').textContent = ratedActive.length + ' rated films';
+
+      // 3. Critic Index
+      const dRated = movies.filter(m => m.derekRating > 0);
+      const kRated = movies.filter(m => m.kiannaRating > 0);
+      const dAvg = dRated.length ? (dRated.reduce((s, m) => s + m.derekRating, 0) / dRated.length) : 0;
+      const kAvg = kRated.length ? (kRated.reduce((s, m) => s + m.kiannaRating, 0) / kRated.length) : 0;
+      renderShelfCriticBox(dAvg, kAvg, 10);
+
+      // 4. Movie Runtime Invested
+      let totalMins = 0;
+      active.forEach(m => {
+        if (m.runtime) {
+          const rMatch = m.runtime.match(/(?:(\d+)h)?\s*(?:(\d+)m)?/i);
+          if (rMatch) totalMins += (parseInt(rMatch[1] || '0', 10) * 60) + parseInt(rMatch[2] || '0', 10);
+        }
+      });
+      const hrs = Math.round(totalMins / 60);
+      document.getElementById('shStat2Title').textContent = '🎬 Screen Time';
+      document.getElementById('shTimeInvested').textContent = `${hrs.toLocaleString()} hrs`;
+      document.getElementById('shTimeSub').textContent = `~${(hrs / 24).toFixed(1)} days of movies`;
+
+      // 5. Clashes & Crowns (Movies)
+      renderClashesAndCrowns('MOVIES');
+
+      // 6. Top Movie Genres & Directors
+      document.getElementById('topGenreTitle').textContent = '🏷️ Top Genres';
+      document.getElementById('topCreatorTitle').textContent = '🎬 Top Directors';
+      const genreCounts = {};
+      const dirCounts = {};
+      active.forEach(m => {
+        if (m.genres) m.genres.split(',').forEach(g => { const c = g.trim(); if (c) genreCounts[c] = (genreCounts[c] || 0) + 1; });
+        if (m.director) { const d = m.director.split(',')[0].trim(); if (d) dirCounts[d] = (dirCounts[d] || 0) + 1; }
+      });
+      renderShelfTopList('topGenresContainer', genreCounts, 'films');
+      renderShelfTopList('topCreatorsContainer', dirCounts, 'films');
+
+      // 7. Decade Breakdown
+      document.getElementById('yoyHeading').textContent = 'Watched by Decade';
+      const grid = document.getElementById('yoyGrid');
+      grid.innerHTML = '';
+      const decMap = {};
+      active.forEach(m => {
+        const yr = parseInt(m.releaseYear, 10);
+        if (!isNaN(yr)) {
+          const dec = Math.floor(yr / 10) * 10 + 's';
+          if (!decMap[dec]) decMap[dec] = { count: 0, sum: 0, rated: 0 };
+          decMap[dec].count++;
+          if (m.targetRating > 0) { decMap[dec].sum += m.targetRating; decMap[dec].rated++; }
+        }
+      });
+      Object.keys(decMap).sort((a, b) => b.localeCompare(a)).forEach(dec => {
+        const it = decMap[dec];
+        const avg = it.rated ? (it.sum / it.rated).toFixed(1) : '--';
+        const card = document.createElement('div');
+        card.className = 'yoy-card';
+        card.innerHTML = `<div class="yoy-year">${dec}</div><div class="yoy-books">${it.count} films</div><div class="yoy-avg">★ ${avg} avg</div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderShelfDining() {
+      const accent = 'var(--emerald)';
+      const totalSpots = restaurants.length || 1;
+      const visited = restaurants.filter(r => r.visited);
+      const totalVisits = restaurants.reduce((s, r) => s + ((r.visits || []).length), 0);
+      const totalDishes = restaurants.reduce((s, r) => s + ((r.dishes || []).length), 0);
+      const mustOrders = restaurants.reduce((s, r) => s + ((r.dishes || []).filter(d => Number(d.rating) >= 8).length), 0);
+
+      // 1. Exploration Progress
+      const pct = Math.min(100, Math.round((visited.length / totalSpots) * 100));
+      document.getElementById('shelfGoalTitle').textContent = '🍽️ Dining Explorer Progress';
+      document.getElementById('shelfGoalCount').textContent = `${visited.length} / ${restaurants.length}`;
+      const bar = document.getElementById('shelfProgressBar');
+      bar.style.width = pct + '%';
+      bar.style.background = accent;
+      document.getElementById('shelfPaceText').innerHTML = `<span>${pct}% explored</span> • ${totalVisits} visit${totalVisits === 1 ? '' : 's'} logged`;
+
+      // Active ratings by user perspective
+      const getURate = (r) => {
+        const d = Number(r.derekRating) || 0;
+        const k = Number(r.kiannaRating) || 0;
+        if (currentShelfUser === 'D') return d;
+        if (currentShelfUser === 'K') return k;
+        return (d > 0 && k > 0) ? (d + k) / 2 : (d || k);
+      };
+
+      // 2. Core KPIs
+      document.getElementById('shKpi1Title').textContent = 'Spots Visited';
+      document.getElementById('shTotalRead').textContent = visited.length;
+      document.getElementById('shTotalPct').textContent = `${restaurants.length - visited.length} left to try`;
+
+      const favSpots = restaurants.filter(r => getURate(r) >= 9).length;
+      document.getElementById('shKpi2Title').textContent = '9–10★ Favorites';
+      document.getElementById('shFavorites').textContent = favSpots;
+      document.getElementById('shFavoritesSub').textContent = 'Tap to view Top Rated';
+
+      const mutualRated = restaurants.filter(r => Number(r.derekRating) > 0 && Number(r.kiannaRating) > 0);
+      let match = 0;
+      if (mutualRated.length > 0) {
+        const d = mutualRated.reduce((s, r) => s + Math.abs(Number(r.derekRating) - Number(r.kiannaRating)), 0);
+        match = Math.max(0, Math.round((1 - (d / (mutualRated.length * 9))) * 100));
+      }
+      document.getElementById('shKpi3Title').textContent = 'Mutual Agreement';
+      document.getElementById('shMutualScore').textContent = mutualRated.length ? (match + '%') : '--';
+      document.getElementById('shMutualSub').textContent = `${mutualRated.length} rated by both`;
+
+      const costed = visited.map(r => getEffectiveTotalCost(r)).filter(c => c !== null);
+      const avgCost = costed.length ? '$' + Math.round(costed.reduce((s, c) => s + c, 0) / costed.length) : '$--';
+      document.getElementById('shKpi4Title').textContent = 'Avg Family Total';
+      document.getElementById('shKpi4Val').textContent = avgCost;
+      document.getElementById('shKpi4Sub').textContent = `across ${costed.length} priced spots`;
+
+      // 3. Critic Index
+      const dRated = restaurants.filter(r => Number(r.derekRating) > 0);
+      const kRated = restaurants.filter(r => Number(r.kiannaRating) > 0);
+      const dAvg = dRated.length ? (dRated.reduce((s, r) => s + Number(r.derekRating), 0) / dRated.length) : 0;
+      const kAvg = kRated.length ? (kRated.reduce((s, r) => s + Number(r.kiannaRating), 0) / kRated.length) : 0;
+      renderShelfCriticBox(dAvg, kAvg, 10);
+
+      // 4. Dishes Logged
+      document.getElementById('shStat2Title').textContent = '🍽️ Dishes Logged';
+      document.getElementById('shTimeInvested').textContent = totalDishes;
+      document.getElementById('shTimeSub').textContent = `${mustOrders} 🔥 Must-Order dishes`;
+
+      // 5. Clashes & Crowns (Dining)
+      renderClashesAndCrowns('DINING');
+
+      // 6. Top Categories & Areas
+      document.getElementById('topGenreTitle').textContent = '🏷️ Top Categories';
+      document.getElementById('topCreatorTitle').textContent = '📍 Top Areas';
+      const catCounts = {};
+      const areaCounts = {};
+      (visited.length ? visited : restaurants).forEach(r => {
+        const c = r.category || 'Other';
+        catCounts[c] = (catCounts[c] || 0) + 1;
+        const a = r.isChain ? 'Chains' : (r.location || 'Local');
+        areaCounts[a] = (areaCounts[a] || 0) + 1;
+      });
+      renderShelfTopList('topGenresContainer', catCounts, 'spots');
+      renderShelfTopList('topCreatorsContainer', areaCounts, 'spots');
+
+      // 7. Recent Visits
+      document.getElementById('yoyHeading').textContent = '🗓️ Recent Dining Visits';
+      const grid = document.getElementById('yoyGrid');
+      grid.innerHTML = '';
+      const allVisits = [];
+      restaurants.forEach(r => {
+        (r.visits || []).forEach(v => allVisits.push({ ...v, restaurant: r }));
+      });
+      allVisits.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      if (!allVisits.length) {
+        grid.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:8px; grid-column:1/-1;">No visits logged yet. Open any restaurant and tap Mark Visited!</div>';
+      } else {
+        allVisits.slice(0, 6).forEach(v => {
+          const card = document.createElement('div');
+          card.className = 'yoy-card';
+          card.onclick = () => openRestaurantModal(v.restaurant);
+          card.innerHTML = `<div class="yoy-year">${escapeHtml(v.date || '')}</div><div class="yoy-books" style="font-size:0.9rem;">${escapeHtml(v.restaurant.name)}</div><div class="yoy-avg" style="color:#34d399;">${escapeHtml(v.companions || 'Family')}</div>`;
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    function renderClashesAndCrowns(pillar) {
       const clashContainer = document.getElementById('clashListContainer');
       const crownContainer = document.getElementById('crownListContainer');
       if (!clashContainer || !crownContainer) return;
@@ -2909,47 +3220,56 @@
       const clashes = [];
       const crowns = [];
 
-      // Inspect books
-      books.forEach(b => {
-        if (b.derekRating > 0 && b.kiannaRating > 0) {
-          const delta = Math.abs(b.derekRating - b.kiannaRating);
-          if (delta >= 1.5) {
-            clashes.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, delta });
+      if (pillar === 'BOOKS') {
+        books.forEach(b => {
+          if (b.derekRating > 0 && b.kiannaRating > 0) {
+            const delta = Math.abs(b.derekRating - b.kiannaRating);
+            if (delta >= 1.5) clashes.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, delta });
+            if (b.derekRating >= 4.0 && b.kiannaRating >= 4.0) crowns.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, avg: (b.derekRating + b.kiannaRating) / 2 });
           }
-          if (b.derekRating >= 4.0 && b.kiannaRating >= 4.0) {
-            crowns.push({ type: 'BOOK', item: b, title: b.title, sub: b.author, dRate: b.derekRating, kRate: b.kiannaRating, avg: (b.derekRating + b.kiannaRating) / 2 });
+        });
+      } else if (pillar === 'MOVIES') {
+        movies.forEach(m => {
+          if (m.derekRating > 0 && m.kiannaRating > 0) {
+            const delta = Math.abs(m.derekRating - m.kiannaRating);
+            if (delta >= 2.0) clashes.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, delta });
+            if (m.derekRating >= 8.0 && m.kiannaRating >= 8.0) crowns.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, avg: (m.derekRating + m.kiannaRating) / 2 });
           }
-        }
-      });
-
-      // Inspect movies
-      movies.forEach(m => {
-        if (m.derekRating > 0 && m.kiannaRating > 0) {
-          const delta = Math.abs(m.derekRating - m.kiannaRating);
-          if (delta >= 2.0) {
-            clashes.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, delta });
+        });
+      } else if (pillar === 'DINING') {
+        restaurants.forEach(r => {
+          const d = Number(r.derekRating) || 0;
+          const k = Number(r.kiannaRating) || 0;
+          if (d > 0 && k > 0) {
+            const delta = Math.abs(d - k);
+            if (delta >= 2.0) clashes.push({ type: 'DINING', item: r, title: r.name, sub: r.category + (r.location ? ' • ' + r.location : ''), dRate: d, kRate: k, delta });
+            if (d >= 8.0 && k >= 8.0) crowns.push({ type: 'DINING', item: r, title: r.name, sub: r.category + (r.location ? ' • ' + r.location : ''), dRate: d, kRate: k, avg: (d + k) / 2 });
           }
-          if (m.derekRating >= 8.0 && m.kiannaRating >= 8.0) {
-            crowns.push({ type: 'MOVIE', item: m, title: m.title, sub: m.releaseYear, dRate: m.derekRating, kRate: m.kiannaRating, avg: (m.derekRating + m.kiannaRating) / 2 });
-          }
-        }
-      });
+        });
+      }
 
       clashes.sort((a, b) => b.delta - a.delta);
       crowns.sort((a, b) => b.avg - a.avg);
 
+      const iconFor = (t) => t === 'BOOK' ? '📚' : (t === 'MOVIE' ? '🎬' : '🍽️');
+      const openFor = (c) => {
+        if (c.type === 'BOOK') openModal(c.item);
+        else if (c.type === 'MOVIE') openMovieModal(c.item);
+        else openRestaurantModal(c.item);
+      };
+
       // Render Clashes
       clashContainer.innerHTML = '';
       if (clashes.length === 0) {
-        clashContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">No major disagreements! You both agree on almost everything.</div>';
+        clashContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">No major disagreements yet!</div>';
       } else {
         clashes.slice(0, 4).forEach(c => {
           const card = document.createElement('div');
           card.className = 'clash-card';
-          card.onclick = () => { if (c.type === 'BOOK') openModal(c.item); else openMovieModal(c.item); };
+          card.onclick = () => openFor(c);
           card.innerHTML = `
             <div>
-              <div class="clash-title">${c.type === 'BOOK' ? '📚' : '🎬'} ${escapeHtml(c.title)}</div>
+              <div class="clash-title">${iconFor(c.type)} ${escapeHtml(c.title)}</div>
               <div class="clash-sub">${escapeHtml(c.sub)}</div>
             </div>
             <div class="clash-badge-row">
@@ -2965,15 +3285,15 @@
       // Render Crowns
       crownContainer.innerHTML = '';
       if (crowns.length === 0) {
-        crownContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">Rate more books & movies together to unlock crowns!</div>';
+        crownContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-muted); padding:10px;">Rate more together to unlock Mutual Crowns!</div>';
       } else {
         crowns.slice(0, 4).forEach(c => {
           const card = document.createElement('div');
           card.className = 'clash-card';
-          card.onclick = () => { if (c.type === 'BOOK') openModal(c.item); else openMovieModal(c.item); };
+          card.onclick = () => openFor(c);
           card.innerHTML = `
             <div>
-              <div class="clash-title">${c.type === 'BOOK' ? '📚' : '🎬'} ${escapeHtml(c.title)}</div>
+              <div class="clash-title">${iconFor(c.type)} ${escapeHtml(c.title)}</div>
               <div class="clash-sub">${escapeHtml(c.sub)}</div>
             </div>
             <div class="clash-badge-row">
@@ -3510,6 +3830,7 @@
           saveRestaurantsCache();
           populateDiningRegions();
           renderDining();
+          if (currentTab === 'shelf' && currentShelfPillar === 'DINING') renderShelf();
         }
       }
 
