@@ -2938,9 +2938,16 @@
       let costPts = 0;
       let costLabel = 'No cost';
       if (totalCost !== null) {
-        if (totalCost < 20) { costPts = 20; costLabel = '< $20 (Full)'; }
-        else if (totalCost < 40) { costPts = 10; costLabel = '< $40 (Half)'; }
-        else { costPts = 0; costLabel = '$40+ (0 pts)'; }
+        if (totalCost <= 30) {
+          costPts = 20;
+          costLabel = '$' + Math.round(totalCost) + ' (Full)';
+        } else if (totalCost >= 60) {
+          costPts = 0;
+          costLabel = '$' + Math.round(totalCost) + ' ($60+ = 0)';
+        } else {
+          costPts = Math.round(((60 - totalCost) / 30) * 20);
+          costLabel = '$' + Math.round(totalCost) + ' (' + costPts + '/20)';
+        }
       }
 
       const mins = (r.driveMins !== null && r.driveMins !== undefined && r.driveMins !== '') ? Number(r.driveMins) : null;
