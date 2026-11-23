@@ -588,6 +588,9 @@
         CHAPTER<span>TWO</span><div class="stealth-pulse-dot" id="stealthDot"></div>
       </div>
       <div class="top-bar-actions">
+        <button type="button" class="header-filter-btn" id="deviceUserBtn" onclick="openWhoModal()" title="Switch Phone User" style="padding:6px 10px;">
+          👤 <span id="deviceUserLabel">?</span>
+        </button>
         <button type="button" class="header-filter-btn" id="headerFilterBtn" onclick="openFilterDrawer()">
           ⚙️ Filters <span class="filter-badge-dot" id="headerFilterCount">0</span>
         </button>
@@ -688,21 +691,23 @@
           <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
             <div class="toggle-group" style="width:100%; justify-content:space-between;">
               <span class="toggle-label label-derek">Derek</span>
-              <div style="display:flex; gap:2px;">
+              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
                 <button class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
+                <button class="toggle-pill" data-filter="derek" data-val="NOT_RATED">Not Rated</button>
                 <button class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
                 <button class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Read/No ★</button>
                 <button class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
               </div>
             </div>
             <div class="toggle-group" style="width:100%; justify-content:space-between;">
               <span class="toggle-label label-kianna">Kianna</span>
-              <div style="display:flex; gap:2px;">
+              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
                 <button class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="NOT_RATED">Not Rated</button>
                 <button class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
                 <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Read/No ★</button>
                 <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
               </div>
             </div>
@@ -752,21 +757,23 @@
           <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
             <div class="toggle-group" style="width:100%; justify-content:space-between;">
               <span class="toggle-label label-derek">Derek</span>
-              <div style="display:flex; gap:2px;">
+              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
                 <button class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="NOT_RATED">Not Rated</button>
                 <button class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Watched</button>
                 <button class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Seen/No ★</button>
                 <button class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unwatched</button>
               </div>
             </div>
             <div class="toggle-group" style="width:100%; justify-content:space-between;">
               <span class="toggle-label label-kianna">Kianna</span>
-              <div style="display:flex; gap:2px;">
+              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
                 <button class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="NOT_RATED">Not Rated</button>
                 <button class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Watched</button>
                 <button class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Seen/No ★</button>
                 <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
               </div>
             </div>
@@ -1586,6 +1593,19 @@
     </div>
   </div>
 
+  <!-- Who's Phone Picker Modal (Saved per device) -->
+  <div class="modal-overlay" id="whoModal" onclick="if(event.target===this && localStorage.getItem('chaptertwo_device_user')) closeWhoModal()">
+    <div class="modal-sheet" style="text-align:center;">
+      <div style="font-size:1.5rem; margin-bottom:6px;">📱</div>
+      <h2 class="modal-title" style="margin-bottom:4px;">Who's phone is this?</h2>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:16px;">We'll remember your choice on this device and tailor your Book, Movie & Dining defaults automatically.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+        <button type="button" class="btn-act" style="background:var(--derek); color:#000; font-weight:900; padding:14px; font-size:0.95rem;" onclick="selectDeviceUser('Derek')">Derek</button>
+        <button type="button" class="btn-act" style="background:var(--kianna); color:#000; font-weight:900; padding:14px; font-size:0.95rem;" onclick="selectDeviceUser('Kianna')">Kianna</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Fullscreen Photo Lightbox -->
   <div class="lightbox-overlay" id="photoLightbox" onclick="closePhotoLightbox()">
     <img id="lightboxImg" src="" alt="Food photo">
@@ -2200,13 +2220,24 @@
       }
 
       const isExemptShelf = (selectedList === 'DNF');
-      let targetCohort = scoped;
-      if (!isExemptShelf) {
-        if (currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
-        else if (currentViewScope === 'top250') targetCohort = scoped.slice(0, 250);
+      const isNotRatedMode = (filterDerek === 'NOT_RATED' || filterKianna === 'NOT_RATED');
+
+      let workingPool = scoped;
+      if (isNotRatedMode) {
+        workingPool = scoped.filter(b => {
+          if (filterDerek === 'NOT_RATED' && b.derekRating > 0) return false;
+          if (filterKianna === 'NOT_RATED' && b.kiannaRating > 0) return false;
+          return true;
+        });
       }
 
-      updateRibbon(targetCohort);
+      let targetCohort = workingPool;
+      if (!isExemptShelf) {
+        if (currentViewScope === 'top100') targetCohort = workingPool.slice(0, 100);
+        else if (currentViewScope === 'top250') targetCohort = workingPool.slice(0, 250);
+      }
+
+      updateRibbon(isNotRatedMode ? scoped.slice(0, currentViewScope === 'top100' ? 100 : (currentViewScope === 'top250' ? 250 : scoped.length)) : targetCohort);
 
       const displayList = targetCohort.filter(b => {
         if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
@@ -2221,11 +2252,13 @@
         const dRead = b.derekRead || b.derekRating > 0;
         const kRead = b.kiannaRead || b.kiannaRating > 0;
 
+        if (filterDerek === 'NOT_RATED' && b.derekRating > 0) return false;
         if (filterDerek === 'READ' && !dRead) return false;
         if (filterDerek === 'WISH' && !b.derekWishlist) return false;
         if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
         if (filterDerek === 'UNREAD' && dRead) return false;
 
+        if (filterKianna === 'NOT_RATED' && b.kiannaRating > 0) return false;
         if (filterKianna === 'READ' && !kRead) return false;
         if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
         if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
@@ -2496,11 +2529,21 @@
         updateFilterBadgeCount();
       }
 
-      let targetCohort = scoped;
-      if (currentMovieScope === 'top100') targetCohort = scoped.slice(0, 100);
-      else if (currentMovieScope === 'top250') targetCohort = scoped.slice(0, 250);
+      const isMNotRated = (mFilterDerek === 'NOT_RATED' || mFilterKianna === 'NOT_RATED');
+      let workingPool = scoped;
+      if (isMNotRated) {
+        workingPool = scoped.filter(m => {
+          if (mFilterDerek === 'NOT_RATED' && m.derekRating > 0) return false;
+          if (mFilterKianna === 'NOT_RATED' && m.kiannaRating > 0) return false;
+          return true;
+        });
+      }
 
-      updateMovieRibbon(targetCohort);
+      let targetCohort = workingPool;
+      if (currentMovieScope === 'top100') targetCohort = workingPool.slice(0, 100);
+      else if (currentMovieScope === 'top250') targetCohort = workingPool.slice(0, 250);
+
+      updateMovieRibbon(isMNotRated ? scoped.slice(0, currentMovieScope === 'top100' ? 100 : (currentMovieScope === 'top250' ? 250 : scoped.length)) : targetCohort);
 
       const displayList = targetCohort.filter(m => {
         if (searchQuery) {
@@ -2512,11 +2555,13 @@
         const dWatched = m.derekWatched || m.derekRating > 0;
         const kWatched = m.kiannaWatched || m.kiannaRating > 0;
 
+        if (mFilterDerek === 'NOT_RATED' && m.derekRating > 0) return false;
         if (mFilterDerek === 'WATCHED' && !dWatched) return false;
         if (mFilterDerek === 'WISH' && !m.derekWishlist) return false;
         if (mFilterDerek === 'UNRATED' && (!dWatched || m.derekRating > 0)) return false;
         if (mFilterDerek === 'UNWATCHED' && dWatched) return false;
 
+        if (mFilterKianna === 'NOT_RATED' && m.kiannaRating > 0) return false;
         if (mFilterKianna === 'WATCHED' && !kWatched) return false;
         if (mFilterKianna === 'WISH' && !m.kiannaWishlist) return false;
         if (mFilterKianna === 'UNRATED' && (!kWatched || m.kiannaRating > 0)) return false;
@@ -3525,7 +3570,9 @@
           return (b._score.total ?? -1) - (a._score.total ?? -1);
         }
         if (sortMode === 'VOTES') {
-          return (Number(b.googleReviews) || 0) - (Number(a.googleReviews) || 0);
+          const diff = (Number(b.googleReviews) || 0) - (Number(a.googleReviews) || 0);
+          if (diff !== 0) return diff;
+          return (b._score.total ?? -1) - (a._score.total ?? -1) || (a.name || '').localeCompare(b.name || '');
         }
         if (sortMode === 'RATING') {
           const ga = parseFloat(a.googleRating) || 0;
@@ -4277,6 +4324,110 @@
       document.getElementById('lightboxImg').src = '';
     }
 
+    // =========================================================================
+    // DEVICE USER IDENTITY & PERSONALIZED DEFAULTS (DEREK vs KIANNA)
+    // =========================================================================
+    let deviceUser = null;
+
+    function openWhoModal() {
+      document.getElementById('whoModal').classList.add('open');
+    }
+
+    function closeWhoModal() {
+      document.getElementById('whoModal').classList.remove('open');
+    }
+
+    function selectDeviceUser(user) {
+      deviceUser = user;
+      try { localStorage.setItem('chaptertwo_device_user', user); } catch (e) {}
+      closeWhoModal();
+      applyUserDefaults(user, true);
+      showToast('📱 Set phone to ' + user + '\'s defaults');
+    }
+
+    function syncTogglePillUI(attrName, who, val) {
+      document.querySelectorAll(`.toggle-pill[${attrName}="${who}"]`).forEach(p => {
+        p.classList.remove('active', 'd-on', 'k-on');
+        if (p.dataset.val === val) {
+          p.classList.add('active');
+          if (val !== 'ALL') p.classList.add(who === 'derek' ? 'd-on' : 'k-on');
+        }
+      });
+    }
+
+    function applyUserDefaults(user, shouldRender) {
+      const isKianna = String(user || '').toLowerCase().startsWith('k');
+      const btn = document.getElementById('deviceUserBtn');
+      const lbl = document.getElementById('deviceUserLabel');
+      if (lbl) lbl.textContent = isKianna ? 'Kianna' : 'Derek';
+      if (btn) {
+        btn.style.borderColor = isKianna ? 'var(--kianna)' : 'var(--derek)';
+        btn.style.color = isKianna ? 'var(--kianna)' : 'var(--derek)';
+      }
+
+      // 1. Books: Top 250 most rated that this user has NOT rated
+      selectedList = 'ALL';
+      bookSortMode = 'VOTES';
+      currentViewScope = 'top250';
+      filterDerek = isKianna ? 'ALL' : 'NOT_RATED';
+      filterKianna = isKianna ? 'NOT_RATED' : 'ALL';
+      if (document.getElementById('listPicker')) document.getElementById('listPicker').value = 'ALL';
+      if (document.getElementById('bookSortPicker')) document.getElementById('bookSortPicker').value = 'VOTES';
+      syncTogglePillUI('data-filter', 'derek', filterDerek);
+      syncTogglePillUI('data-filter', 'kianna', filterKianna);
+
+      // 2. Movies: Top 250 most rated that this user has NOT rated
+      selectedMovieList = 'ALL';
+      movieSortMode = 'VOTES';
+      currentMovieScope = 'top250';
+      mFilterDerek = isKianna ? 'ALL' : 'NOT_RATED';
+      mFilterKianna = isKianna ? 'NOT_RATED' : 'ALL';
+      if (document.getElementById('movieUnifiedPicker')) document.getElementById('movieUnifiedPicker').value = 'ALL';
+      if (document.getElementById('movieSortPicker')) document.getElementById('movieSortPicker').value = 'VOTES';
+      syncTogglePillUI('data-mfilter', 'derek', mFilterDerek);
+      syncTogglePillUI('data-mfilter', 'kianna', mFilterKianna);
+
+      // 3. Dining: Not visited out of the 100 most rated
+      currentDiningScope = 'top100';
+      if (document.getElementById('diningListPicker')) document.getElementById('diningListPicker').value = 'ALL_SPOTS';
+      if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'VOTES';
+      if (document.getElementById('diningVisitedPicker')) document.getElementById('diningVisitedPicker').value = 'UNVISITED';
+
+      // 4. Our Shelf perspective
+      currentShelfUser = isKianna ? 'K' : 'D';
+      document.querySelectorAll('.deck-btn').forEach(b => b.classList.toggle('active', b.dataset.user === currentShelfUser));
+
+      updateFilterBadgeCount();
+      if (shouldRender) {
+        renderBooks();
+        if (movies.length) renderMovies();
+        if (restaurants.length) renderDining();
+        renderShelf();
+      }
+    }
+
+    function initDeviceUser() {
+      const params = new URLSearchParams(window.location.search);
+      const urlUser = params.get('user');
+      if (urlUser && (urlUser.toLowerCase().startsWith('d') || urlUser.toLowerCase().startsWith('k'))) {
+        const clean = urlUser.toLowerCase().startsWith('k') ? 'Kianna' : 'Derek';
+        try { localStorage.setItem('chaptertwo_device_user', clean); } catch (e) {}
+        deviceUser = clean;
+        applyUserDefaults(clean, false);
+        return;
+      }
+
+      const saved = localStorage.getItem('chaptertwo_device_user');
+      if (saved === 'Derek' || saved === 'Kianna') {
+        deviceUser = saved;
+        applyUserDefaults(saved, false);
+      } else {
+        // First time on this phone: ask once!
+        openWhoModal();
+      }
+    }
+
+    initDeviceUser();
     initData();
   </script>
 </body>
