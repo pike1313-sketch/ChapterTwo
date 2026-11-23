@@ -801,6 +801,26 @@
             <option value="UNVISITED">📌 Want to Try (Unvisited)</option>
           </select>
 
+          <div class="filter-section-label">Derek & Kianna Ratings</div>
+          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-derek">Derek</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-dfilter="derek" data-val="ALL">All</button>
+                <button class="toggle-pill" data-dfilter="derek" data-val="RATED">Rated</button>
+                <button class="toggle-pill" data-dfilter="derek" data-val="NOT_RATED">Not Rated</button>
+              </div>
+            </div>
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-kianna">Kianna</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-dfilter="kianna" data-val="ALL">All</button>
+                <button class="toggle-pill" data-dfilter="kianna" data-val="RATED">Rated</button>
+                <button class="toggle-pill" data-dfilter="kianna" data-val="NOT_RATED">Not Rated</button>
+              </div>
+            </div>
+          </div>
+
           <div class="filter-section-label">List / Source</div>
           <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()">
             <option value="ALL_SPOTS" selected>📋 All Restaurants</option>
@@ -1735,6 +1755,8 @@
         if (regF !== 'Haslet / DFW') count++;
         if (catF !== 'ALL') count++;
         if (sortF !== 'SCORE') count++;
+        if (dFilterDerek !== 'ALL') count++;
+        if (dFilterKianna !== 'ALL') count++;
         if (currentDiningScope !== 'top100') count++;
       }
 
@@ -1774,11 +1796,15 @@
         renderMovies();
       } else if (currentTab === 'dining') {
         currentDiningScope = 'top100';
+        dFilterDerek = 'ALL';
+        dFilterKianna = 'ALL';
         document.getElementById('diningListPicker').value = 'ALL_SPOTS';
         document.getElementById('diningVisitedPicker').value = 'ALL';
         document.getElementById('diningRegionPicker').value = 'Haslet / DFW';
         document.getElementById('diningCategoryPicker').value = 'ALL';
         document.getElementById('diningSortPicker').value = 'SCORE';
+        syncTogglePillUI('data-dfilter', 'derek', 'ALL');
+        syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
         renderDining();
       }
       showToast('Filters reset');
@@ -3349,7 +3375,20 @@
     let restaurants = [];
     let diningLoaded = false;
     let diningMode = 'FAMILY'; // 'FAMILY' | 'DATE' | 'ALL'
+    let dFilterDerek = 'ALL';
+    let dFilterKianna = 'ALL';
     let activeRestaurant = null;
+
+    document.querySelectorAll('.toggle-pill[data-dfilter]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const who = this.dataset.dfilter;
+        const val = this.dataset.val;
+        syncTogglePillUI('data-dfilter', who, val);
+        if (who === 'derek') dFilterDerek = val;
+        if (who === 'kianna') dFilterKianna = val;
+        renderDining();
+      });
+    });
 
     const DINING_CATEGORY_ICONS = {
       'Mexican': '🌮',
@@ -3532,6 +3571,13 @@
 
         if (visitedFilter === 'VISITED' && !r.visited) return false;
         if (visitedFilter === 'UNVISITED' && r.visited) return false;
+
+        const dHasRate = Number(r.derekRating) > 0;
+        const kHasRate = Number(r.kiannaRating) > 0;
+        if (dFilterDerek === 'RATED' && !dHasRate) return false;
+        if (dFilterDerek === 'NOT_RATED' && dHasRate) return false;
+        if (dFilterKianna === 'RATED' && !kHasRate) return false;
+        if (dFilterKianna === 'NOT_RATED' && kHasRate) return false;
 
         if (regionFilter === 'CHAINS_ONLY') {
           if (!r.isChain) return false;
