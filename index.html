@@ -4097,6 +4097,12 @@
         const distText = sc.mins !== null ? (sc.mins + ' min') : '';
         const dBadge = Number(r.derekRating) > 0 ? `<span class="rating-badge badge-derek">D: ★ ${r.derekRating}</span>` : '';
         const kBadge = Number(r.kiannaRating) > 0 ? `<span class="rating-badge badge-kianna">K: ★ ${r.kiannaRating}</span>` : '';
+        const gReviewsFmt = Number(r.googleReviews) >= 1000
+          ? (Number(r.googleReviews) / 1000).toFixed(1) + 'k'
+          : (Number(r.googleReviews) || '');
+        const gBadge = Number(r.googleRating) > 0
+          ? `<span class="rating-badge" style="color:var(--gold);">G: ★ ${Number(r.googleRating).toFixed(1)}${gReviewsFmt ? ' (' + gReviewsFmt + ')' : ''}</span>`
+          : '';
         const visitBadge = r.visited
           ? '<span class="rest-tag-pill rest-tag-family">✓ Visited</span>'
           : '<span class="rest-tag-pill" style="color:var(--text-muted);">📌 Try</span>';
@@ -4115,7 +4121,7 @@
               <div class="card-author">${escapeHtml(r.category)}${r.location ? ' • ' + escapeHtml(r.location) : ''}${distText ? ' • ' + distText : ''}</div>
               <div class="ratings-row">
                 ${visitBadge}
-                ${dBadge}${kBadge}
+                ${dBadge}${kBadge}${gBadge}
                 ${costText ? `<span class="rating-badge" style="color:var(--derek);">${costText}</span>` : ''}
                 ${r.isChain ? '<span class="rest-tag-pill" style="background:rgba(56,189,248,0.16);color:#38bdf8;border-color:rgba(56,189,248,0.4);">🔗 Chain</span>' : ''}
               </div>
