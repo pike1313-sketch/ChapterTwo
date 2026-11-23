@@ -468,6 +468,116 @@
     }
     .lightbox-overlay.open { display: flex; }
     .lightbox-overlay img { max-width: 100%; max-height: 88vh; border-radius: 12px; object-fit: contain; }
+
+    /* ================= MOBILE-FIRST SLIM HEADER & FILTER DRAWER ================= */
+    .top-bar-actions { display: flex; align-items: center; gap: 6px; }
+    .header-filter-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--surface); border: 1px solid var(--border); color: #fff;
+      padding: 6px 11px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; cursor: pointer;
+    }
+    .header-filter-btn.has-active { border-color: var(--accent); background: rgba(99, 102, 241, 0.18); color: #c7d2fe; }
+    .filter-badge-dot {
+      background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 900;
+      padding: 1px 6px; border-radius: 999px; display: none;
+    }
+    .header-filter-btn.has-active .filter-badge-dot { display: inline-block; }
+    .header-quick-btn {
+      background: var(--accent); color: #fff; border: none; border-radius: 999px;
+      padding: 6px 11px; font-size: 0.74rem; font-weight: 800; cursor: pointer; display: none;
+    }
+
+    .filter-section-label {
+      font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;
+      margin: 12px 0 6px 0; letter-spacing: 0.4px;
+    }
+    .filter-section-label:first-child { margin-top: 0; }
+    .segmented-3 {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 3px;
+    }
+    .seg-btn {
+      background: transparent; border: none; color: var(--text-muted); padding: 7px 6px;
+      border-radius: 7px; font-size: 0.74rem; font-weight: 800; cursor: pointer; transition: 0.15s;
+    }
+    .seg-btn.active { background: var(--accent); color: #fff; }
+
+    /* ================= FULL-PAGE DETAIL MODALS ================= */
+    .modal-overlay.fullscreen-modal {
+      align-items: stretch; justify-content: center; padding: 0;
+    }
+    .modal-overlay.fullscreen-modal .modal-sheet {
+      width: 100%; max-width: 680px; height: 100dvh; max-height: 100dvh;
+      border-radius: 0; border-top: none; padding: 0;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    @media (min-width: 680px) {
+      .modal-overlay.fullscreen-modal { align-items: center; padding: 20px; }
+      .modal-overlay.fullscreen-modal .modal-sheet {
+        height: auto; max-height: 92vh; border-radius: 18px; border: 1px solid var(--border);
+      }
+    }
+    .fp-topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 12px 16px; background: rgba(14, 16, 20, 0.96); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .fp-back-btn {
+      background: var(--surface-elevated); border: 1px solid var(--border); color: #fff;
+      padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; cursor: pointer;
+    }
+    .fp-top-title {
+      flex: 1; font-size: 0.9rem; font-weight: 800; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
+    }
+    .fp-body {
+      flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 24px;
+    }
+    .fp-footer {
+      display: flex; gap: 8px; padding: 12px 16px calc(14px + var(--safe-bottom)) 16px;
+      background: rgba(14, 16, 20, 0.96); border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap;
+    }
+
+    /* ================= RESTAURANT VISIT FLOW & D/K RATING PILLS ================= */
+    .visit-cta-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(20, 21, 25, 0.96));
+      border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 12px; padding: 12px; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .visit-cta-btn {
+      background: var(--emerald); color: #000; border: none; border-radius: 10px;
+      padding: 9px 14px; font-size: 0.8rem; font-weight: 900; cursor: pointer; white-space: nowrap;
+    }
+    .visit-cta-btn.secondary {
+      background: var(--surface-elevated); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+
+    .dk-rating-card {
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px; margin-bottom: 12px;
+    }
+    .rate-row-head {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+      font-size: 0.72rem; font-weight: 900; text-transform: uppercase;
+    }
+    .rate-strip {
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 10px;
+    }
+    .rate-strip:last-child { margin-bottom: 0; }
+    .rate-pill {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 7px; padding: 7px 0; font-size: 0.74rem; font-weight: 800; cursor: pointer;
+      text-align: center; transition: 0.12s;
+    }
+    .rate-pill.active-d { background: var(--derek); color: #000; border-color: var(--derek); font-weight: 900; }
+    .rate-pill.active-k { background: var(--kianna); color: #000; border-color: var(--kianna); font-weight: 900; }
+
+    .dish-verdict {
+      font-size: 0.62rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 5px;
+    }
+    .verdict-must { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .verdict-solid { background: rgba(251, 191, 36, 0.16); color: #fbbf24; }
+    .verdict-skip { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
   </style>
 </head>
 <body>
@@ -477,188 +587,251 @@
       <div class="logo" id="stealthLogoBtn" onclick="onStealthLogoTap()" title="ChapterTwo">
         CHAPTER<span>TWO</span><div class="stealth-pulse-dot" id="stealthDot"></div>
       </div>
-    </div>
-
-    <!-- BOOK CONTROLS -->
-    <div class="controls-row" id="catalogControls">
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="listPicker" class="list-select" onchange="onListChange(this.value)" style="flex:1; min-width:160px;">
-          <option value="ALL" selected>📚 All Books (Catalog)</option>
-          <option value="ADAPTATION">🎬 Movie Adaptations</option>
-          <option value="1M">💎 1M+ Ratings Club</option>
-          <option value="Christmas">🎄 Christmas / Holiday</option>
-          <option value="Halloween">🎃 Halloween / Gothic</option>
-          <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
-        </select>
-
-        <select id="bookGenreStackPicker" class="list-select" onchange="onBookGenreChange(this.value)" style="flex:1; min-width:140px; border-color:var(--accent);">
-          <option value="ALL" selected>🏷️ All Genres</option>
-          <option value="Fantasy">✨ Fantasy</option>
-          <option value="Sci-Fi">🚀 Science Fiction</option>
-          <option value="Thriller">🔪 Thriller</option>
-          <option value="Mystery">🔍 Mystery</option>
-          <option value="Crime">🕵️ Crime</option>
-          <option value="Romance">💘 Romance</option>
-          <option value="Spicy">🌶️ Spicy / Romantasy</option>
-          <option value="Horror">🩸 Horror</option>
-          <option value="Dystopian">👁️ Dystopian</option>
-          <option value="Classics">🏛️ Classics</option>
-          <option value="Historical Fiction">⏳ Historical Fiction</option>
-          <option value="Young Adult">🎒 Young Adult</option>
-          <option value="Children">🧸 Children's Books</option>
-          <option value="Nonfiction">🧠 Nonfiction</option>
-          <option value="Memoir">📖 Memoir & Biography</option>
-        </select>
-      </div>
-
-      <div class="filter-pills-row">
-        <div class="toggle-group">
-          <span class="toggle-label label-derek">Derek</span>
-          <button class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
-          <button class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
-          <button class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
-          <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Unrated</button>
-          <button class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
-        </div>
-
-        <div class="toggle-group">
-          <span class="toggle-label label-kianna">Kianna</span>
-          <button class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
-          <button class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
-          <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
-          <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Unrated</button>
-          <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOVIE CONTROLS -->
-    <div class="controls-row" id="movieControls" style="display:none;">
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)" style="flex:1; min-width:170px;">
-          <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
-          <option value="Book Adaptation">📚 Based on Books</option>
-          <option value="Top 250">⭐ IMDb Top 250</option>
-          <option value="Disney">🏰 Disney</option>
-          <option value="Christmas">🎄 Christmas / Holiday</option>
-          <option value="Halloween">🎃 Halloween / Spooky</option>
-          <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
-          <option value="100k Club">💎 100k Club (All Movies)</option>
-        </select>
-
-        <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; width:auto; min-width:135px; border-color:var(--gold);">
-          <option value="ALL" selected>⭐ All-Time Master</option>
-        </select>
-
-        <select id="movieGenreStackPicker" class="list-select" onchange="onMovieGenreChange(this.value)" style="flex:1; min-width:130px; border-color:var(--accent);">
-          <option value="ALL" selected>🏷️ All Genres</option>
-          <option value="Action">💥 Action</option>
-          <option value="Adventure">🗺️ Adventure</option>
-          <option value="Animation">🎨 Animation</option>
-          <option value="Comedy">😂 Comedy</option>
-          <option value="Crime">🕵️ Crime</option>
-          <option value="Drama">🎭 Drama</option>
-          <option value="Family">👨‍👩‍👧 Family</option>
-          <option value="Fantasy">✨ Fantasy</option>
-          <option value="Horror">🩸 Horror</option>
-          <option value="Mystery">🔍 Mystery</option>
-          <option value="Romance">💘 Romance</option>
-          <option value="Sci-Fi">🚀 Sci-Fi</option>
-          <option value="Thriller">🔪 Thriller</option>
-        </select>
-
-        <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)" style="width:auto; min-width:125px; border-color:var(--emerald);">
-          <option value="VOTES" selected>🗳️ Total Votes</option>
-          <option value="RATING">⭐ Rating (10k+)</option>
-        </select>
-
-        <button type="button" class="btn-act btn-close" onclick="openMovieUploadModal()" style="flex:none; padding:8px 12px; font-size:0.75rem; border:1px solid var(--accent); color:#a5b4fc; white-space:nowrap;">
-          + Ingest CSV
+      <div class="top-bar-actions">
+        <button type="button" class="header-filter-btn" id="headerFilterBtn" onclick="openFilterDrawer()">
+          ⚙️ Filters <span class="filter-badge-dot" id="headerFilterCount">0</span>
         </button>
-      </div>
-
-      <div class="filter-pills-row">
-        <div class="toggle-group">
-          <span class="toggle-label label-derek">Derek</span>
-          <button class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
-          <button class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Watched</button>
-          <button class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
-          <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Unrated</button>
-          <button class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unwatched</button>
-        </div>
-
-        <div class="toggle-group">
-          <span class="toggle-label label-kianna">Kianna</span>
-          <button class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
-          <button class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Watched</button>
-          <button class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
-          <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Unrated</button>
-          <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
-        </div>
+        <button type="button" class="header-quick-btn" id="headerAddRestBtn" onclick="openRestaurantFormModal()">+ Add</button>
+        <button type="button" class="header-quick-btn" id="headerCsvBtn" onclick="openMovieUploadModal()" style="background:var(--surface-elevated); border:1px solid var(--accent); color:#a5b4fc;">+ CSV</button>
       </div>
     </div>
 
-    <!-- DINING CONTROLS -->
+    <!-- SLIM BOOK PRIMARY BAR -->
+    <div class="controls-row" id="catalogControls">
+      <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
+        <option value="ALL" selected>📚 All Books (Catalog)</option>
+        <option value="ADAPTATION">🎬 Movie Adaptations</option>
+        <option value="1M">💎 1M+ Ratings Club</option>
+        <option value="Christmas">🎄 Christmas / Holiday</option>
+        <option value="Halloween">🎃 Halloween / Gothic</option>
+        <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
+      </select>
+    </div>
+
+    <!-- SLIM MOVIE PRIMARY BAR -->
+    <div class="controls-row" id="movieControls" style="display:none;">
+      <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)">
+        <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
+        <option value="ALL">🎬 All Movies (Catalog)</option>
+        <option value="Book Adaptation">📚 Based on Books</option>
+        <option value="Top 250">⭐ IMDb Top 250</option>
+        <option value="Disney">🏰 Disney</option>
+        <option value="Christmas">🎄 Christmas / Holiday</option>
+        <option value="Halloween">🎃 Halloween / Spooky</option>
+        <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
+        <option value="100k Club">💎 100k Club (All Movies)</option>
+      </select>
+    </div>
+
+    <!-- SLIM DINING PRIMARY BAR -->
     <div class="controls-row" id="diningControls" style="display:none;">
-      <div class="dining-mode-bar">
-        <div class="dining-mode-deck">
-          <button class="dining-mode-btn active" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
-          <button class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
-          <button class="dining-mode-btn" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
-        </div>
-        <button type="button" class="dining-add-btn" onclick="openRestaurantFormModal()">+ Add Spot</button>
-      </div>
-
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:135px;">
-          <option value="OUR_LIST" selected>⭐ Our Rated List</option>
-          <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
-          <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
-          <option value="ALL_SPOTS">📋 All Restaurants</option>
-        </select>
-
-        <select id="diningRegionPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:125px; border-color:var(--derek);">
-          <option value="Haslet / DFW" selected>📍 Haslet / DFW (+Chains)</option>
-          <option value="CHAINS_ONLY">🔗 Chains Only</option>
-          <option value="ALL">🌎 All Regions</option>
-        </select>
-
-        <select id="diningCategoryPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:125px; border-color:var(--accent);">
-          <option value="ALL" selected>🏷️ All Categories</option>
-          <option value="Mexican">🌮 Mexican</option>
-          <option value="Pizza">🍕 Pizza</option>
-          <option value="Burgers">🍔 Burgers</option>
-          <option value="BBQ">🥩 BBQ</option>
-          <option value="Italian">🍝 Italian</option>
-          <option value="Asian / Sushi">🍣 Asian / Sushi</option>
-          <option value="Steakhouse">🥩 Steakhouse</option>
-          <option value="American">🍟 American</option>
-          <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
-          <option value="Seafood">🍤 Seafood</option>
-          <option value="Fast Food">🚗 Fast Food</option>
-          <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
-          <option value="Other">🍽️ Other</option>
-        </select>
-
-        <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()" style="width:auto; min-width:125px; border-color:var(--emerald);">
-          <option value="SCORE" selected>🏆 Score (/100)</option>
-          <option value="COST_ASC">💵 Cost: Low → High</option>
-          <option value="COST_DESC">💰 Cost: High → Low</option>
-          <option value="DISTANCE">📍 Closest Drive</option>
-          <option value="FOOD">⭐ Best Food</option>
-          <option value="NAME">🔤 A – Z</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- SHARED VIEW SCOPE -->
-    <div class="view-scope-wrapper">
-      <div class="scope-toggle-group">
-        <button id="scopeTop100Btn" class="scope-btn active" onclick="setViewScope('top100')">Top 100</button>
-        <button id="scopeAllBtn" class="scope-btn" onclick="setViewScope('all')">Show All (<span id="categoryTotalCount">0</span>)</button>
+      <div class="dining-mode-deck">
+        <button class="dining-mode-btn active" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
+        <button class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
+        <button class="dining-mode-btn" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
       </div>
     </div>
   </header>
+
+  <!-- UNIFIED SLIDE-UP FILTERS & SORT DRAWER -->
+  <div class="drawer-overlay" id="filterDrawerOverlay" onclick="if(event.target===this) closeFilterDrawer()">
+    <div class="drawer-sheet">
+      <div class="drawer-header">
+        <div class="drawer-title" id="filterDrawerTitle">⚙️ Filters & Sort</div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" onclick="resetActiveTabFilters()" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-size:0.72rem; font-weight:800; padding:4px 10px; border-radius:7px; cursor:pointer;">Reset</button>
+          <button class="flag-close-btn" onclick="closeFilterDrawer()">✕</button>
+        </div>
+      </div>
+
+      <div class="drawer-scroll-body">
+        <!-- SHARED SCOPE (Top 100 | Top 250 | All) -->
+        <div id="filterScopeSection">
+          <div class="filter-section-label">List Size / Scope</div>
+          <div class="segmented-3">
+            <button type="button" class="seg-btn active" id="scopeTop100Btn" onclick="setViewScope('top100')">Top 100</button>
+            <button type="button" class="seg-btn" id="scopeTop250Btn" onclick="setViewScope('top250')">Top 250</button>
+            <button type="button" class="seg-btn" id="scopeAllBtn" onclick="setViewScope('all')">All (<span id="categoryTotalCount">0</span>)</button>
+          </div>
+        </div>
+
+        <!-- BOOK FILTERS -->
+        <div id="drawerBookFilters">
+          <div class="filter-section-label">Rank / Sort By</div>
+          <select id="bookSortPicker" class="list-select" onchange="onBookSortChange(this.value)">
+            <option value="VOTES" selected>🗳️ Most Ratings</option>
+            <option value="RATING">⭐ Avg Rating (100k+ ratings)</option>
+            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+          </select>
+
+          <div class="filter-section-label">Genre</div>
+          <select id="bookGenreStackPicker" class="list-select" onchange="onBookGenreChange(this.value)">
+            <option value="ALL" selected>🏷️ All Genres</option>
+            <option value="Fantasy">✨ Fantasy</option>
+            <option value="Sci-Fi">🚀 Science Fiction</option>
+            <option value="Thriller">🔪 Thriller</option>
+            <option value="Mystery">🔍 Mystery</option>
+            <option value="Crime">🕵️ Crime</option>
+            <option value="Romance">💘 Romance</option>
+            <option value="Spicy">🌶️ Spicy / Romantasy</option>
+            <option value="Horror">🩸 Horror</option>
+            <option value="Dystopian">👁️ Dystopian</option>
+            <option value="Classics">🏛️ Classics</option>
+            <option value="Historical Fiction">⏳ Historical Fiction</option>
+            <option value="Young Adult">🎒 Young Adult</option>
+            <option value="Children">🧸 Children's Books</option>
+            <option value="Nonfiction">🧠 Nonfiction</option>
+            <option value="Memoir">📖 Memoir & Biography</option>
+          </select>
+
+          <div class="filter-section-label">Status</div>
+          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-derek">Derek</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
+                <button class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
+                <button class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
+                <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
+              </div>
+            </div>
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-kianna">Kianna</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOVIE FILTERS -->
+        <div id="drawerMovieFilters" style="display:none;">
+          <div class="filter-section-label">Rank / Sort By</div>
+          <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)">
+            <option value="VOTES" selected>🗳️ Most Ratings</option>
+            <option value="RATING">⭐ Avg Rating (10k+ ratings)</option>
+            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+          </select>
+
+          <div class="filter-section-label">Holiday / Theme (Combines with List!)</div>
+          <select id="movieHolidayPicker" class="list-select" onchange="onMovieHolidayChange(this.value)">
+            <option value="ALL" selected>✨ Any Holiday / Theme</option>
+            <option value="Christmas">🎄 Christmas / Holiday</option>
+            <option value="Halloween">🎃 Halloween / Spooky</option>
+            <option value="Disney">🏰 Disney</option>
+          </select>
+
+          <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; margin-top:8px; border-color:var(--gold);">
+            <option value="ALL" selected>⭐ All-Time Master</option>
+          </select>
+
+          <div class="filter-section-label">Genre</div>
+          <select id="movieGenreStackPicker" class="list-select" onchange="onMovieGenreChange(this.value)">
+            <option value="ALL" selected>🏷️ All Genres</option>
+            <option value="Action">💥 Action</option>
+            <option value="Adventure">🗺️ Adventure</option>
+            <option value="Animation">🎨 Animation</option>
+            <option value="Comedy">😂 Comedy</option>
+            <option value="Crime">🕵️ Crime</option>
+            <option value="Drama">🎭 Drama</option>
+            <option value="Family">👨‍👩‍👧 Family</option>
+            <option value="Fantasy">✨ Fantasy</option>
+            <option value="Horror">🩸 Horror</option>
+            <option value="Mystery">🔍 Mystery</option>
+            <option value="Romance">💘 Romance</option>
+            <option value="Sci-Fi">🚀 Sci-Fi</option>
+            <option value="Thriller">🔪 Thriller</option>
+          </select>
+
+          <div class="filter-section-label">Status</div>
+          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-derek">Derek</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Watched</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unwatched</button>
+              </div>
+            </div>
+            <div class="toggle-group" style="width:100%; justify-content:space-between;">
+              <span class="toggle-label label-kianna">Kianna</span>
+              <div style="display:flex; gap:2px;">
+                <button class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Watched</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Unrated</button>
+                <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DINING FILTERS -->
+        <div id="drawerDiningFilters" style="display:none;">
+          <div class="filter-section-label">Rank / Sort By</div>
+          <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
+            <option value="SCORE" selected>🏆 Overall Score (/100)</option>
+            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+            <option value="VOTES">🗳️ Most Ratings (Google)</option>
+            <option value="RATING">⭐ Avg Rating (250+ ratings)</option>
+            <option value="COST_ASC">💵 Cost: Low → High</option>
+            <option value="COST_DESC">💰 Cost: High → Low</option>
+            <option value="DISTANCE">📍 Closest Drive</option>
+            <option value="NAME">🔤 A – Z</option>
+          </select>
+
+          <div class="filter-section-label">Visited Status</div>
+          <select id="diningVisitedPicker" class="list-select" onchange="onDiningFilterChange()">
+            <option value="ALL" selected>🍽️ All Spots (Visited + Want to Try)</option>
+            <option value="VISITED">✅ Visited Only</option>
+            <option value="UNVISITED">📌 Want to Try (Unvisited)</option>
+          </select>
+
+          <div class="filter-section-label">List / Source</div>
+          <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()">
+            <option value="ALL_SPOTS" selected>📋 All Restaurants</option>
+            <option value="OUR_LIST">⭐ Visited / Our List</option>
+            <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
+            <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
+          </select>
+
+          <div class="filter-section-label">Region / Travel</div>
+          <select id="diningRegionPicker" class="list-select" onchange="onDiningFilterChange()">
+            <option value="Haslet / DFW" selected>📍 Haslet / DFW (+Chains)</option>
+            <option value="CHAINS_ONLY">🔗 Chains Only</option>
+            <option value="ALL">🌎 All Regions</option>
+          </select>
+
+          <div class="filter-section-label">Category</div>
+          <select id="diningCategoryPicker" class="list-select" onchange="onDiningFilterChange()">
+            <option value="ALL" selected>🏷️ All Categories</option>
+            <option value="Mexican">🌮 Mexican</option>
+            <option value="Pizza">🍕 Pizza</option>
+            <option value="Burgers">🍔 Burgers</option>
+            <option value="BBQ">🥩 BBQ</option>
+            <option value="Italian">🍝 Italian</option>
+            <option value="Asian / Sushi">🍣 Asian / Sushi</option>
+            <option value="Steakhouse">🥩 Steakhouse</option>
+            <option value="American">🍟 American</option>
+            <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
+            <option value="Seafood">🍤 Seafood</option>
+            <option value="Fast Food">🚗 Fast Food</option>
+            <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
+            <option value="Other">🍽️ Other</option>
+          </select>
+        </div>
+
+        <button type="button" class="dining-add-btn" style="width:100%; margin-top:16px; padding:11px;" onclick="closeFilterDrawer()">Done</button>
+      </div>
+    </div>
+  </div>
 
   <!-- TAB 1: Books Catalog -->
   <main id="tabCatalog" class="tab-content active">
@@ -810,19 +983,19 @@
   <main id="tabDining" class="tab-content">
     <div class="mini-kpi-ribbon">
       <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag" style="color:var(--emerald);">Spots Shown</span>
-        <span class="kpi-ribbon-val" id="dRbCount">0</span>
-        <span class="kpi-ribbon-sub" id="dRbModeSub">Family Friendly</span>
+        <span class="kpi-ribbon-tag" style="color:var(--emerald);">Visited</span>
+        <span class="kpi-ribbon-val" id="dRbVisited">0 / 0</span>
+        <span class="kpi-ribbon-sub" id="dRbVisitedPct">0% tried</span>
       </div>
       <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag" style="color:var(--gold);">Avg Score</span>
-        <span class="kpi-ribbon-val" id="dRbAvgScore">-- / 100</span>
-        <span class="kpi-ribbon-sub" id="dRbAvgFood">Food -- / 10</span>
+        <span class="kpi-ribbon-tag derek">Derek Avg</span>
+        <span class="kpi-ribbon-val" id="dRbDAvg">★ --</span>
+        <span class="kpi-ribbon-sub" id="dRbDCount">0 rated</span>
       </div>
       <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag" style="color:var(--derek);">Avg Total (6)</span>
-        <span class="kpi-ribbon-val" id="dRbAvgCost">$--</span>
-        <span class="kpi-ribbon-sub" id="dRbAvgDist">-- min avg</span>
+        <span class="kpi-ribbon-tag kianna">Kianna Avg</span>
+        <span class="kpi-ribbon-val" id="dRbKAvg">★ --</span>
+        <span class="kpi-ribbon-sub" id="dRbKCount">0 rated</span>
       </div>
     </div>
 
@@ -875,85 +1048,96 @@
     </div>
   </div>
 
-  <!-- Book Modal -->
-  <div class="modal-overlay" id="bookModal" onclick="if(event.target===this) closeModal()">
+  <!-- Book Modal (Full Page) -->
+  <div class="modal-overlay fullscreen-modal" id="bookModal" onclick="if(event.target===this) closeModal()">
     <div class="modal-sheet">
-      <div class="modal-header">
-        <div id="modalCover" style="width:85px; min-width:85px; height:125px; border-radius:8px; overflow:hidden;"></div>
-        <div style="flex:1; overflow:hidden;">
-          <h2 class="modal-title" id="mTitle"></h2>
-          <div class="modal-author" id="mAuthor"></div>
-          <div class="ratings-row" id="mRatings"></div>
-          <div id="bookUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
-          <div class="audio-pill" id="mAudio" style="display:none; margin-top:6px;"></div>
-        </div>
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeModal()">← Back</button>
+        <div class="fp-top-title">Book Details</div>
+        <button type="button" class="fp-back-btn" style="color:#f87171; border-color:rgba(239,68,68,0.35);" onclick="openQuickFlagModal()">⚠️ Flag</button>
       </div>
-      <p class="modal-desc" id="mDesc"></p>
-
-      <!-- Interactive Toggles (Books) -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 12px 0 6px 0;">
-        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
-          <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
-          <div style="display:flex; gap:6px;">
-            <button id="btnDReadToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'STATUS')">📖 Read</button>
-            <button id="btnDWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'WISH')">📌 Wish</button>
+      <div class="fp-body">
+        <div class="modal-header">
+          <div id="modalCover" style="width:95px; min-width:95px; height:140px; border-radius:10px; overflow:hidden;"></div>
+          <div style="flex:1; overflow:hidden;">
+            <h2 class="modal-title" id="mTitle"></h2>
+            <div class="modal-author" id="mAuthor"></div>
+            <div class="ratings-row" id="mRatings"></div>
+            <div id="bookUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
+            <div class="audio-pill" id="mAudio" style="display:none; margin-top:6px;"></div>
           </div>
         </div>
-        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
-          <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
-          <div style="display:flex; gap:6px;">
-            <button id="btnKReadToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'STATUS')">📖 Read</button>
-            <button id="btnKWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'WISH')">📌 Wish</button>
+        <p class="modal-desc" id="mDesc" style="max-height:none;"></p>
+
+        <!-- Interactive Toggles (Books) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 14px 0 6px 0;">
+          <div style="background:var(--surface-elevated); padding:10px; border-radius:10px; border:1px solid var(--border);">
+            <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
+            <div style="display:flex; gap:6px;">
+              <button id="btnDReadToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'STATUS')">📖 Read</button>
+              <button id="btnDWishToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Derek', 'WISH')">📌 Wish</button>
+            </div>
+          </div>
+          <div style="background:var(--surface-elevated); padding:10px; border-radius:10px; border:1px solid var(--border);">
+            <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
+            <div style="display:flex; gap:6px;">
+              <button id="btnKReadToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'STATUS')">📖 Read</button>
+              <button id="btnKWishToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'WISH')">📌 Wish</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-actions">
+      <div class="fp-footer">
         <a href="#" target="_blank" id="mLibbyBtn" class="btn-act btn-libby">Open Libby</a>
         <a href="#" target="_blank" id="mGrBtn" class="btn-act btn-goodreads">Goodreads ↗</a>
-        <button class="btn-act btn-flag" onclick="openQuickFlagModal()">⚠️ Flag</button>
-        <button class="btn-act btn-close" onclick="closeModal()">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- Movie Detail Modal -->
-  <div class="modal-overlay" id="movieModal" onclick="if(event.target===this) closeMovieModal()">
+  <!-- Movie Detail Modal (Full Page) -->
+  <div class="modal-overlay fullscreen-modal" id="movieModal" onclick="if(event.target===this) closeMovieModal()">
     <div class="modal-sheet">
-      <div class="modal-header">
-        <div id="movieModalCover" style="width:85px; min-width:85px; height:125px; border-radius:8px; overflow:hidden; background:#181a20;"></div>
-        <div style="flex:1; overflow:hidden;">
-          <h2 class="modal-title" id="mvTitle"></h2>
-          <div class="modal-author" id="mvDirectorYear"></div>
-          <div class="ratings-row" id="mvRatings"></div>
-          <div id="movieUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;" id="mvTagsWrap"></div>
-        </div>
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeMovieModal()">← Back</button>
+        <div class="fp-top-title">Movie Details</div>
+        <div style="width:60px;"></div>
       </div>
-      <p class="modal-desc" id="mvOverview"></p>
-
-      <!-- Interactive Toggles (Movies) -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 12px 0 6px 0;">
-        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
-          <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
-          <div style="display:flex; gap:6px;">
-            <button id="btnDWatchToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'STATUS')">👁️ Watched</button>
-            <button id="btnDMovWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'WISH')">📌 Wish</button>
+      <div class="fp-body">
+        <div class="modal-header">
+          <div id="movieModalCover" style="width:95px; min-width:95px; height:140px; border-radius:10px; overflow:hidden; background:#181a20;"></div>
+          <div style="flex:1; overflow:hidden;">
+            <h2 class="modal-title" id="mvTitle"></h2>
+            <div class="modal-author" id="mvDirectorYear"></div>
+            <div class="ratings-row" id="mvRatings"></div>
+            <div id="movieUnratedBanner" style="display:none; margin-top:4px; font-size:0.7rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); padding:3px 8px; border-radius:5px;"></div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;" id="mvTagsWrap"></div>
           </div>
         </div>
-        <div style="background:var(--surface-elevated); padding:8px; border-radius:8px; border:1px solid var(--border);">
-          <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
-          <div style="display:flex; gap:6px;">
-            <button id="btnKWatchToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'STATUS')">👁️ Watched</button>
-            <button id="btnKMovWishToggle" class="btn-act" style="flex:1; padding:6px; font-size:0.72rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'WISH')">📌 Wish</button>
+        <p class="modal-desc" id="mvOverview" style="max-height:none;"></p>
+
+        <!-- Interactive Toggles (Movies) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin: 14px 0 6px 0;">
+          <div style="background:var(--surface-elevated); padding:10px; border-radius:10px; border:1px solid var(--border);">
+            <div style="font-size:0.68rem; font-weight:800; color:var(--derek); margin-bottom:6px;">DEREK</div>
+            <div style="display:flex; gap:6px;">
+              <button id="btnDWatchToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'STATUS')">👁️ Watched</button>
+              <button id="btnDMovWishToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Derek', 'WISH')">📌 Wish</button>
+            </div>
+          </div>
+          <div style="background:var(--surface-elevated); padding:10px; border-radius:10px; border:1px solid var(--border);">
+            <div style="font-size:0.68rem; font-weight:800; color:var(--kianna); margin-bottom:6px;">KIANNA</div>
+            <div style="display:flex; gap:6px;">
+              <button id="btnKWatchToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'STATUS')">👁️ Watched</button>
+              <button id="btnKMovWishToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('MOVIE', 'Kianna', 'WISH')">📌 Wish</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-actions">
+      <div class="fp-footer">
         <a href="#" target="_blank" id="mvJustWatchBtn" class="btn-act btn-libby">Where to Watch ↗</a>
         <a href="#" target="_blank" id="mvImdbBtn" class="btn-act btn-goodreads">IMDb Page ↗</a>
-        <button class="btn-act btn-close" onclick="closeMovieModal()">Close</button>
       </div>
     </div>
   </div>
@@ -1111,12 +1295,18 @@
     </div>
   </div>
 
-  <!-- Restaurant Detail Modal -->
-  <div class="modal-overlay" id="restaurantModal" onclick="if(event.target===this) closeRestaurantModal()">
-    <div class="modal-sheet" style="max-height:90vh; display:flex; flex-direction:column;">
-      <div class="form-scroll">
+  <!-- Restaurant Detail Modal (Full Page) -->
+  <div class="modal-overlay fullscreen-modal" id="restaurantModal" onclick="if(event.target===this) closeRestaurantModal()">
+    <div class="modal-sheet">
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeRestaurantModal()">← Back</button>
+        <div class="fp-top-title" id="rmTopTitle">Restaurant</div>
+        <button type="button" class="fp-back-btn" onclick="editActiveRestaurant()">✏️ Edit</button>
+      </div>
+
+      <div class="fp-body">
         <div class="modal-header">
-          <div id="rmThumb" class="rest-card-thumb" style="width:84px; min-width:84px; height:105px; border-radius:10px; border:1px solid var(--border);"></div>
+          <div id="rmThumb" class="rest-card-thumb" style="width:88px; min-width:88px; height:108px; border-radius:10px; border:1px solid var(--border);"></div>
           <div style="flex:1; min-width:0;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
               <h2 class="modal-title" id="rmName" style="margin-bottom:2px;"></h2>
@@ -1127,12 +1317,40 @@
           </div>
         </div>
 
-        <!-- Score Breakdown (60 Food / 20 Cost / 20 Distance) -->
+        <!-- Prominent Visit CTA (Mark Visited -> Expands Optional Rate & Details) -->
+        <div class="visit-cta-card" id="rmVisitCtaCard">
+          <div>
+            <div style="font-size:0.82rem; font-weight:900; color:#fff;" id="rmVisitCtaTitle">Haven't visited yet?</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);" id="rmVisitCtaSub">Mark visited to unlock quick D & K ratings</div>
+          </div>
+          <button type="button" class="visit-cta-btn" id="rmVisitCtaBtn" onclick="onMarkVisitedClick()">✅ Mark Visited</button>
+        </div>
+
+        <!-- Derek & Kianna Quick 1-10 Restaurant Ratings (Shown when visited, or expandable) -->
+        <div class="dk-rating-card" id="rmDkRatingCard" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-size:0.78rem; font-weight:900; color:#fff;">⭐ Overall Restaurant Rating (1–10)</span>
+            <span style="font-size:0.66rem; color:var(--text-muted);">Separate from individual dishes</span>
+          </div>
+          <div class="rate-row-head">
+            <span style="color:var(--derek);">Derek</span>
+            <span id="rmDRateVal" style="color:var(--derek);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="rmDRateStrip"></div>
+
+          <div class="rate-row-head">
+            <span style="color:var(--kianna);">Kianna</span>
+            <span id="rmKRateVal" style="color:var(--kianna);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="rmKRateStrip"></div>
+        </div>
+
+        <!-- Score Breakdown (60 Our Rating / 20 Cost / 20 Distance) -->
         <div class="score-breakdown-grid">
           <div class="score-box">
-            <div class="score-box-lbl">🍽️ Food (60)</div>
+            <div class="score-box-lbl">⭐ Rating (60)</div>
             <div class="score-box-val" id="rmFoodPts">--</div>
-            <div class="score-box-sub" id="rmFoodSub">No dishes yet</div>
+            <div class="score-box-sub" id="rmFoodSub">Rate above</div>
           </div>
           <div class="score-box">
             <div class="score-box-lbl">💵 Cost (20)</div>
@@ -1163,7 +1381,7 @@
         <p id="rmNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
 
         <!-- Visit History -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0 6px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0 6px 0;">
           <div style="font-size:0.82rem; font-weight:900; color:#fff;" id="rmVisitHeader">🗓️ Visit Log</div>
           <button type="button" class="dining-add-btn" style="padding:5px 10px; font-size:0.72rem; background:var(--surface-elevated); border:1px solid var(--emerald); color:#34d399;" onclick="toggleVisitForm()">+ Log Visit</button>
         </div>
@@ -1180,7 +1398,7 @@
             </div>
           </div>
           <div class="form-group" style="margin-bottom:8px;">
-            <label class="form-label">Visit Notes</label>
+            <label class="form-label">Visit Notes (Optional)</label>
             <input type="text" id="visitNotesInput" class="form-input" placeholder="e.g. Grandma and Grandpa loved it!">
           </div>
           <div style="display:flex; gap:8px;">
@@ -1189,11 +1407,11 @@
           </div>
         </div>
 
-        <div class="dish-list" id="rmVisitList" style="max-height:170px; margin-bottom:12px;"></div>
+        <div class="dish-list" id="rmVisitList" style="max-height:none; margin-bottom:14px;"></div>
 
-        <!-- What We Ate / Dish Log -->
+        <!-- What We Ate / Dish Guide -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-          <div style="font-size:0.82rem; font-weight:900; color:#fff;">🍽️ What We Ate & Ratings</div>
+          <div style="font-size:0.82rem; font-weight:900; color:#fff;">🍽️ What We Ate (Order Guide)</div>
           <button type="button" class="dining-add-btn" style="padding:5px 10px; font-size:0.72rem;" onclick="toggleDishForm()">+ Log Dish</button>
         </div>
 
@@ -1205,7 +1423,7 @@
               <input type="text" id="dishNameInput" class="form-input" placeholder="e.g. Brisket Tacos">
             </div>
             <div class="form-group" style="margin-bottom:8px;">
-              <label class="form-label">Rating (1–10) *</label>
+              <label class="form-label">Dish Rating (1–10) *</label>
               <input type="number" id="dishRatingInput" class="form-input" min="1" max="10" step="0.5" placeholder="8.5">
             </div>
           </div>
@@ -1234,13 +1452,12 @@
           </div>
         </div>
 
-        <div class="dish-list" id="rmDishList"></div>
+        <div class="dish-list" id="rmDishList" style="max-height:none;"></div>
       </div>
 
-      <div class="modal-actions" style="flex-shrink:0;">
+      <div class="fp-footer">
         <a href="#" target="_blank" id="rmMapsBtn" class="btn-act btn-libby">📍 Google Maps ↗</a>
-        <button type="button" class="btn-act btn-goodreads" onclick="editActiveRestaurant()">✏️ Edit</button>
-        <button type="button" class="btn-act btn-close" onclick="closeRestaurantModal()">Close</button>
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveRestaurant()">✏️ Edit Details</button>
       </div>
     </div>
   </div>
@@ -1382,6 +1599,7 @@
     let books = [];
     let selectedList = 'ALL';
     let selectedBookGenre = 'ALL';
+    let bookSortMode = 'VOTES';
     let currentViewScope = 'top100';
     let filterDerek = 'ALL';
     let filterKianna = 'ALL';
@@ -1395,10 +1613,12 @@
     let movieTitleSet = new Set();
     let bookTitleSet = new Set();
     let selectedMovieList = 'Fill In Filmography';
+    let selectedMovieHoliday = 'ALL';
     let selectedTop250Year = 'ALL';
     let selectedMovieGenre = 'ALL';
     let movieSortMode = 'VOTES';
     let currentMovieScope = 'top100';
+    let currentDiningScope = 'top100';
     let mFilterDerek = 'ALL';
     let mFilterKianna = 'ALL';
     let activeMovie = null;
@@ -1421,14 +1641,127 @@
       renderBooks();
     }
 
+    function onBookSortChange(val) {
+      bookSortMode = val;
+      renderBooks();
+    }
+
     function onMovieGenreChange(val) {
       selectedMovieGenre = val;
+      renderMovies();
+    }
+
+    function onMovieHolidayChange(val) {
+      selectedMovieHoliday = val;
       renderMovies();
     }
 
     function onMovieSortChange(val) {
       movieSortMode = val;
       renderMovies();
+    }
+
+    function openFilterDrawer() {
+      const bSec = document.getElementById('drawerBookFilters');
+      const mSec = document.getElementById('drawerMovieFilters');
+      const dSec = document.getElementById('drawerDiningFilters');
+      const scopeSec = document.getElementById('filterScopeSection');
+      const titleEl = document.getElementById('filterDrawerTitle');
+
+      if (bSec) bSec.style.display = (currentTab === 'catalog') ? 'block' : 'none';
+      if (mSec) mSec.style.display = (currentTab === 'movies') ? 'block' : 'none';
+      if (dSec) dSec.style.display = (currentTab === 'dining') ? 'block' : 'none';
+      if (scopeSec) scopeSec.style.display = (currentTab === 'shelf') ? 'none' : 'block';
+
+      if (titleEl) {
+        titleEl.textContent = currentTab === 'catalog' ? '📚 Book Filters & Sort'
+          : (currentTab === 'movies' ? '🎬 Movie Filters & Sort' : '🍽️ Dining Filters & Sort');
+      }
+      document.getElementById('filterDrawerOverlay').classList.add('open');
+    }
+
+    function closeFilterDrawer() {
+      document.getElementById('filterDrawerOverlay').classList.remove('open');
+    }
+
+    function updateFilterBadgeCount() {
+      const btn = document.getElementById('headerFilterBtn');
+      const badge = document.getElementById('headerFilterCount');
+      if (!btn || !badge) return;
+      let count = 0;
+
+      if (currentTab === 'catalog') {
+        if (bookSortMode !== 'VOTES') count++;
+        if (selectedBookGenre !== 'ALL') count++;
+        if (filterDerek !== 'ALL') count++;
+        if (filterKianna !== 'ALL') count++;
+        if (currentViewScope !== 'top100') count++;
+      } else if (currentTab === 'movies') {
+        if (movieSortMode !== 'VOTES') count++;
+        if (selectedMovieHoliday !== 'ALL') count++;
+        if (selectedMovieGenre !== 'ALL') count++;
+        if (selectedTop250Year !== 'ALL') count++;
+        if (mFilterDerek !== 'ALL') count++;
+        if (mFilterKianna !== 'ALL') count++;
+        if (currentMovieScope !== 'top100') count++;
+      } else if (currentTab === 'dining') {
+        const listF = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
+        const visF = (document.getElementById('diningVisitedPicker') || {}).value || 'ALL';
+        const regF = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
+        const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
+        const sortF = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+        if (listF !== 'ALL_SPOTS') count++;
+        if (visF !== 'ALL') count++;
+        if (regF !== 'Haslet / DFW') count++;
+        if (catF !== 'ALL') count++;
+        if (sortF !== 'SCORE') count++;
+        if (currentDiningScope !== 'top100') count++;
+      }
+
+      badge.textContent = count;
+      btn.classList.toggle('has-active', count > 0);
+    }
+
+    function resetActiveTabFilters() {
+      if (currentTab === 'catalog') {
+        bookSortMode = 'VOTES';
+        selectedBookGenre = 'ALL';
+        currentViewScope = 'top100';
+        filterDerek = 'ALL';
+        filterKianna = 'ALL';
+        document.getElementById('bookSortPicker').value = 'VOTES';
+        document.getElementById('bookGenreStackPicker').value = 'ALL';
+        document.querySelectorAll('.toggle-pill[data-filter]').forEach(p => {
+          p.classList.remove('active', 'd-on', 'k-on');
+          if (p.dataset.val === 'ALL') p.classList.add('active');
+        });
+        renderBooks();
+      } else if (currentTab === 'movies') {
+        movieSortMode = 'VOTES';
+        selectedMovieHoliday = 'ALL';
+        selectedMovieGenre = 'ALL';
+        selectedTop250Year = 'ALL';
+        currentMovieScope = 'top100';
+        mFilterDerek = 'ALL';
+        mFilterKianna = 'ALL';
+        document.getElementById('movieSortPicker').value = 'VOTES';
+        document.getElementById('movieHolidayPicker').value = 'ALL';
+        document.getElementById('movieGenreStackPicker').value = 'ALL';
+        document.querySelectorAll('.toggle-pill[data-mfilter]').forEach(p => {
+          p.classList.remove('active', 'd-on', 'k-on');
+          if (p.dataset.val === 'ALL') p.classList.add('active');
+        });
+        renderMovies();
+      } else if (currentTab === 'dining') {
+        currentDiningScope = 'top100';
+        document.getElementById('diningListPicker').value = 'ALL_SPOTS';
+        document.getElementById('diningVisitedPicker').value = 'ALL';
+        document.getElementById('diningRegionPicker').value = 'Haslet / DFW';
+        document.getElementById('diningCategoryPicker').value = 'ALL';
+        document.getElementById('diningSortPicker').value = 'SCORE';
+        renderDining();
+      }
+      showToast('Filters reset');
     }
 
     function openMovieModal(m) {
@@ -1719,7 +2052,13 @@
       const bookControls = document.getElementById('catalogControls');
       const movieControls = document.getElementById('movieControls');
       const diningControls = document.getElementById('diningControls');
-      const scopeWrap = document.querySelector('.view-scope-wrapper');
+      const filterBtn = document.getElementById('headerFilterBtn');
+      const addRestBtn = document.getElementById('headerAddRestBtn');
+      const csvBtn = document.getElementById('headerCsvBtn');
+
+      if (filterBtn) filterBtn.style.display = (tab === 'shelf') ? 'none' : 'inline-flex';
+      if (addRestBtn) addRestBtn.style.display = (tab === 'dining') ? 'inline-block' : 'none';
+      if (csvBtn) csvBtn.style.display = (tab === 'movies') ? 'inline-block' : 'none';
 
       if (tab === 'catalog') {
         document.getElementById('navCatalog').classList.add('active');
@@ -1727,7 +2066,6 @@
         if (bookControls) bookControls.style.display = 'flex';
         if (movieControls) movieControls.style.display = 'none';
         if (diningControls) diningControls.style.display = 'none';
-        if (scopeWrap) scopeWrap.style.display = 'flex';
         updateScopeButtons(currentViewScope, getBookScopedCount());
       } else if (tab === 'movies') {
         document.getElementById('navMovies').classList.add('active');
@@ -1735,7 +2073,6 @@
         if (bookControls) bookControls.style.display = 'none';
         if (movieControls) movieControls.style.display = 'flex';
         if (diningControls) diningControls.style.display = 'none';
-        if (scopeWrap) scopeWrap.style.display = 'flex';
         loadMovieData();
       } else if (tab === 'dining') {
         document.getElementById('navDining').classList.add('active');
@@ -1743,7 +2080,6 @@
         if (bookControls) bookControls.style.display = 'none';
         if (movieControls) movieControls.style.display = 'none';
         if (diningControls) diningControls.style.display = 'flex';
-        if (scopeWrap) scopeWrap.style.display = 'none';
         loadRestaurantsData();
       } else {
         document.getElementById('navShelf').classList.add('active');
@@ -1751,23 +2087,20 @@
         if (bookControls) bookControls.style.display = 'none';
         if (movieControls) movieControls.style.display = 'none';
         if (diningControls) diningControls.style.display = 'none';
-        if (scopeWrap) scopeWrap.style.display = 'none';
         renderShelf();
       }
+      updateFilterBadgeCount();
     }
 
     function updateScopeButtons(scope, count) {
-      const topBtn = document.getElementById('scopeTop100Btn');
-      const allBtn = document.getElementById('scopeAllBtn');
+      const b100 = document.getElementById('scopeTop100Btn');
+      const b250 = document.getElementById('scopeTop250Btn');
+      const bAll = document.getElementById('scopeAllBtn');
       const countEl = document.getElementById('categoryTotalCount');
-      const isTopScope = (scope === 'top100' || scope === 'top250');
-      const isAllScope = (scope === 'all');
 
-      if (topBtn) {
-        topBtn.textContent = currentTab === 'movies' ? 'Top 250' : 'Top 100';
-        topBtn.classList.toggle('active', isTopScope);
-      }
-      if (allBtn) allBtn.classList.toggle('active', isAllScope);
+      if (b100) b100.classList.toggle('active', scope === 'top100');
+      if (b250) b250.classList.toggle('active', scope === 'top250');
+      if (bAll) bAll.classList.toggle('active', scope === 'all');
       if (countEl) countEl.textContent = count;
     }
 
@@ -1778,7 +2111,18 @@
       } else if (currentTab === 'movies') {
         currentMovieScope = scope;
         renderMovies();
+      } else if (currentTab === 'dining') {
+        currentDiningScope = scope;
+        renderDining();
       }
+    }
+
+    function getOurCombinedRating(dRate, kRate) {
+      const vals = [];
+      if (dRate > 0) vals.push(Number(dRate));
+      if (kRate > 0) vals.push(Number(kRate));
+      if (!vals.length) return 0;
+      return vals.reduce((s, v) => s + v, 0) / vals.length;
     }
 
     function getFilteredBookPool() {
@@ -1823,7 +2167,20 @@
         });
       }
 
-      pool.sort((a, b) => b.numRatings - a.numRatings);
+      if (bookSortMode === 'RATING') {
+        pool = pool.filter(b => b.numRatings >= 100000);
+        pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0) || (b.numRatings - a.numRatings));
+      } else if (bookSortMode === 'OUR_TOP') {
+        pool = pool.filter(b => b.derekRating > 0 || b.kiannaRating > 0);
+        pool.sort((a, b) => {
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          if (rb !== ra) return rb - ra;
+          return b.numRatings - a.numRatings;
+        });
+      } else {
+        pool.sort((a, b) => b.numRatings - a.numRatings);
+      }
       return pool;
     }
 
@@ -1837,14 +2194,17 @@
       grid.innerHTML = '';
 
       let scoped = getFilteredBookPool();
-      updateScopeButtons(currentViewScope, scoped.length);
+      if (currentTab === 'catalog') {
+        updateScopeButtons(currentViewScope, scoped.length);
+        updateFilterBadgeCount();
+      }
 
-      const scopeWrapper = document.querySelector('.view-scope-wrapper');
       const isExemptShelf = (selectedList === 'DNF');
-      if (scopeWrapper) scopeWrapper.style.display = isExemptShelf ? 'none' : 'flex';
-
       let targetCohort = scoped;
-      if (!isExemptShelf && currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
+      if (!isExemptShelf) {
+        if (currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
+        else if (currentViewScope === 'top250') targetCohort = scoped.slice(0, 250);
+      }
 
       updateRibbon(targetCohort);
 
@@ -2017,6 +2377,26 @@
         });
       }
 
+      if (selectedMovieHoliday && selectedMovieHoliday !== 'ALL') {
+        const hTarget = selectedMovieHoliday.toLowerCase().trim();
+        pool = pool.filter(m => {
+          const inLists = (m.lists || []).some(l => {
+            const lLower = l.toLowerCase();
+            if (hTarget === 'christmas') return lLower.includes('christmas') || lLower.includes('holiday');
+            if (hTarget === 'halloween') return lLower.includes('halloween') || lLower.includes('spooky');
+            if (hTarget === 'disney') return lLower.includes('disney');
+            return lLower.includes(hTarget);
+          });
+          let inContent = false;
+          if (hTarget === 'christmas') {
+            inContent = (m.title || '').toLowerCase().includes('christmas') || (m.overview || '').toLowerCase().includes('christmas');
+          } else if (hTarget === 'halloween') {
+            inContent = (m.title || '').toLowerCase().includes('halloween') || (m.overview || '').toLowerCase().includes('halloween');
+          }
+          return inLists || inContent;
+        });
+      }
+
       if (selectedMovieGenre !== 'ALL') {
         const genreTarget = selectedMovieGenre.toLowerCase().trim();
         pool = pool.filter(m => (m.genres || '').toLowerCase().includes(genreTarget));
@@ -2024,7 +2404,15 @@
 
       if (movieSortMode === 'RATING') {
         pool = pool.filter(m => Number(m.totalRatings) >= 10000);
-        pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0));
+        pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0) || (Number(b.totalRatings) - Number(a.totalRatings)));
+      } else if (movieSortMode === 'OUR_TOP') {
+        pool = pool.filter(m => m.derekRating > 0 || m.kiannaRating > 0);
+        pool.sort((a, b) => {
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          if (rb !== ra) return rb - ra;
+          return (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0);
+        });
       } else {
         pool.sort((a, b) => (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0));
       }
@@ -2103,12 +2491,14 @@
       grid.innerHTML = '';
 
       let scoped = getFilteredMoviePool();
-      updateScopeButtons(currentMovieScope, scoped.length);
+      if (currentTab === 'movies') {
+        updateScopeButtons(currentMovieScope, scoped.length);
+        updateFilterBadgeCount();
+      }
 
       let targetCohort = scoped;
-      if (currentMovieScope !== 'all') {
-        targetCohort = scoped.slice(0, 250);
-      }
+      if (currentMovieScope === 'top100') targetCohort = scoped.slice(0, 100);
+      else if (currentMovieScope === 'top250') targetCohort = scoped.slice(0, 250);
 
       updateMovieRibbon(targetCohort);
 
@@ -2945,8 +3335,16 @@
     }
 
     function computeRestaurantScore(r) {
+      const dRate = Number(r.derekRating) || 0;
+      const kRate = Number(r.kiannaRating) || 0;
+      const ourRate = getOurCombinedRating(dRate, kRate);
+
       const dishes = Array.isArray(r.dishes) ? r.dishes.filter(d => d.rating > 0) : [];
-      const avgFood = dishes.length ? (dishes.reduce((s, d) => s + Number(d.rating), 0) / dishes.length) : null;
+      const avgDish = dishes.length ? (dishes.reduce((s, d) => s + Number(d.rating), 0) / dishes.length) : null;
+
+      // Use D & K overall restaurant ratings first (so 1 bad dish never drags down a 10/10 spot like Piada!)
+      const avgFood = ourRate > 0 ? ourRate : avgDish;
+      const foodSource = ourRate > 0 ? 'DK' : (avgDish !== null ? 'DISH' : 'NONE');
       const foodPts = avgFood !== null ? Math.round(avgFood * 6 * 10) / 10 : 0;
 
       const totalCost = getEffectiveTotalCost(r);
@@ -2977,7 +3375,7 @@
       const hasAnyData = (avgFood !== null) || (totalCost !== null) || (mins !== null);
       const total = hasAnyData ? Math.min(100, Math.round(foodPts + costPts + distPts)) : null;
 
-      return { total, avgFood, foodPts: Math.round(foodPts), costPts, costLabel, distPts, distLabel, totalCost, mins };
+      return { total, avgFood, avgDish, ourRate, foodSource, foodPts: Math.round(foodPts), costPts, costLabel, distPts, distLabel, totalCost, mins };
     }
 
     function getScoreBadgeClass(score) {
@@ -3076,7 +3474,8 @@
     }
 
     function getFilteredRestaurants() {
-      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'OUR_LIST';
+      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
+      const visitedFilter = (document.getElementById('diningVisitedPicker') || {}).value || 'ALL';
       const regionFilter = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
       const catFilter = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
       const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
@@ -3085,6 +3484,9 @@
         if (listFilter === 'OUR_LIST' && !r.visited) return false;
         if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
         if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+
+        if (visitedFilter === 'VISITED' && !r.visited) return false;
+        if (visitedFilter === 'UNVISITED' && r.visited) return false;
 
         if (regionFilter === 'CHAINS_ONLY') {
           if (!r.isChain) return false;
@@ -3109,7 +3511,28 @@
 
       list = list.map(r => ({ ...r, _score: computeRestaurantScore(r) }));
 
+      if (sortMode === 'RATING') {
+        list = list.filter(r => (Number(r.googleReviews) || 0) >= 250);
+      } else if (sortMode === 'OUR_TOP') {
+        list = list.filter(r => (Number(r.derekRating) || 0) > 0 || (Number(r.kiannaRating) || 0) > 0);
+      }
+
       list.sort((a, b) => {
+        if (sortMode === 'OUR_TOP') {
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          if (rb !== ra) return rb - ra;
+          return (b._score.total ?? -1) - (a._score.total ?? -1);
+        }
+        if (sortMode === 'VOTES') {
+          return (Number(b.googleReviews) || 0) - (Number(a.googleReviews) || 0);
+        }
+        if (sortMode === 'RATING') {
+          const ga = parseFloat(a.googleRating) || 0;
+          const gb = parseFloat(b.googleRating) || 0;
+          if (gb !== ga) return gb - ga;
+          return (Number(b.googleReviews) || 0) - (Number(a.googleReviews) || 0);
+        }
         if (sortMode === 'COST_ASC') {
           const ca = a._score.totalCost !== null ? a._score.totalCost : 99999;
           const cb = b._score.totalCost !== null ? b._score.totalCost : 99999;
@@ -3125,18 +3548,14 @@
           const db = b._score.mins !== null ? b._score.mins : 9999;
           return da - db;
         }
-        if (sortMode === 'FOOD') {
-          const fa = a._score.avgFood !== null ? a._score.avgFood : -1;
-          const fb = b._score.avgFood !== null ? b._score.avgFood : -1;
-          return fb - fa;
-        }
         if (sortMode === 'NAME') {
           return (a.name || '').localeCompare(b.name || '');
         }
-        // Default: SCORE descending
+        // Default: SCORE descending (visited first when tied)
         const sa = a._score.total !== null ? a._score.total : -1;
         const sb = b._score.total !== null ? b._score.total : -1;
         if (sb !== sa) return sb - sa;
+        if (a.visited !== b.visited) return a.visited ? -1 : 1;
         return (a.name || '').localeCompare(b.name || '');
       });
 
@@ -3150,31 +3569,34 @@
       const sugTitle = document.getElementById('diningSuggestionsTitle');
       if (!grid) return;
 
-      const list = getFilteredRestaurants();
-      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'OUR_LIST';
+      const fullList = getFilteredRestaurants();
+      if (currentTab === 'dining') {
+        updateScopeButtons(currentDiningScope, fullList.length);
+        updateFilterBadgeCount();
+      }
 
-      // KPI Ribbon
-      const modeLabel = diningMode === 'FAMILY' ? 'Family Friendly' : (diningMode === 'DATE' ? 'Date Night' : 'All Spots');
-      document.getElementById('dRbCount').textContent = list.length;
-      document.getElementById('dRbModeSub').textContent = modeLabel;
+      let list = fullList;
+      if (currentDiningScope === 'top100') list = fullList.slice(0, 100);
+      else if (currentDiningScope === 'top250') list = fullList.slice(0, 250);
 
-      const scored = list.filter(r => r._score.total !== null);
-      const fooded = list.filter(r => r._score.avgFood !== null);
-      const costed = list.filter(r => r._score.totalCost !== null);
-      const disted = list.filter(r => r._score.mins !== null);
+      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
 
-      document.getElementById('dRbAvgScore').textContent = scored.length
-        ? Math.round(scored.reduce((s, r) => s + r._score.total, 0) / scored.length) + ' / 100'
-        : '-- / 100';
-      document.getElementById('dRbAvgFood').textContent = fooded.length
-        ? 'Food ' + (fooded.reduce((s, r) => s + r._score.avgFood, 0) / fooded.length).toFixed(1) + ' / 10'
-        : 'Food -- / 10';
-      document.getElementById('dRbAvgCost').textContent = costed.length
-        ? '$' + Math.round(costed.reduce((s, r) => s + r._score.totalCost, 0) / costed.length)
-        : '$--';
-      document.getElementById('dRbAvgDist').textContent = disted.length
-        ? Math.round(disted.reduce((s, r) => s + r._score.mins, 0) / disted.length) + ' min avg'
-        : '-- min avg';
+      // Upgraded KPI Ribbon: Visited | Derek Avg | Kianna Avg
+      const totalSpots = list.length;
+      const visitedCount = list.filter(r => r.visited).length;
+      const visitedPct = totalSpots ? Math.round((visitedCount / totalSpots) * 100) : 0;
+
+      const dRated = list.filter(r => Number(r.derekRating) > 0);
+      const kRated = list.filter(r => Number(r.kiannaRating) > 0);
+      const dAvg = dRated.length ? (dRated.reduce((s, r) => s + Number(r.derekRating), 0) / dRated.length).toFixed(1) : '--';
+      const kAvg = kRated.length ? (kRated.reduce((s, r) => s + Number(r.kiannaRating), 0) / kRated.length).toFixed(1) : '--';
+
+      document.getElementById('dRbVisited').textContent = `${visitedCount} / ${totalSpots}`;
+      document.getElementById('dRbVisitedPct').textContent = `${visitedPct}% visited`;
+      document.getElementById('dRbDAvg').textContent = `★ ${dAvg}`;
+      document.getElementById('dRbDCount').textContent = `${dRated.length} rated`;
+      document.getElementById('dRbKAvg').textContent = `★ ${kAvg}`;
+      document.getElementById('dRbKCount').textContent = `${kRated.length} rated`;
 
       // Suggestions Banner (Top 3 for Family / Date Night)
       if (list.length > 0) {
@@ -3240,9 +3662,13 @@
           ? `<img src="${heroPhoto}" alt="${escapeHtml(r.name)}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=\\'rest-emoji-cover\\'>${getDiningIcon(r.category)}</div><div class=\\'rest-cat-mini\\'>${escapeHtml(r.category)}</div>';">`
           : `<div class="rest-emoji-cover">${getDiningIcon(r.category)}</div><div class="rest-cat-mini">${escapeHtml(r.category)}</div>`;
 
-        const costText = sc.totalCost !== null ? ('$' + Math.round(sc.totalCost) + ' total') : 'Cost --';
+        const costText = sc.totalCost !== null ? ('$' + Math.round(sc.totalCost) + ' total') : '';
         const distText = sc.mins !== null ? (sc.mins + ' min') : '';
-        const foodText = sc.avgFood !== null ? ('★ ' + sc.avgFood.toFixed(1) + '/10') : 'Unrated';
+        const dBadge = Number(r.derekRating) > 0 ? `<span class="rating-badge badge-derek">D: ★ ${r.derekRating}</span>` : '';
+        const kBadge = Number(r.kiannaRating) > 0 ? `<span class="rating-badge badge-kianna">K: ★ ${r.kiannaRating}</span>` : '';
+        const visitBadge = r.visited
+          ? '<span class="rest-tag-pill rest-tag-family">✓ Visited</span>'
+          : '<span class="rest-tag-pill" style="color:var(--text-muted);">📌 Try</span>';
 
         card.innerHTML = `
           <div class="rest-card-thumb">
@@ -3257,11 +3683,10 @@
               </div>
               <div class="card-author">${escapeHtml(r.category)}${r.location ? ' • ' + escapeHtml(r.location) : ''}${distText ? ' • ' + distText : ''}</div>
               <div class="ratings-row">
-                <span class="rating-badge" style="color:var(--gold);">${foodText}</span>
-                <span class="rating-badge" style="color:var(--derek);">${costText}</span>
+                ${visitBadge}
+                ${dBadge}${kBadge}
+                ${costText ? `<span class="rating-badge" style="color:var(--derek);">${costText}</span>` : ''}
                 ${r.isChain ? '<span class="rest-tag-pill" style="background:rgba(56,189,248,0.16);color:#38bdf8;border-color:rgba(56,189,248,0.4);">🔗 Chain</span>' : ''}
-                ${r.familyFriendly ? '<span class="rest-tag-pill rest-tag-family">Family</span>' : ''}
-                ${r.dateNight ? '<span class="rest-tag-pill rest-tag-date">Date</span>' : ''}
               </div>
             </div>
             <div class="card-footer">
@@ -3307,16 +3732,67 @@
         ? `<img src="${heroPhoto}" style="cursor:pointer;" onclick="openPhotoLightbox('${heroPhoto}')" referrerpolicy="no-referrer">`
         : `<div class="rest-emoji-cover">${getDiningIcon(r.category)}</div><div class="rest-cat-mini">${escapeHtml(r.category)}</div>`;
 
+      document.getElementById('rmTopTitle').textContent = r.name || 'Restaurant';
       document.getElementById('rmName').textContent = r.name || '';
       const metaParts = [r.category, r.location, sc.mins !== null ? (sc.mins + ' min from Haslet') : ''].filter(Boolean);
       document.getElementById('rmMeta').textContent = metaParts.join(' • ');
+
+      // Prominent Visit CTA & Optional Rate & Details Flow
+      const ctaTitle = document.getElementById('rmVisitCtaTitle');
+      const ctaSub = document.getElementById('rmVisitCtaSub');
+      const ctaBtn = document.getElementById('rmVisitCtaBtn');
+      const dkCard = document.getElementById('rmDkRatingCard');
+
+      if (r.visited) {
+        const vCount = (r.visits || []).length;
+        const lastStr = vCount ? ('Last visited ' + r.visits[0].date) : 'Marked as visited';
+        ctaTitle.textContent = '✅ Visited' + (vCount > 0 ? ` (${vCount}x)` : '');
+        ctaSub.textContent = lastStr + ' • Tap to log another visit';
+        ctaBtn.textContent = '+ Log Visit';
+        ctaBtn.classList.add('secondary');
+        dkCard.style.display = 'block';
+      } else {
+        ctaTitle.textContent = '📌 Want to Try';
+        ctaSub.textContent = 'Mark visited to unlock quick D & K ratings & details';
+        ctaBtn.textContent = '✅ Mark Visited';
+        ctaBtn.classList.remove('secondary');
+        dkCard.style.display = 'none';
+      }
+
+      // Render Derek & Kianna 1-10 Quick-Tap Rating Strips
+      const dVal = Number(r.derekRating) || 0;
+      const kVal = Number(r.kiannaRating) || 0;
+      document.getElementById('rmDRateVal').textContent = dVal > 0 ? `★ ${dVal} / 10` : 'Tap 1–10';
+      document.getElementById('rmKRateVal').textContent = kVal > 0 ? `★ ${kVal} / 10` : 'Tap 1–10';
+
+      const dStrip = document.getElementById('rmDRateStrip');
+      const kStrip = document.getElementById('rmKRateStrip');
+      dStrip.innerHTML = '';
+      kStrip.innerHTML = '';
+      for (let n = 1; n <= 10; n++) {
+        const db = document.createElement('button');
+        db.type = 'button';
+        db.className = 'rate-pill' + (dVal === n ? ' active-d' : '');
+        db.textContent = n;
+        db.onclick = () => setRestaurantQuickRating('derekRating', n);
+        dStrip.appendChild(db);
+
+        const kb = document.createElement('button');
+        kb.type = 'button';
+        kb.className = 'rate-pill' + (kVal === n ? ' active-k' : '');
+        kb.textContent = n;
+        kb.onclick = () => setRestaurantQuickRating('kiannaRating', n);
+        kStrip.appendChild(kb);
+      }
 
       const badge = document.getElementById('rmScoreBadge');
       badge.className = 'score-pill ' + getScoreBadgeClass(sc.total);
       badge.textContent = sc.total !== null ? (sc.total + ' / 100') : '-- / 100';
 
       document.getElementById('rmFoodPts').textContent = sc.avgFood !== null ? (sc.foodPts + ' / 60') : '--';
-      document.getElementById('rmFoodSub').textContent = sc.avgFood !== null ? ('Avg ★ ' + sc.avgFood.toFixed(1) + ' / 10') : 'Log a dish below';
+      document.getElementById('rmFoodSub').textContent = sc.foodSource === 'DK'
+        ? ('D & K Avg ★ ' + sc.avgFood.toFixed(1) + '/10')
+        : (sc.foodSource === 'DISH' ? ('Dish Avg ★ ' + sc.avgFood.toFixed(1) + '/10') : 'Rate above');
       document.getElementById('rmCostPts').textContent = sc.totalCost !== null ? (sc.costPts + ' / 20') : '--';
       document.getElementById('rmCostSub').textContent = sc.costLabel;
       document.getElementById('rmDistPts').textContent = sc.mins !== null ? (sc.distPts + ' / 20') : '--';
@@ -3373,11 +3849,11 @@
         });
       }
 
-      // Dishes list
+      // Dishes list (Order Guide: sorted highest-to-lowest!)
       const dishWrap = document.getElementById('rmDishList');
-      const dishes = r.dishes || [];
+      const dishes = [...(r.dishes || [])].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
       if (!dishes.length) {
-        dishWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:10px 4px;">No dishes logged yet. Tap <strong>+ Log Dish</strong> to rate what you ate and add photos!</div>';
+        dishWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:10px 4px;">No dishes logged yet. Tap <strong>+ Log Dish</strong> to track what to order again vs. skip!</div>';
       } else {
         dishWrap.innerHTML = '';
         dishes.forEach(d => {
@@ -3386,10 +3862,14 @@
           const imgHtml = d.photoUrl
             ? `<img class="dish-thumb" src="${d.photoUrl}" referrerpolicy="no-referrer" onclick="openPhotoLightbox('${d.photoUrl}')" alt="${escapeHtml(d.name)}">`
             : '';
+          const ratingNum = Number(d.rating) || 0;
+          const verdictHtml = ratingNum >= 8
+            ? '<span class="dish-verdict verdict-must">🔥 Must Order</span>'
+            : (ratingNum >= 6 ? '<span class="dish-verdict verdict-solid">👍 Solid</span>' : '<span class="dish-verdict verdict-skip">⚠️ Skip</span>');
           item.innerHTML = `
             ${imgHtml}
             <div class="dish-info">
-              <div class="dish-name">${escapeHtml(d.name)}</div>
+              <div class="dish-name">${escapeHtml(d.name)}${verdictHtml}</div>
               <div class="dish-meta">${escapeHtml(d.orderedBy || 'Shared')}${d.dateLogged ? ' • ' + d.dateLogged : ''}${d.notes ? ' • ' + escapeHtml(d.notes) : ''}</div>
             </div>
             <span class="dish-rating-badge">★ ${d.rating}/10</span>
@@ -3398,6 +3878,54 @@
           dishWrap.appendChild(item);
         });
       }
+    }
+
+    function onMarkVisitedClick() {
+      if (!activeRestaurant) return;
+      if (activeRestaurant.visited) {
+        toggleVisitForm(true);
+        return;
+      }
+      // Mark visited immediately + reveal optional D & K ratings and details!
+      activeRestaurant.visited = true;
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      saveRestaurantsCache();
+      renderRestaurantModal();
+      renderDining();
+      showToast('✅ Marked visited! Rate below (optional)');
+
+      postRestaurantApi({ action: 'saveRestaurant', ...activeRestaurant });
+      postRestaurantApi({
+        action: 'addVisit',
+        restaurantId: activeRestaurant.id,
+        date: today,
+        companions: 'Family',
+        notes: ''
+      }, (res) => {
+        if (res && res.success && res.visit) {
+          if (!Array.isArray(activeRestaurant.visits)) activeRestaurant.visits = [];
+          activeRestaurant.visits.unshift(res.visit);
+          saveRestaurantsCache();
+          renderRestaurantModal();
+          renderDining();
+        }
+      });
+    }
+
+    function setRestaurantQuickRating(field, score) {
+      if (!activeRestaurant) return;
+      const current = Number(activeRestaurant[field]) || 0;
+      activeRestaurant[field] = (current === score) ? 0 : score;
+      activeRestaurant.visited = true;
+      saveRestaurantsCache();
+      renderRestaurantModal();
+      renderDining();
+
+      const who = field === 'derekRating' ? 'Derek' : 'Kianna';
+      postRestaurantApi({ action: 'saveRestaurant', ...activeRestaurant }, () => {
+        showToast(activeRestaurant[field] > 0 ? `✅ ${who}: ★ ${activeRestaurant[field]}/10` : `Cleared ${who}'s rating`);
+      });
     }
 
     function quickToggleRestaurantFlag(flagName) {
@@ -3665,7 +4193,9 @@
         dateNight: document.getElementById('rfDateNight').checked,
         isChain: document.getElementById('rfIsChain').checked,
         region: document.getElementById('rfRegion').value.trim(),
-        visited: true,
+        visited: existingObj ? !!existingObj.visited : true,
+        derekRating: existingObj ? (existingObj.derekRating || 0) : 0,
+        kiannaRating: existingObj ? (existingObj.kiannaRating || 0) : 0,
         lists: existingObj ? (existingObj.lists || []) : [],
         kidsNotes: document.getElementById('rfKidsNotes').value.trim(),
         notes: document.getElementById('rfNotes').value.trim(),
