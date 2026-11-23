@@ -610,11 +610,17 @@
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:145px;">
+        <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:135px;">
           <option value="OUR_LIST" selected>⭐ Our Rated List</option>
           <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
           <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
           <option value="ALL_SPOTS">📋 All Restaurants</option>
+        </select>
+
+        <select id="diningRegionPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:125px; border-color:var(--derek);">
+          <option value="Haslet / DFW" selected>📍 Haslet / DFW (+Chains)</option>
+          <option value="CHAINS_ONLY">🔗 Chains Only</option>
+          <option value="ALL">🌎 All Regions</option>
         </select>
 
         <select id="diningCategoryPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:125px; border-color:var(--accent);">
@@ -1318,16 +1324,25 @@
           </label>
         </div>
 
-        <!-- Family / Date Night Flags -->
+        <!-- Family / Date Night / Chain Flags -->
         <div class="form-check-row">
           <label class="form-check-chip">
             <input type="checkbox" id="rfFamilyFriendly" checked>
-            <span>👨‍👩‍👧‍👦 Family / Kid Friendly</span>
+            <span>👨‍👩‍👧‍👦 Family Friendly</span>
           </label>
           <label class="form-check-chip">
             <input type="checkbox" id="rfDateNight" checked>
             <span>🥂 Date Night</span>
           </label>
+          <label class="form-check-chip">
+            <input type="checkbox" id="rfIsChain" onchange="onChainToggleChange()">
+            <span>🔗 Chain (Everywhere)</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">🌎 Region / Trip (Default: Haslet / DFW)</label>
+          <input type="text" id="rfRegion" class="form-input" placeholder="Haslet / DFW (or e.g. Destin, FL)" value="Haslet / DFW">
         </div>
 
         <div class="form-group">
@@ -2994,6 +3009,7 @@
           restaurants = data;
           diningLoaded = true;
           saveRestaurantsCache();
+          populateDiningRegions();
           renderDining();
         }
       }
@@ -3029,8 +3045,39 @@
       renderDining();
     }
 
+    function populateDiningRegions() {
+      const picker = document.getElementById('diningRegionPicker');
+      if (!picker) return;
+      const current = picker.value || 'Haslet / DFW';
+      const regions = new Set(['Haslet / DFW']);
+      restaurants.forEach(r => {
+        if (r.region && !r.isChain && r.region !== 'Chain (Everywhere)') {
+          regions.add(r.region);
+        }
+      });
+      picker.innerHTML = '';
+      regions.forEach(reg => {
+        const opt = document.createElement('option');
+        opt.value = reg;
+        opt.textContent = '📍 ' + reg + ' (+Chains)';
+        picker.appendChild(opt);
+      });
+      const optChain = document.createElement('option');
+      optChain.value = 'CHAINS_ONLY';
+      optChain.textContent = '🔗 Chains Only';
+      picker.appendChild(optChain);
+
+      const optAll = document.createElement('option');
+      optAll.value = 'ALL';
+      optAll.textContent = '🌎 All Regions';
+      picker.appendChild(optAll);
+
+      if ([...picker.options].some(o => o.value === current)) picker.value = current;
+    }
+
     function getFilteredRestaurants() {
       const listFilter = (document.getElementById('diningListPicker') || {}).value || 'OUR_LIST';
+      const regionFilter = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
       const catFilter = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
       const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
 
@@ -3038,6 +3085,13 @@
         if (listFilter === 'OUR_LIST' && !r.visited) return false;
         if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
         if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+
+        if (regionFilter === 'CHAINS_ONLY') {
+          if (!r.isChain) return false;
+        } else if (regionFilter !== 'ALL') {
+          const rReg = r.region || 'Haslet / DFW';
+          if (!r.isChain && rReg !== regionFilter) return false;
+        }
 
         if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
         if (diningMode === 'DATE' && !r.dateNight) return false;
@@ -3205,6 +3259,7 @@
               <div class="ratings-row">
                 <span class="rating-badge" style="color:var(--gold);">${foodText}</span>
                 <span class="rating-badge" style="color:var(--derek);">${costText}</span>
+                ${r.isChain ? '<span class="rest-tag-pill" style="background:rgba(56,189,248,0.16);color:#38bdf8;border-color:rgba(56,189,248,0.4);">🔗 Chain</span>' : ''}
                 ${r.familyFriendly ? '<span class="rest-tag-pill rest-tag-family">Family</span>' : ''}
                 ${r.dateNight ? '<span class="rest-tag-pill rest-tag-date">Date</span>' : ''}
               </div>
@@ -3530,6 +3585,8 @@
       document.getElementById('rfTotalAvg').value = (isEdit && existing.totalAvg !== null && existing.totalAvg !== undefined) ? existing.totalAvg : '';
       document.getElementById('rfFamilyFriendly').checked = isEdit ? !!existing.familyFriendly : true;
       document.getElementById('rfDateNight').checked = isEdit ? !!existing.dateNight : true;
+      document.getElementById('rfIsChain').checked = isEdit ? !!existing.isChain : false;
+      document.getElementById('rfRegion').value = isEdit ? (existing.region || (existing.isChain ? 'Chain (Everywhere)' : 'Haslet / DFW')) : 'Haslet / DFW';
       document.getElementById('rfKidsNotes').value = isEdit ? (existing.kidsNotes || '') : '';
       document.getElementById('rfNotes').value = isEdit ? (existing.notes || '') : '';
       document.getElementById('rfPhotoInput').value = '';
@@ -3564,6 +3621,16 @@
       document.getElementById('rfManualTotal').checked = true;
     }
 
+    function onChainToggleChange() {
+      const isChain = document.getElementById('rfIsChain').checked;
+      const regInput = document.getElementById('rfRegion');
+      if (isChain) {
+        regInput.value = 'Chain (Everywhere)';
+      } else if (regInput.value === 'Chain (Everywhere)' || !regInput.value) {
+        regInput.value = 'Haslet / DFW';
+      }
+    }
+
     async function submitRestaurantForm() {
       const name = document.getElementById('rfName').value.trim();
       if (!name) { showToast('⚠️ Restaurant name is required'); return; }
@@ -3596,6 +3663,8 @@
         manualTotal: document.getElementById('rfManualTotal').checked,
         familyFriendly: document.getElementById('rfFamilyFriendly').checked,
         dateNight: document.getElementById('rfDateNight').checked,
+        isChain: document.getElementById('rfIsChain').checked,
+        region: document.getElementById('rfRegion').value.trim(),
         visited: true,
         lists: existingObj ? (existingObj.lists || []) : [],
         kidsNotes: document.getElementById('rfKidsNotes').value.trim(),
@@ -3618,6 +3687,7 @@
           if (idx !== -1) restaurants[idx] = saved;
           else restaurants.unshift(saved);
           saveRestaurantsCache();
+          populateDiningRegions();
           closeRestaurantFormModal();
           renderDining();
           showToast(existingId ? '✅ Restaurant updated!' : '✅ Restaurant added!');
