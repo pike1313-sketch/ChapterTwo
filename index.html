@@ -336,6 +336,138 @@
       font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s ease; z-index: 10001;
     }
     .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ================= DINING TAB STYLES ================= */
+    .dining-mode-bar {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .dining-mode-deck {
+      flex: 1; display: flex; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 3px; gap: 3px;
+    }
+    .dining-mode-btn {
+      flex: 1; background: transparent; border: none; color: var(--text-muted);
+      padding: 7px 6px; border-radius: 7px; font-size: 0.76rem; font-weight: 800;
+      cursor: pointer; transition: 0.15s; white-space: nowrap;
+    }
+    .dining-mode-btn.active[data-dmode="FAMILY"] { background: var(--emerald); color: #000; }
+    .dining-mode-btn.active[data-dmode="DATE"] { background: var(--kianna); color: #000; }
+    .dining-mode-btn.active[data-dmode="ALL"] { background: var(--accent); color: #fff; }
+
+    .dining-add-btn {
+      background: var(--accent); color: #fff; border: none; border-radius: 10px;
+      padding: 9px 12px; font-size: 0.78rem; font-weight: 800; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .dining-add-btn:active { transform: scale(0.97); }
+
+    .suggestions-banner {
+      background: linear-gradient(145deg, rgba(99, 102, 241, 0.14), rgba(20, 21, 25, 0.96));
+      border: 1px solid rgba(99, 102, 241, 0.35); border-radius: var(--radius);
+      margin: 12px 16px 0 16px; padding: 12px;
+    }
+    .suggestions-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px;
+    }
+    .suggestions-title { font-size: 0.82rem; font-weight: 900; color: #fff; }
+    .btn-spin {
+      background: rgba(251, 191, 36, 0.18); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 5px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; cursor: pointer;
+      white-space: nowrap;
+    }
+    .suggestions-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;
+    }
+    .suggestion-chip {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 10px; cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; gap: 3px;
+    }
+    .suggestion-chip:active { transform: scale(0.98); border-color: var(--accent); }
+    .suggestion-chip-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .suggestion-name { font-size: 0.8rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .suggestion-meta { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+
+    .score-pill {
+      font-size: 0.72rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;
+    }
+    .score-high { background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); }
+    .score-mid { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+    .score-low { background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+    .score-none { background: var(--surface-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+
+    .rest-card-thumb {
+      width: 90px; min-width: 90px; height: 124px; background: linear-gradient(145deg, #1d2130, #12141c);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden;
+    }
+    .rest-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .rest-emoji-cover { font-size: 2rem; line-height: 1; }
+    .rest-cat-mini { font-size: 0.6rem; font-weight: 800; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; text-align: center; padding: 0 4px; }
+
+    .rest-tag-pill {
+      font-size: 0.66rem; font-weight: 700; padding: 2px 6px; border-radius: 5px;
+      background: var(--surface-elevated); color: #cbd5e1; border: 1px solid var(--border);
+    }
+    .rest-tag-family { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.35); }
+    .rest-tag-date { background: rgba(244, 114, 182, 0.15); color: #f472b6; border-color: rgba(244, 114, 182, 0.35); }
+
+    .score-breakdown-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 12px 0;
+    }
+    .score-box {
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px; text-align: center;
+    }
+    .score-box-lbl { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+    .score-box-val { font-size: 1rem; font-weight: 900; color: #fff; margin-top: 2px; }
+    .score-box-sub { font-size: 0.65rem; color: var(--text-muted); margin-top: 1px; }
+
+    .dish-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; margin-top: 8px; }
+    .dish-item {
+      display: flex; gap: 10px; align-items: center; background: var(--surface-elevated);
+      border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px;
+    }
+    .dish-thumb {
+      width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+      background: #141519; border: 1px solid var(--border); cursor: pointer;
+    }
+    .dish-info { flex: 1; min-width: 0; }
+    .dish-name { font-size: 0.82rem; font-weight: 800; color: #fff; }
+    .dish-meta { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+    .dish-rating-badge {
+      font-size: 0.78rem; font-weight: 900; color: var(--gold); background: rgba(251, 191, 36, 0.14);
+      border: 1px solid rgba(251, 191, 36, 0.35); padding: 3px 7px; border-radius: 6px; white-space: nowrap;
+    }
+    .dish-del-btn {
+      background: none; border: none; color: #64748b; font-size: 0.85rem; cursor: pointer; padding: 4px;
+    }
+    .dish-del-btn:hover { color: #f87171; }
+
+    .form-scroll { max-height: 74vh; overflow-y: auto; padding-right: 4px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .form-group { margin-bottom: 10px; }
+    .form-label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .form-input {
+      width: 100%; background: var(--surface-elevated); border: 1px solid var(--border);
+      color: #fff; padding: 9px 11px; border-radius: 9px; font-size: 0.85rem; outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-check-row {
+      display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 12px 0;
+    }
+    .form-check-chip {
+      flex: 1; min-width: 130px; display: flex; align-items: center; gap: 8px;
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 10px; font-size: 0.78rem; font-weight: 700; color: #fff; cursor: pointer;
+    }
+    .form-check-chip input { width: 16px; height: 16px; accent-color: var(--emerald); }
+
+    .lightbox-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-overlay img { max-width: 100%; max-height: 88vh; border-radius: 12px; object-fit: contain; }
   </style>
 </head>
 <body>
@@ -463,6 +595,53 @@
           <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Unrated</button>
           <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
         </div>
+      </div>
+    </div>
+
+    <!-- DINING CONTROLS -->
+    <div class="controls-row" id="diningControls" style="display:none;">
+      <div class="dining-mode-bar">
+        <div class="dining-mode-deck">
+          <button class="dining-mode-btn active" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
+          <button class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
+          <button class="dining-mode-btn" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
+        </div>
+        <button type="button" class="dining-add-btn" onclick="openRestaurantFormModal()">+ Add Spot</button>
+      </div>
+
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:145px;">
+          <option value="OUR_LIST" selected>⭐ Our Rated List</option>
+          <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
+          <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
+          <option value="ALL_SPOTS">📋 All Restaurants</option>
+        </select>
+
+        <select id="diningCategoryPicker" class="list-select" onchange="onDiningFilterChange()" style="flex:1; min-width:125px; border-color:var(--accent);">
+          <option value="ALL" selected>🏷️ All Categories</option>
+          <option value="Mexican">🌮 Mexican</option>
+          <option value="Pizza">🍕 Pizza</option>
+          <option value="Burgers">🍔 Burgers</option>
+          <option value="BBQ">🥩 BBQ</option>
+          <option value="Italian">🍝 Italian</option>
+          <option value="Asian / Sushi">🍣 Asian / Sushi</option>
+          <option value="Steakhouse">🥩 Steakhouse</option>
+          <option value="American">🍟 American</option>
+          <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
+          <option value="Seafood">🍤 Seafood</option>
+          <option value="Fast Food">🚗 Fast Food</option>
+          <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
+          <option value="Other">🍽️ Other</option>
+        </select>
+
+        <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()" style="width:auto; min-width:125px; border-color:var(--emerald);">
+          <option value="SCORE" selected>🏆 Score (/100)</option>
+          <option value="COST_ASC">💵 Cost: Low → High</option>
+          <option value="COST_DESC">💰 Cost: High → Low</option>
+          <option value="DISTANCE">📍 Closest Drive</option>
+          <option value="FOOD">⭐ Best Food</option>
+          <option value="NAME">🔤 A – Z</option>
+        </select>
       </div>
     </div>
 
@@ -621,6 +800,40 @@
     </div>
   </main>
 
+  <!-- TAB 4: Dining / Restaurants -->
+  <main id="tabDining" class="tab-content">
+    <div class="mini-kpi-ribbon">
+      <div class="kpi-ribbon-card">
+        <span class="kpi-ribbon-tag" style="color:var(--emerald);">Spots Shown</span>
+        <span class="kpi-ribbon-val" id="dRbCount">0</span>
+        <span class="kpi-ribbon-sub" id="dRbModeSub">Family Friendly</span>
+      </div>
+      <div class="kpi-ribbon-card">
+        <span class="kpi-ribbon-tag" style="color:var(--gold);">Avg Score</span>
+        <span class="kpi-ribbon-val" id="dRbAvgScore">-- / 100</span>
+        <span class="kpi-ribbon-sub" id="dRbAvgFood">Food -- / 10</span>
+      </div>
+      <div class="kpi-ribbon-card">
+        <span class="kpi-ribbon-tag" style="color:var(--derek);">Avg Total (6)</span>
+        <span class="kpi-ribbon-val" id="dRbAvgCost">$--</span>
+        <span class="kpi-ribbon-sub" id="dRbAvgDist">-- min avg</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Suggestions Banner (Family vs Date Night) -->
+    <div class="suggestions-banner" id="diningSuggestionsWrap" style="display:none;">
+      <div class="suggestions-header">
+        <div class="suggestions-title" id="diningSuggestionsTitle">👨‍👩‍👧‍👦 Top Family Suggestions</div>
+        <button type="button" class="btn-spin" onclick="pickRandomRestaurant()">🎲 Pick For Us</button>
+      </div>
+      <div class="suggestions-row" id="diningSuggestionsRow"></div>
+    </div>
+
+    <div class="grid-container" id="diningGrid">
+      <div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading restaurants...</div>
+    </div>
+  </main>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navCatalog" onclick="switchTab('catalog')">
@@ -630,6 +843,10 @@
     <button class="nav-item" id="navMovies" onclick="switchTab('movies')">
       <div class="nav-icon">🎬</div>
       <div class="nav-label">Movies</div>
+    </button>
+    <button class="nav-item" id="navDining" onclick="switchTab('dining')">
+      <div class="nav-icon">🍽️</div>
+      <div class="nav-label">Dining</div>
     </button>
     <button class="nav-item" id="navShelf" onclick="switchTab('shelf')">
       <div class="nav-icon">📊</div>
@@ -886,6 +1103,221 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Restaurant Detail Modal -->
+  <div class="modal-overlay" id="restaurantModal" onclick="if(event.target===this) closeRestaurantModal()">
+    <div class="modal-sheet" style="max-height:90vh; display:flex; flex-direction:column;">
+      <div class="form-scroll">
+        <div class="modal-header">
+          <div id="rmThumb" class="rest-card-thumb" style="width:84px; min-width:84px; height:105px; border-radius:10px; border:1px solid var(--border);"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <h2 class="modal-title" id="rmName" style="margin-bottom:2px;"></h2>
+              <span id="rmScoreBadge" class="score-pill score-high"></span>
+            </div>
+            <div class="modal-author" id="rmMeta" style="margin-bottom:6px;"></div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="rmFlagsWrap"></div>
+          </div>
+        </div>
+
+        <!-- Score Breakdown (60 Food / 20 Cost / 20 Distance) -->
+        <div class="score-breakdown-grid">
+          <div class="score-box">
+            <div class="score-box-lbl">🍽️ Food (60)</div>
+            <div class="score-box-val" id="rmFoodPts">--</div>
+            <div class="score-box-sub" id="rmFoodSub">No dishes yet</div>
+          </div>
+          <div class="score-box">
+            <div class="score-box-lbl">💵 Cost (20)</div>
+            <div class="score-box-val" id="rmCostPts">--</div>
+            <div class="score-box-sub" id="rmCostSub">--</div>
+          </div>
+          <div class="score-box">
+            <div class="score-box-lbl">📍 Drive (20)</div>
+            <div class="score-box-val" id="rmDistPts">--</div>
+            <div class="score-box-sub" id="rmDistSub">--</div>
+          </div>
+        </div>
+
+        <!-- Cost Breakdown Details -->
+        <div id="rmCostBreakdown" style="font-size:0.75rem; color:#cbd5e1; background:var(--surface-elevated); border:1px solid var(--border); border-radius:9px; padding:8px 11px; margin-bottom:10px;"></div>
+
+        <!-- Quick Mode Toggles -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+          <button type="button" id="btnRmFamilyToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('familyFriendly')">👨‍👩‍👧‍👦 Family Friendly</button>
+          <button type="button" id="btnRmDateToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('dateNight')">🥂 Date Night</button>
+        </div>
+
+        <p id="rmNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
+
+        <!-- What We Ate / Dish Log -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+          <div style="font-size:0.82rem; font-weight:900; color:#fff;">🍽️ What We Ate & Ratings</div>
+          <button type="button" class="dining-add-btn" style="padding:5px 10px; font-size:0.72rem;" onclick="toggleDishForm()">+ Log Dish</button>
+        </div>
+
+        <!-- Inline Add Dish Form -->
+        <div id="addDishFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:10px; padding:10px; margin-top:8px;">
+          <div class="form-row-2">
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Dish Name *</label>
+              <input type="text" id="dishNameInput" class="form-input" placeholder="e.g. Brisket Tacos">
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Rating (1–10) *</label>
+              <input type="number" id="dishRatingInput" class="form-input" min="1" max="10" step="0.5" placeholder="8.5">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">Who Ate It</label>
+              <select id="dishOrderedByInput" class="form-input">
+                <option value="Family / Shared">Family / Shared</option>
+                <option value="Derek">Derek</option>
+                <option value="Kianna">Kianna</option>
+                <option value="Kids">Kids</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label class="form-label">📷 Add Photo (Optional)</label>
+              <input type="file" id="dishPhotoInput" accept="image/*" class="form-input" style="padding:6px; font-size:0.75rem;">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Notes (Optional)</label>
+            <input type="text" id="dishNotesInput" class="form-input" placeholder="e.g. Ask for extra salsa">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="btnSaveDish" class="btn-act" style="background:var(--emerald); color:#000; font-weight:800;" onclick="submitNewDish()">Save Dish</button>
+            <button type="button" class="btn-act btn-close" style="flex:none; padding:8px 14px;" onclick="toggleDishForm(false)">Cancel</button>
+          </div>
+        </div>
+
+        <div class="dish-list" id="rmDishList"></div>
+      </div>
+
+      <div class="modal-actions" style="flex-shrink:0;">
+        <a href="#" target="_blank" id="rmMapsBtn" class="btn-act btn-libby">📍 Google Maps ↗</a>
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveRestaurant()">✏️ Edit</button>
+        <button type="button" class="btn-act btn-close" onclick="closeRestaurantModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Restaurant Modal -->
+  <div class="modal-overlay" id="restaurantFormModal" onclick="if(event.target===this) closeRestaurantFormModal()">
+    <div class="modal-sheet" style="max-height:92vh; display:flex; flex-direction:column;">
+      <div class="flag-sheet-header" style="margin-bottom:10px;">
+        <span class="flag-sheet-title" id="rfModalTitle">🍽️ Add Restaurant</span>
+        <button class="flag-close-btn" onclick="closeRestaurantFormModal()">✕</button>
+      </div>
+
+      <div class="form-scroll">
+        <input type="hidden" id="rfId">
+        <div class="form-group">
+          <label class="form-label">Restaurant Name *</label>
+          <input type="text" id="rfName" class="form-input" placeholder="e.g. Hard Eight BBQ">
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="rfCategory" class="form-input">
+              <option value="Mexican">🌮 Mexican</option>
+              <option value="Pizza">🍕 Pizza</option>
+              <option value="Burgers">🍔 Burgers</option>
+              <option value="BBQ">🥩 BBQ</option>
+              <option value="Italian">🍝 Italian</option>
+              <option value="Asian / Sushi">🍣 Asian / Sushi</option>
+              <option value="Steakhouse">🥩 Steakhouse</option>
+              <option value="American">🍟 American</option>
+              <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
+              <option value="Seafood">🍤 Seafood</option>
+              <option value="Fast Food">🚗 Fast Food</option>
+              <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
+              <option value="Other">🍽️ Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location / City</label>
+            <input type="text" id="rfLocation" class="form-input" placeholder="e.g. Roanoke, Alliance, Haslet">
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Drive Time (mins from Haslet)</label>
+            <input type="number" id="rfDriveMins" class="form-input" min="1" max="120" placeholder="Auto if blank">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Address (Optional)</label>
+            <input type="text" id="rfAddress" class="form-input" placeholder="Helps auto-calc drive time">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Google Maps Link (Optional — auto-linked if blank)</label>
+          <input type="url" id="rfMapsUrl" class="form-input" placeholder="https://maps.google.com/...">
+        </div>
+
+        <!-- Cost Inputs -->
+        <div style="background:rgba(99,102,241,0.08); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px;">
+          <div style="font-size:0.72rem; font-weight:800; color:#a5b4fc; text-transform:uppercase; margin-bottom:8px;">💵 Average Cost (Family of 6 = 2 Adults + 4 Kids)</div>
+          <div class="form-row-3">
+            <div class="form-group" style="margin-bottom:6px;">
+              <label class="form-label">Adult Avg ($)</label>
+              <input type="number" id="rfAdultAvg" class="form-input" min="0" step="0.5" placeholder="15" oninput="recalcFormTotalCost()">
+            </div>
+            <div class="form-group" style="margin-bottom:6px;">
+              <label class="form-label">Kid Avg ($)</label>
+              <input type="number" id="rfKidAvg" class="form-input" min="0" step="0.5" placeholder="8" oninput="recalcFormTotalCost()">
+            </div>
+            <div class="form-group" style="margin-bottom:6px;">
+              <label class="form-label">Total All 6 ($)</label>
+              <input type="number" id="rfTotalAvg" class="form-input" min="0" step="1" placeholder="62" oninput="onManualTotalTyped()">
+            </div>
+          </div>
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text-muted); cursor:pointer;">
+            <input type="checkbox" id="rfManualTotal" onchange="recalcFormTotalCost()">
+            <span>Use manual total override (e.g. Pizza / shared meals)</span>
+          </label>
+        </div>
+
+        <!-- Family / Date Night Flags -->
+        <div class="form-check-row">
+          <label class="form-check-chip">
+            <input type="checkbox" id="rfFamilyFriendly" checked>
+            <span>👨‍👩‍👧‍👦 Family / Kid Friendly</span>
+          </label>
+          <label class="form-check-chip">
+            <input type="checkbox" id="rfDateNight" checked>
+            <span>🥂 Date Night</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">📷 Cover Photo (Optional)</label>
+          <input type="file" id="rfPhotoInput" accept="image/*" class="form-input" style="padding:6px; font-size:0.78rem;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea id="rfNotes" class="form-input" rows="2" placeholder="Kids eat free Tuesdays, great patio, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="flex-shrink:0;">
+        <button type="button" id="btnSaveRestaurant" class="btn-act" style="background:var(--accent); color:#fff; font-weight:800;" onclick="submitRestaurantForm()">💾 Save Spot</button>
+        <button type="button" id="btnDeleteRestaurant" class="btn-act btn-flag" style="display:none; flex:none; padding:10px 14px;" onclick="deleteEditingRestaurant()">🗑️</button>
+        <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="closeRestaurantFormModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Photo Lightbox -->
+  <div class="lightbox-overlay" id="photoLightbox" onclick="closePhotoLightbox()">
+    <img id="lightboxImg" src="" alt="Food photo">
   </div>
 
   <div id="toastNotification" class="toast-notification"></div>
@@ -1232,6 +1664,7 @@
 
       const bookControls = document.getElementById('catalogControls');
       const movieControls = document.getElementById('movieControls');
+      const diningControls = document.getElementById('diningControls');
       const scopeWrap = document.querySelector('.view-scope-wrapper');
 
       if (tab === 'catalog') {
@@ -1239,6 +1672,7 @@
         document.getElementById('tabCatalog').classList.add('active');
         if (bookControls) bookControls.style.display = 'flex';
         if (movieControls) movieControls.style.display = 'none';
+        if (diningControls) diningControls.style.display = 'none';
         if (scopeWrap) scopeWrap.style.display = 'flex';
         updateScopeButtons(currentViewScope, getBookScopedCount());
       } else if (tab === 'movies') {
@@ -1246,13 +1680,23 @@
         document.getElementById('tabMovies').classList.add('active');
         if (bookControls) bookControls.style.display = 'none';
         if (movieControls) movieControls.style.display = 'flex';
+        if (diningControls) diningControls.style.display = 'none';
         if (scopeWrap) scopeWrap.style.display = 'flex';
         loadMovieData();
+      } else if (tab === 'dining') {
+        document.getElementById('navDining').classList.add('active');
+        document.getElementById('tabDining').classList.add('active');
+        if (bookControls) bookControls.style.display = 'none';
+        if (movieControls) movieControls.style.display = 'none';
+        if (diningControls) diningControls.style.display = 'flex';
+        if (scopeWrap) scopeWrap.style.display = 'none';
+        loadRestaurantsData();
       } else {
         document.getElementById('navShelf').classList.add('active');
         document.getElementById('tabShelf').classList.add('active');
         if (bookControls) bookControls.style.display = 'none';
         if (movieControls) movieControls.style.display = 'none';
+        if (diningControls) diningControls.style.display = 'none';
         if (scopeWrap) scopeWrap.style.display = 'none';
         renderShelf();
       }
@@ -2190,6 +2634,7 @@
     function closeSearchSheet() {
       document.getElementById('searchSheetOverlay').classList.remove('open');
       if (currentTab === 'movies') renderMovies();
+      else if (currentTab === 'dining') renderDining();
       else switchTab('catalog');
     }
 
@@ -2198,6 +2643,9 @@
       if (currentTab === 'movies') {
         renderMovies();
         document.getElementById('searchResultCount').textContent = document.querySelectorAll('#movieGrid .book-card').length + ' movies found';
+      } else if (currentTab === 'dining') {
+        renderDining();
+        document.getElementById('searchResultCount').textContent = document.querySelectorAll('#diningGrid .book-card').length + ' spots found';
       } else {
         renderBooks();
         document.getElementById('searchResultCount').textContent = document.querySelectorAll('#booksGrid .book-card').length + ' books found';
@@ -2404,6 +2852,682 @@
       } else {
         fetch(API_URL + '?action=getBooksData').then(res => res.json()).then(handleRawBookData).catch(err => console.error("Fetch Error:", err));
       }
+    }
+
+    // =========================================================================
+    // DINING / RESTAURANTS ENGINE (PHASE 1 + PHASE 2 READY)
+    // =========================================================================
+    let restaurants = [];
+    let diningLoaded = false;
+    let diningMode = 'FAMILY'; // 'FAMILY' | 'DATE' | 'ALL'
+    let activeRestaurant = null;
+
+    const DINING_CATEGORY_ICONS = {
+      'Mexican': '🌮',
+      'Pizza': '🍕',
+      'Burgers': '🍔',
+      'BBQ': '🥩',
+      'Italian': '🍝',
+      'Asian / Sushi': '🍣',
+      'Steakhouse': '🥩',
+      'American': '🍟',
+      'Breakfast / Brunch': '🥞',
+      'Seafood': '🍤',
+      'Fast Food': '🚗',
+      'Bakery / Dessert': '🍦',
+      'Other': '🍽️'
+    };
+
+    function getDiningIcon(cat) {
+      return DINING_CATEGORY_ICONS[cat] || '🍽️';
+    }
+
+    function getEffectiveTotalCost(r) {
+      if (r.totalAvg !== null && r.totalAvg !== undefined && r.totalAvg > 0) return Number(r.totalAvg);
+      const a = Number(r.adultAvg) || 0;
+      const k = Number(r.kidAvg) || 0;
+      const calc = (a * 2) + (k * 4);
+      return calc > 0 ? Math.round(calc * 100) / 100 : null;
+    }
+
+    function computeRestaurantScore(r) {
+      const dishes = Array.isArray(r.dishes) ? r.dishes.filter(d => d.rating > 0) : [];
+      const avgFood = dishes.length ? (dishes.reduce((s, d) => s + Number(d.rating), 0) / dishes.length) : null;
+      const foodPts = avgFood !== null ? Math.round(avgFood * 6 * 10) / 10 : 0;
+
+      const totalCost = getEffectiveTotalCost(r);
+      let costPts = 0;
+      let costLabel = 'No cost';
+      if (totalCost !== null) {
+        if (totalCost < 20) { costPts = 20; costLabel = '< $20 (Full)'; }
+        else if (totalCost < 40) { costPts = 10; costLabel = '< $40 (Half)'; }
+        else { costPts = 0; costLabel = '$40+ (0 pts)'; }
+      }
+
+      const mins = (r.driveMins !== null && r.driveMins !== undefined && r.driveMins !== '') ? Number(r.driveMins) : null;
+      let distPts = 0;
+      let distLabel = 'No time';
+      if (mins !== null && !isNaN(mins)) {
+        if (mins <= 15) { distPts = 20; distLabel = mins + 'm (Full)'; }
+        else if (mins <= 30) { distPts = 10; distLabel = mins + 'm (Half)'; }
+        else { distPts = 0; distLabel = mins + 'm (0 pts)'; }
+      }
+
+      const hasAnyData = (avgFood !== null) || (totalCost !== null) || (mins !== null);
+      const total = hasAnyData ? Math.min(100, Math.round(foodPts + costPts + distPts)) : null;
+
+      return { total, avgFood, foodPts: Math.round(foodPts), costPts, costLabel, distPts, distLabel, totalCost, mins };
+    }
+
+    function getScoreBadgeClass(score) {
+      if (score === null || score === undefined) return 'score-none';
+      if (score >= 75) return 'score-high';
+      if (score >= 50) return 'score-mid';
+      return 'score-low';
+    }
+
+    function saveRestaurantsCache() {
+      try {
+        localStorage.setItem('chaptertwo_restaurants_cache', JSON.stringify(restaurants));
+      } catch (e) {}
+    }
+
+    function loadRestaurantsData(forceRefresh) {
+      if (!forceRefresh && !diningLoaded) {
+        const cached = localStorage.getItem('chaptertwo_restaurants_cache');
+        if (cached) {
+          try {
+            restaurants = JSON.parse(cached);
+            renderDining();
+          } catch (e) {}
+        }
+      }
+
+      function onData(data) {
+        if (Array.isArray(data)) {
+          restaurants = data;
+          diningLoaded = true;
+          saveRestaurantsCache();
+          renderDining();
+        }
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(onData)
+          .withFailureHandler(err => {
+            console.error('Restaurants load error:', err);
+            renderDining();
+          })
+          .getRestaurantsData();
+      } else {
+        fetch(API_URL + '?action=getRestaurantsData')
+          .then(r => r.json())
+          .then(onData)
+          .catch(err => {
+            console.error('Restaurants fetch error:', err);
+            renderDining();
+          });
+      }
+    }
+
+    function setDiningMode(mode) {
+      diningMode = mode;
+      document.querySelectorAll('.dining-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.dmode === mode);
+      });
+      renderDining();
+    }
+
+    function onDiningFilterChange() {
+      renderDining();
+    }
+
+    function getFilteredRestaurants() {
+      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'OUR_LIST';
+      const catFilter = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
+      const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+
+      let list = restaurants.filter(r => {
+        if (listFilter === 'OUR_LIST' && !r.visited) return false;
+        if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
+        if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+
+        if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
+        if (diningMode === 'DATE' && !r.dateNight) return false;
+
+        if (catFilter !== 'ALL' && (r.category || 'Other') !== catFilter) return false;
+
+        if (searchQuery) {
+          const dishText = (r.dishes || []).map(d => d.name + ' ' + (d.notes || '')).join(' ');
+          const haystack = `${r.name} ${r.category} ${r.location} ${r.address} ${r.notes} ${dishText}`.toLowerCase();
+          if (!haystack.includes(searchQuery)) return false;
+        }
+        return true;
+      });
+
+      list = list.map(r => ({ ...r, _score: computeRestaurantScore(r) }));
+
+      list.sort((a, b) => {
+        if (sortMode === 'COST_ASC') {
+          const ca = a._score.totalCost !== null ? a._score.totalCost : 99999;
+          const cb = b._score.totalCost !== null ? b._score.totalCost : 99999;
+          return ca - cb;
+        }
+        if (sortMode === 'COST_DESC') {
+          const ca = a._score.totalCost !== null ? a._score.totalCost : -1;
+          const cb = b._score.totalCost !== null ? b._score.totalCost : -1;
+          return cb - ca;
+        }
+        if (sortMode === 'DISTANCE') {
+          const da = a._score.mins !== null ? a._score.mins : 9999;
+          const db = b._score.mins !== null ? b._score.mins : 9999;
+          return da - db;
+        }
+        if (sortMode === 'FOOD') {
+          const fa = a._score.avgFood !== null ? a._score.avgFood : -1;
+          const fb = b._score.avgFood !== null ? b._score.avgFood : -1;
+          return fb - fa;
+        }
+        if (sortMode === 'NAME') {
+          return (a.name || '').localeCompare(b.name || '');
+        }
+        // Default: SCORE descending
+        const sa = a._score.total !== null ? a._score.total : -1;
+        const sb = b._score.total !== null ? b._score.total : -1;
+        if (sb !== sa) return sb - sa;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+
+      return list;
+    }
+
+    function renderDining() {
+      const grid = document.getElementById('diningGrid');
+      const sugWrap = document.getElementById('diningSuggestionsWrap');
+      const sugRow = document.getElementById('diningSuggestionsRow');
+      const sugTitle = document.getElementById('diningSuggestionsTitle');
+      if (!grid) return;
+
+      const list = getFilteredRestaurants();
+      const listFilter = (document.getElementById('diningListPicker') || {}).value || 'OUR_LIST';
+
+      // KPI Ribbon
+      const modeLabel = diningMode === 'FAMILY' ? 'Family Friendly' : (diningMode === 'DATE' ? 'Date Night' : 'All Spots');
+      document.getElementById('dRbCount').textContent = list.length;
+      document.getElementById('dRbModeSub').textContent = modeLabel;
+
+      const scored = list.filter(r => r._score.total !== null);
+      const fooded = list.filter(r => r._score.avgFood !== null);
+      const costed = list.filter(r => r._score.totalCost !== null);
+      const disted = list.filter(r => r._score.mins !== null);
+
+      document.getElementById('dRbAvgScore').textContent = scored.length
+        ? Math.round(scored.reduce((s, r) => s + r._score.total, 0) / scored.length) + ' / 100'
+        : '-- / 100';
+      document.getElementById('dRbAvgFood').textContent = fooded.length
+        ? 'Food ' + (fooded.reduce((s, r) => s + r._score.avgFood, 0) / fooded.length).toFixed(1) + ' / 10'
+        : 'Food -- / 10';
+      document.getElementById('dRbAvgCost').textContent = costed.length
+        ? '$' + Math.round(costed.reduce((s, r) => s + r._score.totalCost, 0) / costed.length)
+        : '$--';
+      document.getElementById('dRbAvgDist').textContent = disted.length
+        ? Math.round(disted.reduce((s, r) => s + r._score.mins, 0) / disted.length) + ' min avg'
+        : '-- min avg';
+
+      // Suggestions Banner (Top 3 for Family / Date Night)
+      if (list.length > 0) {
+        sugWrap.style.display = 'block';
+        sugTitle.textContent = diningMode === 'FAMILY'
+          ? '👨‍👩‍👧‍👦 Top Family Suggestions'
+          : (diningMode === 'DATE' ? '🥂 Top Date Night Suggestions' : '⭐ Top Overall Suggestions');
+
+        const topPicks = [...list]
+          .sort((a, b) => (b._score.total ?? -1) - (a._score.total ?? -1))
+          .slice(0, 3);
+
+        sugRow.innerHTML = '';
+        topPicks.forEach(p => {
+          const chip = document.createElement('div');
+          chip.className = 'suggestion-chip';
+          chip.onclick = () => openRestaurantModal(p);
+          const sc = p._score;
+          chip.innerHTML = `
+            <div class="suggestion-chip-top">
+              <div class="suggestion-name">${getDiningIcon(p.category)} ${escapeHtml(p.name)}</div>
+              <span class="score-pill ${getScoreBadgeClass(sc.total)}">${sc.total !== null ? sc.total : '--'}</span>
+            </div>
+            <div class="suggestion-meta">
+              ${sc.totalCost !== null ? '$' + Math.round(sc.totalCost) + ' total' : 'No cost'}
+              ${sc.mins !== null ? ' • ' + sc.mins + 'm' : ''}
+              ${sc.avgFood !== null ? ' • ★' + sc.avgFood.toFixed(1) : ''}
+            </div>
+          `;
+          sugRow.appendChild(chip);
+        });
+      } else {
+        sugWrap.style.display = 'none';
+      }
+
+      // Main Grid
+      grid.innerHTML = '';
+      if (list.length === 0) {
+        const isPhase2List = (listFilter === 'MOST_RATED' || listFilter === 'HIGHEST_RATED');
+        grid.innerHTML = isPhase2List
+          ? `<div style="text-align:center; padding:40px 20px; color:var(--text-muted); grid-column:1/-1;">
+              <div style="font-size:2rem; margin-bottom:8px;">🗺️</div>
+              <div style="font-size:0.95rem; font-weight:800; color:#fff; margin-bottom:6px;">Phase 2 Top 100 Coming Next!</div>
+              <div style="font-size:0.8rem;">Switch to <strong>⭐ Our Rated List</strong> to track your spots, or we'll populate the Top 100 near Haslet in Phase 2.</div>
+            </div>`
+          : `<div style="text-align:center; padding:40px 20px; color:var(--text-muted); grid-column:1/-1;">
+              <div style="font-size:2rem; margin-bottom:8px;">🍽️</div>
+              <div style="font-size:0.95rem; font-weight:800; color:#fff; margin-bottom:6px;">No restaurants here yet</div>
+              <div style="font-size:0.8rem; margin-bottom:14px;">Add your first family or date night spot to start scoring!</div>
+              <button type="button" class="dining-add-btn" onclick="openRestaurantFormModal()">+ Add First Restaurant</button>
+            </div>`;
+        return;
+      }
+
+      list.forEach(r => {
+        const sc = r._score;
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.onclick = () => openRestaurantModal(r);
+
+        const heroPhoto = r.photoUrl || ((r.dishes || []).find(d => d.photoUrl) || {}).photoUrl || '';
+        const thumbHtml = heroPhoto
+          ? `<img src="${heroPhoto}" alt="${escapeHtml(r.name)}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=\\'rest-emoji-cover\\'>${getDiningIcon(r.category)}</div><div class=\\'rest-cat-mini\\'>${escapeHtml(r.category)}</div>';">`
+          : `<div class="rest-emoji-cover">${getDiningIcon(r.category)}</div><div class="rest-cat-mini">${escapeHtml(r.category)}</div>`;
+
+        const costText = sc.totalCost !== null ? ('$' + Math.round(sc.totalCost) + ' total') : 'Cost --';
+        const distText = sc.mins !== null ? (sc.mins + ' min') : '';
+        const foodText = sc.avgFood !== null ? ('★ ' + sc.avgFood.toFixed(1) + '/10') : 'Unrated';
+
+        card.innerHTML = `
+          <div class="rest-card-thumb">
+            ${r.rank ? `<div class="series-badge">#${r.rank}</div>` : ''}
+            ${thumbHtml}
+          </div>
+          <div class="card-body">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
+                <div class="card-title">${escapeHtml(r.name)}</div>
+                <span class="score-pill ${getScoreBadgeClass(sc.total)}">${sc.total !== null ? sc.total + '/100' : '--'}</span>
+              </div>
+              <div class="card-author">${escapeHtml(r.category)}${r.location ? ' • ' + escapeHtml(r.location) : ''}${distText ? ' • ' + distText : ''}</div>
+              <div class="ratings-row">
+                <span class="rating-badge" style="color:var(--gold);">${foodText}</span>
+                <span class="rating-badge" style="color:var(--derek);">${costText}</span>
+                ${r.familyFriendly ? '<span class="rest-tag-pill rest-tag-family">Family</span>' : ''}
+                ${r.dateNight ? '<span class="rest-tag-pill rest-tag-date">Date</span>' : ''}
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="ratings-count-pill">${(r.dishes || []).length} dish${(r.dishes || []).length === 1 ? '' : 'es'} logged</span>
+              <a href="${r.googleMapsUrl}" target="_blank" onclick="event.stopPropagation();" class="audio-pill" style="text-decoration:none;">📍 Maps ↗</a>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function pickRandomRestaurant() {
+      const list = getFilteredRestaurants();
+      if (!list.length) { showToast('Add a few spots first!'); return; }
+      // Weighted slightly toward higher scores
+      const pool = list.slice(0, Math.min(list.length, 10));
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      showToast('🎲 Tonight\'s pick: ' + pick.name + '!');
+      openRestaurantModal(pick);
+    }
+
+    function openRestaurantModal(r) {
+      activeRestaurant = restaurants.find(x => x.id === r.id) || r;
+      toggleDishForm(false);
+      renderRestaurantModal();
+      document.getElementById('restaurantModal').classList.add('open');
+    }
+
+    function closeRestaurantModal() {
+      document.getElementById('restaurantModal').classList.remove('open');
+    }
+
+    function renderRestaurantModal() {
+      const r = activeRestaurant;
+      if (!r) return;
+      const sc = computeRestaurantScore(r);
+
+      const heroPhoto = r.photoUrl || ((r.dishes || []).find(d => d.photoUrl) || {}).photoUrl || '';
+      const thumbEl = document.getElementById('rmThumb');
+      thumbEl.innerHTML = heroPhoto
+        ? `<img src="${heroPhoto}" style="cursor:pointer;" onclick="openPhotoLightbox('${heroPhoto}')" referrerpolicy="no-referrer">`
+        : `<div class="rest-emoji-cover">${getDiningIcon(r.category)}</div><div class="rest-cat-mini">${escapeHtml(r.category)}</div>`;
+
+      document.getElementById('rmName').textContent = r.name || '';
+      const metaParts = [r.category, r.location, sc.mins !== null ? (sc.mins + ' min from Haslet') : ''].filter(Boolean);
+      document.getElementById('rmMeta').textContent = metaParts.join(' • ');
+
+      const badge = document.getElementById('rmScoreBadge');
+      badge.className = 'score-pill ' + getScoreBadgeClass(sc.total);
+      badge.textContent = sc.total !== null ? (sc.total + ' / 100') : '-- / 100';
+
+      document.getElementById('rmFoodPts').textContent = sc.avgFood !== null ? (sc.foodPts + ' / 60') : '--';
+      document.getElementById('rmFoodSub').textContent = sc.avgFood !== null ? ('Avg ★ ' + sc.avgFood.toFixed(1) + ' / 10') : 'Log a dish below';
+      document.getElementById('rmCostPts').textContent = sc.totalCost !== null ? (sc.costPts + ' / 20') : '--';
+      document.getElementById('rmCostSub').textContent = sc.costLabel;
+      document.getElementById('rmDistPts').textContent = sc.mins !== null ? (sc.distPts + ' / 20') : '--';
+      document.getElementById('rmDistSub').textContent = sc.distLabel;
+
+      const costBits = [];
+      if (r.adultAvg !== null && r.adultAvg !== undefined) costBits.push(`Adult: $${r.adultAvg}`);
+      if (r.kidAvg !== null && r.kidAvg !== undefined) costBits.push(`Kid: $${r.kidAvg}`);
+      if (sc.totalCost !== null) costBits.push(`<strong>Total (6): $${sc.totalCost}</strong>${r.manualTotal ? ' (flat/manual)' : ' (2A + 4K)'}`);
+      document.getElementById('rmCostBreakdown').innerHTML = costBits.length
+        ? '💵 ' + costBits.join(' &nbsp;•&nbsp; ')
+        : '💵 No cost entered yet — tap <strong>Edit</strong> to add Adult / Kid / Total costs.';
+
+      styleToggleBtn(document.getElementById('btnRmFamilyToggle'), !!r.familyFriendly, 'var(--emerald)');
+      styleToggleBtn(document.getElementById('btnRmDateToggle'), !!r.dateNight, 'var(--kianna)');
+
+      const notesEl = document.getElementById('rmNotes');
+      if (r.notes) {
+        notesEl.style.display = 'block';
+        notesEl.textContent = '📝 ' + r.notes;
+      } else {
+        notesEl.style.display = 'none';
+      }
+
+      document.getElementById('rmMapsBtn').href = r.googleMapsUrl || '#';
+
+      // Dishes list
+      const dishWrap = document.getElementById('rmDishList');
+      const dishes = r.dishes || [];
+      if (!dishes.length) {
+        dishWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:10px 4px;">No dishes logged yet. Tap <strong>+ Log Dish</strong> to rate what you ate and add photos!</div>';
+      } else {
+        dishWrap.innerHTML = '';
+        dishes.forEach(d => {
+          const item = document.createElement('div');
+          item.className = 'dish-item';
+          const imgHtml = d.photoUrl
+            ? `<img class="dish-thumb" src="${d.photoUrl}" referrerpolicy="no-referrer" onclick="openPhotoLightbox('${d.photoUrl}')" alt="${escapeHtml(d.name)}">`
+            : '';
+          item.innerHTML = `
+            ${imgHtml}
+            <div class="dish-info">
+              <div class="dish-name">${escapeHtml(d.name)}</div>
+              <div class="dish-meta">${escapeHtml(d.orderedBy || 'Shared')}${d.dateLogged ? ' • ' + d.dateLogged : ''}${d.notes ? ' • ' + escapeHtml(d.notes) : ''}</div>
+            </div>
+            <span class="dish-rating-badge">★ ${d.rating}/10</span>
+            <button type="button" class="dish-del-btn" title="Delete dish" onclick="deleteDishItem('${d.id}')">✕</button>
+          `;
+          dishWrap.appendChild(item);
+        });
+      }
+    }
+
+    function quickToggleRestaurantFlag(flagName) {
+      if (!activeRestaurant) return;
+      activeRestaurant[flagName] = !activeRestaurant[flagName];
+      saveRestaurantsCache();
+      renderRestaurantModal();
+      renderDining();
+
+      const payload = { action: 'saveRestaurant', ...activeRestaurant };
+      postRestaurantApi(payload, () => showToast('✅ Updated ' + (flagName === 'familyFriendly' ? 'Family' : 'Date Night') + ' tag'));
+    }
+
+    function toggleDishForm(forceState) {
+      const box = document.getElementById('addDishFormBox');
+      if (!box) return;
+      const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
+      box.style.display = show ? 'block' : 'none';
+      if (show) {
+        document.getElementById('dishNameInput').value = '';
+        document.getElementById('dishRatingInput').value = '';
+        document.getElementById('dishNotesInput').value = '';
+        document.getElementById('dishPhotoInput').value = '';
+        document.getElementById('dishNameInput').focus();
+      }
+    }
+
+    function compressImageToBase64(file, maxWidth, quality) {
+      return new Promise((resolve) => {
+        if (!file) { resolve(null); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, (maxWidth || 900) / img.width);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality || 0.78);
+            resolve({ base64: dataUrl, mimeType: 'image/jpeg' });
+          };
+          img.onerror = () => resolve(null);
+          img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function submitNewDish() {
+      if (!activeRestaurant) return;
+      const name = document.getElementById('dishNameInput').value.trim();
+      const rating = parseFloat(document.getElementById('dishRatingInput').value);
+      const orderedBy = document.getElementById('dishOrderedByInput').value;
+      const notes = document.getElementById('dishNotesInput').value.trim();
+      const photoFile = document.getElementById('dishPhotoInput').files[0];
+
+      if (!name) { showToast('⚠️ Enter a dish name'); return; }
+      if (isNaN(rating) || rating < 1 || rating > 10) { showToast('⚠️ Rating must be 1–10'); return; }
+
+      const btn = document.getElementById('btnSaveDish');
+      btn.disabled = true;
+      btn.textContent = photoFile ? 'Uploading photo...' : 'Saving...';
+
+      let compressed = null;
+      if (photoFile) {
+        compressed = await compressImageToBase64(photoFile, 900, 0.78);
+      }
+
+      const payload = {
+        action: 'addDish',
+        restaurantId: activeRestaurant.id,
+        name,
+        rating,
+        orderedBy,
+        notes,
+        photoBase64: compressed ? compressed.base64 : '',
+        photoMimeType: compressed ? compressed.mimeType : ''
+      };
+
+      postRestaurantApi(payload, (res) => {
+        btn.disabled = false;
+        btn.textContent = 'Save Dish';
+        if (res && res.success && res.dish) {
+          if (!Array.isArray(activeRestaurant.dishes)) activeRestaurant.dishes = [];
+          activeRestaurant.dishes.unshift(res.dish);
+          activeRestaurant.visited = true;
+          if (res.dish.photoUrl && !activeRestaurant.photoUrl) activeRestaurant.photoUrl = res.dish.photoUrl;
+          saveRestaurantsCache();
+          toggleDishForm(false);
+          renderRestaurantModal();
+          renderDining();
+          showToast('✅ Dish logged!');
+        } else {
+          showToast('❌ ' + (res && res.error ? res.error : 'Could not save dish'));
+        }
+      });
+    }
+
+    function deleteDishItem(dishId) {
+      if (!activeRestaurant || !confirm('Remove this dish?')) return;
+      activeRestaurant.dishes = (activeRestaurant.dishes || []).filter(d => d.id !== dishId);
+      saveRestaurantsCache();
+      renderRestaurantModal();
+      renderDining();
+      postRestaurantApi({ action: 'deleteDish', id: dishId }, () => showToast('🗑️ Dish removed'));
+    }
+
+    function openRestaurantFormModal(existing) {
+      const isEdit = !!existing;
+      document.getElementById('rfModalTitle').textContent = isEdit ? '✏️ Edit Restaurant' : '🍽️ Add Restaurant';
+      document.getElementById('rfId').value = isEdit ? existing.id : '';
+      document.getElementById('rfName').value = isEdit ? (existing.name || '') : '';
+      document.getElementById('rfCategory').value = isEdit ? (existing.category || 'Other') : 'Mexican';
+      document.getElementById('rfLocation').value = isEdit ? (existing.location || '') : '';
+      document.getElementById('rfAddress').value = isEdit ? (existing.address || '') : '';
+      document.getElementById('rfDriveMins').value = (isEdit && existing.driveMins !== null && existing.driveMins !== undefined) ? existing.driveMins : '';
+      document.getElementById('rfMapsUrl').value = isEdit ? (existing.googleMapsUrl || '') : '';
+      document.getElementById('rfAdultAvg').value = (isEdit && existing.adultAvg !== null && existing.adultAvg !== undefined) ? existing.adultAvg : '';
+      document.getElementById('rfKidAvg').value = (isEdit && existing.kidAvg !== null && existing.kidAvg !== undefined) ? existing.kidAvg : '';
+      document.getElementById('rfManualTotal').checked = isEdit ? !!existing.manualTotal : false;
+      document.getElementById('rfTotalAvg').value = (isEdit && existing.totalAvg !== null && existing.totalAvg !== undefined) ? existing.totalAvg : '';
+      document.getElementById('rfFamilyFriendly').checked = isEdit ? !!existing.familyFriendly : true;
+      document.getElementById('rfDateNight').checked = isEdit ? !!existing.dateNight : true;
+      document.getElementById('rfNotes').value = isEdit ? (existing.notes || '') : '';
+      document.getElementById('rfPhotoInput').value = '';
+      document.getElementById('btnDeleteRestaurant').style.display = isEdit ? 'inline-block' : 'none';
+
+      document.getElementById('restaurantFormModal').classList.add('open');
+      setTimeout(() => document.getElementById('rfName').focus(), 100);
+    }
+
+    function closeRestaurantFormModal() {
+      document.getElementById('restaurantFormModal').classList.remove('open');
+    }
+
+    function editActiveRestaurant() {
+      if (!activeRestaurant) return;
+      closeRestaurantModal();
+      openRestaurantFormModal(activeRestaurant);
+    }
+
+    function recalcFormTotalCost() {
+      const manual = document.getElementById('rfManualTotal').checked;
+      if (manual) return;
+      const a = parseFloat(document.getElementById('rfAdultAvg').value);
+      const k = parseFloat(document.getElementById('rfKidAvg').value);
+      if (!isNaN(a) || !isNaN(k)) {
+        const total = ((isNaN(a) ? 0 : a) * 2) + ((isNaN(k) ? 0 : k) * 4);
+        document.getElementById('rfTotalAvg').value = Math.round(total * 100) / 100;
+      }
+    }
+
+    function onManualTotalTyped() {
+      document.getElementById('rfManualTotal').checked = true;
+    }
+
+    async function submitRestaurantForm() {
+      const name = document.getElementById('rfName').value.trim();
+      if (!name) { showToast('⚠️ Restaurant name is required'); return; }
+
+      const btn = document.getElementById('btnSaveRestaurant');
+      const photoFile = document.getElementById('rfPhotoInput').files[0];
+      btn.disabled = true;
+      btn.textContent = photoFile ? 'Uploading photo...' : 'Saving...';
+
+      let compressed = null;
+      if (photoFile) {
+        compressed = await compressImageToBase64(photoFile, 900, 0.78);
+      }
+
+      const existingId = document.getElementById('rfId').value.trim();
+      const existingObj = existingId ? restaurants.find(r => r.id === existingId) : null;
+
+      const payload = {
+        action: 'saveRestaurant',
+        id: existingId,
+        name,
+        category: document.getElementById('rfCategory').value,
+        location: document.getElementById('rfLocation').value.trim(),
+        address: document.getElementById('rfAddress').value.trim(),
+        driveMins: document.getElementById('rfDriveMins').value.trim(),
+        googleMapsUrl: document.getElementById('rfMapsUrl').value.trim(),
+        adultAvg: document.getElementById('rfAdultAvg').value.trim(),
+        kidAvg: document.getElementById('rfKidAvg').value.trim(),
+        totalAvg: document.getElementById('rfTotalAvg').value.trim(),
+        manualTotal: document.getElementById('rfManualTotal').checked,
+        familyFriendly: document.getElementById('rfFamilyFriendly').checked,
+        dateNight: document.getElementById('rfDateNight').checked,
+        visited: true,
+        lists: existingObj ? (existingObj.lists || []) : [],
+        notes: document.getElementById('rfNotes').value.trim(),
+        photoUrl: existingObj ? (existingObj.photoUrl || '') : '',
+        photoBase64: compressed ? compressed.base64 : '',
+        photoMimeType: compressed ? compressed.mimeType : ''
+      };
+
+      postRestaurantApi(payload, (res) => {
+        btn.disabled = false;
+        btn.textContent = '💾 Save Spot';
+        if (res && res.success && res.restaurant) {
+          const saved = { ...res.restaurant, dishes: existingObj ? (existingObj.dishes || []) : [] };
+          const idx = restaurants.findIndex(r => r.id === saved.id);
+          if (idx !== -1) restaurants[idx] = saved;
+          else restaurants.unshift(saved);
+          saveRestaurantsCache();
+          closeRestaurantFormModal();
+          renderDining();
+          showToast(existingId ? '✅ Restaurant updated!' : '✅ Restaurant added!');
+        } else {
+          showToast('❌ ' + (res && res.error ? res.error : 'Save failed'));
+        }
+      });
+    }
+
+    function deleteEditingRestaurant() {
+      const id = document.getElementById('rfId').value.trim();
+      if (!id || !confirm('Delete this restaurant and all its logged dishes?')) return;
+      restaurants = restaurants.filter(r => r.id !== id);
+      saveRestaurantsCache();
+      closeRestaurantFormModal();
+      renderDining();
+      postRestaurantApi({ action: 'deleteRestaurant', id }, () => showToast('🗑️ Restaurant deleted'));
+    }
+
+    function postRestaurantApi(payload, callback) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        const runner = google.script.run
+          .withSuccessHandler(callback)
+          .withFailureHandler(err => {
+            console.error('GAS API error:', err);
+            if (callback) callback({ success: false, error: String(err) });
+          });
+        if (payload.action === 'saveRestaurant') runner.apiSaveRestaurant(payload);
+        else if (payload.action === 'deleteRestaurant') runner.apiDeleteRestaurant(payload.id);
+        else if (payload.action === 'addDish') runner.apiAddDish(payload);
+        else if (payload.action === 'deleteDish') runner.apiDeleteDish(payload.id);
+      } else {
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        })
+          .then(r => r.json())
+          .then(res => { if (callback) callback(res); })
+          .catch(err => {
+            console.error('Restaurant API error:', err);
+            if (callback) callback({ success: false, error: String(err) });
+          });
+      }
+    }
+
+    function openPhotoLightbox(url) {
+      if (!url) return;
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('photoLightbox').classList.add('open');
+    }
+
+    function closePhotoLightbox() {
+      document.getElementById('photoLightbox').classList.remove('open');
+      document.getElementById('lightboxImg').src = '';
     }
 
     initData();
