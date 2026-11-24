@@ -891,8 +891,9 @@
 
           <div class="filter-section-label">Rank / Sort By</div>
           <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="ULTIMATE" selected>🏆 Ultimate (Rating + Reviews)</option>
-            <option value="DISTANCE">📍 Closest to Home</option>
+            <option value="NEARBY_SCORE" selected>📍 Best Nearby (Distance + Rating + Cost)</option>
+            <option value="ULTIMATE">🏆 Ultimate (Rating + Reviews)</option>
+            <option value="DISTANCE">🚗 Closest Drive</option>
             <option value="VOTES">🔥 Most Rated (Google)</option>
             <option value="RATING">⭐ Highest Rated (250+ reviews)</option>
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
@@ -1143,9 +1144,9 @@
   <main id="tabDining" class="tab-content">
     <div class="sticky-tab-top">
       <div class="quick-pill-row" id="diningQuickSortRow">
-        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-dsort="ULTIMATE" onclick="setDiningQuickSort('ULTIMATE')">🏆 Ultimate</button>
-        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="DISTANCE" onclick="setDiningQuickSort('DISTANCE')">📍 Closest</button>
-        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
+        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-dsort="NEARBY_SCORE" onclick="setDiningQuickSort('NEARBY_SCORE')">📍 Best Nearby</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="ULTIMATE" onclick="setDiningQuickSort('ULTIMATE')">🏆 Ultimate</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="DISTANCE" onclick="setDiningQuickSort('DISTANCE')">🚗 Closest</button>
         <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
       </div>
 
@@ -1168,12 +1169,19 @@
       </div>
     </div>
 
-    <!-- Dynamic Suggestions Banner (Top 3 in 1 row + Live GPS toggle) -->
+    <!-- Live Travel / Anywhere Scan Banner -->
+    <div id="liveScanBanner" style="display:none; margin:10px 14px 0 14px; padding:10px 12px; background:rgba(16, 185, 129, 0.14); border:1px solid rgba(16, 185, 129, 0.45); border-radius:10px; align-items:center; justify-content:space-between; gap:8px;">
+      <div style="font-size:0.78rem; font-weight:800; color:#34d399;" id="liveScanBannerText">🌍 Live Nearby (15m)</div>
+      <button type="button" onclick="clearLiveScanResults()" style="background:var(--surface); border:1px solid var(--border); color:#fff; font-size:0.74rem; font-weight:800; padding:6px 10px; border-radius:8px; cursor:pointer; white-space:nowrap;">✕ Back to DFW</button>
+    </div>
+
+    <!-- Dynamic Suggestions Banner (Top 3 in 1 row + Live GPS & Scan Nearby) -->
     <div class="suggestions-banner" id="diningSuggestionsWrap" style="display:none;">
       <div class="suggestions-header">
         <div class="suggestions-title" id="diningSuggestionsTitle">⭐ Top 3 Spots</div>
-        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
+        <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
           <button type="button" class="btn-spin" id="diningGpsBtn" style="background:var(--surface-elevated); color:#cbd5e1; border-color:var(--border);" onclick="toggleDiningGps()">📡 GPS</button>
+          <button type="button" class="btn-spin" id="diningScanBtn" style="background:rgba(56,189,248,0.16); color:#38bdf8; border-color:rgba(56,189,248,0.4);" onclick="triggerScanNearbyAnywhere()">🌍 Scan</button>
           <button type="button" class="btn-spin" onclick="pickRandomRestaurant()">🎲 Pick</button>
         </div>
       </div>
@@ -2126,16 +2134,14 @@
         if (currentMovieScope !== 'top100') count++;
       } else if (currentTab === 'dining') {
         const listF = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
-        const visF = (document.getElementById('diningVisitedPicker') || {}).value || 'ALL';
         const regF = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
         const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
-        const sortF = (document.getElementById('diningSortPicker') || {}).value || 'ULTIMATE';
+        const sortF = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
         if (diningMode !== 'ALL') count++;
         if (listF !== 'ALL_SPOTS') count++;
-        if (visF !== 'ALL') count++;
         if (regF !== 'Haslet / DFW') count++;
         if (catF !== 'ALL') count++;
-        if (sortF !== 'ULTIMATE') count++;
+        if (sortF !== 'NEARBY_SCORE') count++;
         if (dFilterDerek !== 'ALL') count++;
         if (dFilterKianna !== 'ALL') count++;
         if (currentDiningScope !== 'top100') count++;
@@ -2191,7 +2197,7 @@
         document.getElementById('diningListPicker').value = 'ALL_SPOTS';
         document.getElementById('diningRegionPicker').value = 'Haslet / DFW';
         document.getElementById('diningCategoryPicker').value = 'ALL';
-        document.getElementById('diningSortPicker').value = 'ULTIMATE';
+        document.getElementById('diningSortPicker').value = 'NEARBY_SCORE';
         syncTogglePillUI('data-dfilter', 'derek', 'ALL');
         syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
         renderDining();
@@ -4339,9 +4345,116 @@
       }
     }
 
+    let liveScanRestaurants = null; // Non-null when viewing live Google Places Anywhere Scan
+    let liveScanCity = '';
+    let gpsAutoChecked = false;
+
+    function distanceMilesBetween(lat1, lng1, lat2, lng2) {
+      const toRad = d => (d * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function clearLiveScanResults() {
+      liveScanRestaurants = null;
+      liveScanCity = '';
+      const b = document.getElementById('liveScanBanner');
+      if (b) b.style.display = 'none';
+      renderDining();
+      showToast('Back to DFW restaurant list');
+    }
+
+    function scanNearbyLiveGps(lat, lng) {
+      const btn = document.getElementById('diningScanBtn');
+      if (btn) btn.textContent = '🌍 Scanning...';
+      fetch(`${API_URL}?action=scanNearbyRestaurants&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius=10500`)
+        .then(r => r.json())
+        .then(res => {
+          if (btn) btn.textContent = '🌍 Scan';
+          if (res && res.success && Array.isArray(res.restaurants) && res.restaurants.length > 0) {
+            liveScanRestaurants = res.restaurants;
+            liveScanCity = res.city || 'Nearby';
+            const b = document.getElementById('liveScanBanner');
+            const bt = document.getElementById('liveScanBannerText');
+            if (b) b.style.display = 'flex';
+            if (bt) bt.textContent = `🌍 Live Nearby (15m) — ${liveScanCity} (${res.restaurants.length} spots)`;
+            renderDining();
+            showToast(`🌍 Found ${res.restaurants.length} top spots within 15m of ${liveScanCity}!`);
+          } else {
+            showToast('No nearby spots returned — check GPS or try again');
+          }
+        })
+        .catch(() => {
+          if (btn) btn.textContent = '🌍 Scan';
+          showToast('Live nearby scan failed — check connection');
+        });
+    }
+
+    function triggerScanNearbyAnywhere() {
+      if (userGpsPos) {
+        scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
+        return;
+      }
+      if (!navigator.geolocation) {
+        showToast('GPS not supported on this browser');
+        return;
+      }
+      const btn = document.getElementById('diningScanBtn');
+      if (btn) btn.textContent = '📡 Locating...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          try { localStorage.setItem('chaptertwo_gps_enabled', '1'); } catch (e) {}
+          syncDiningGpsBtnUI();
+          scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
+        },
+        () => {
+          if (btn) btn.textContent = '🌍 Scan';
+          showToast('Enable location permission to scan nearby restaurants');
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 180000 }
+      );
+    }
+
+    function autoInitDiningGps() {
+      if (gpsAutoChecked || userGpsPos || !navigator.geolocation) return;
+      gpsAutoChecked = true;
+      const remembered = localStorage.getItem('chaptertwo_gps_enabled') === '1';
+      const tryGrab = () => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            try { localStorage.setItem('chaptertwo_gps_enabled', '1'); } catch (e) {}
+            syncDiningGpsBtnUI();
+            const milesFromHaslet = distanceMilesBetween(32.9765, -97.3478, userGpsPos.lat, userGpsPos.lng);
+            if (milesFromHaslet > 45) {
+              // Outside DFW (e.g. Houston / road trip!) -> auto-scan live nearby!
+              scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
+            } else {
+              renderDining();
+            }
+          },
+          () => {},
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+        );
+      };
+      if (remembered) {
+        tryGrab();
+      } else if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'geolocation' }).then(st => {
+          if (st.state === 'granted') tryGrab();
+        }).catch(() => {});
+      }
+    }
+
     function toggleDiningGps() {
       if (userGpsPos) {
         userGpsPos = null;
+        try { localStorage.setItem('chaptertwo_gps_enabled', '0'); } catch (e) {}
         syncDiningGpsBtnUI();
         renderDining();
         showToast('🏠 Switched back to Home (Haslet) drive times');
@@ -4356,9 +4469,16 @@
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          try { localStorage.setItem('chaptertwo_gps_enabled', '1'); } catch (e) {}
           syncDiningGpsBtnUI();
-          renderDining();
-          showToast('📡 Live GPS active — drive times & scores updated!');
+          const milesFromHaslet = distanceMilesBetween(32.9765, -97.3478, userGpsPos.lat, userGpsPos.lng);
+          if (milesFromHaslet > 45) {
+            showToast('🌍 Outside DFW detected — scanning top spots within 15m!');
+            scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
+          } else {
+            renderDining();
+            showToast('📡 Live GPS active — drive times & scores updated!');
+          }
         },
         (err) => {
           userGpsPos = null;
@@ -4367,6 +4487,44 @@
         },
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 180000 }
       );
+    }
+
+    // 📍 Best Nearby Score (0-100): 45% Proximity + 35% Quality/Popularity + 20% Cost
+    function computeBestNearbyScore(r, sc) {
+      // 1. Proximity (45 pts) — heavily rewards spots within 5-15 mins of current GPS!
+      let proxPts = 15; // neutral fallback if unknown
+      if (sc.mins !== null && !isNaN(sc.mins)) {
+        if (sc.mins <= 5) proxPts = 45;
+        else if (sc.mins <= 15) proxPts = 45 - ((sc.mins - 5) / 10) * 13; // 45 -> 32
+        else if (sc.mins <= 25) proxPts = 32 - ((sc.mins - 15) / 10) * 18; // 32 -> 14
+        else if (sc.mins <= 40) proxPts = 14 - ((sc.mins - 25) / 15) * 14; // 14 -> 0
+        else proxPts = 0;
+      }
+
+      // 2. Quality & Popularity (35 pts)
+      let qualPts = 18;
+      if (sc.ourRate > 0) {
+        qualPts = Math.min(35, (sc.ourRate / 10) * 35);
+      } else {
+        const gRate = parseFloat(r.googleRating) || 0;
+        const gRev = Number(r.googleReviews) || 0;
+        if (gRate > 0) {
+          const bayes = ((gRev / (gRev + 150)) * gRate) + ((150 / (gRev + 150)) * 4.3);
+          const rateNorm = Math.max(0, Math.min(1, (bayes - 3.5) / 1.3));
+          const popNorm = Math.max(0, Math.min(1, Math.log10(gRev + 1) / 4));
+          qualPts = (rateNorm * 0.72 + popNorm * 0.28) * 35;
+        }
+      }
+
+      // 3. Estimated / Logged Cost (20 pts)
+      let costPts = 10;
+      if (sc.totalCost !== null) {
+        if (sc.totalCost <= 30) costPts = 20;
+        else if (sc.totalCost >= 90) costPts = 0;
+        else costPts = ((90 - sc.totalCost) / 60) * 20;
+      }
+
+      return Math.min(100, Math.round(proxPts + qualPts + costPts));
     }
 
     function computeRestaurantScore(r) {
@@ -4411,7 +4569,9 @@
       const hasAnyData = (avgFood !== null) || (totalCost !== null) || (mins !== null);
       const total = hasAnyData ? Math.min(100, Math.round(foodPts + costPts + distPts)) : null;
 
-      return { total, avgFood, avgDish, ourRate, foodSource, foodPts: Math.round(foodPts), costPts, costLabel, distPts, distLabel, totalCost, mins };
+      const sc = { total, avgFood, avgDish, ourRate, foodSource, foodPts: Math.round(foodPts), costPts, costLabel, distPts, distLabel, totalCost, mins };
+      sc.nearbyScore = computeBestNearbyScore(r, sc);
+      return sc;
     }
 
     function getScoreBadgeClass(score) {
@@ -4428,6 +4588,7 @@
     }
 
     function loadRestaurantsData(forceRefresh) {
+      autoInitDiningGps();
       if (!forceRefresh && !diningLoaded) {
         const cached = localStorage.getItem('chaptertwo_restaurants_cache');
         if (cached) {
@@ -4497,7 +4658,7 @@
     }
 
     function syncDiningQuickSortUI() {
-      const cur = (document.getElementById('diningSortPicker') || {}).value || 'ULTIMATE';
+      const cur = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
       document.querySelectorAll('#diningQuickSortRow button').forEach(btn => {
         btn.classList.toggle('has-active', btn.dataset.dsort === cur);
       });
@@ -4583,14 +4744,17 @@
       const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
       const regionFilter = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
       const catFilter = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
-      const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'ULTIMATE';
+      const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
       const dWishSet = getDiningWishSet('derek');
       const kWishSet = getDiningWishSet('kianna');
+      const sourcePool = Array.isArray(liveScanRestaurants) ? liveScanRestaurants : restaurants;
 
-      let list = restaurants.filter(r => {
-        if (listFilter === 'OUR_LIST' && !r.visited) return false;
-        if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
-        if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+      let list = sourcePool.filter(r => {
+        if (!liveScanRestaurants) {
+          if (listFilter === 'OUR_LIST' && !r.visited) return false;
+          if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
+          if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+        }
 
         const rKey = String(r.id || r.name || '').trim();
         const dHasRate = Number(r.derekRating) > 0;
@@ -4607,11 +4771,13 @@
         if (dFilterKianna === 'NOT_VISITED' && isVisited) return false;
         if (dFilterKianna === 'WISH' && !kWishSet.has(rKey)) return false;
 
-        if (regionFilter === 'CHAINS_ONLY') {
-          if (!r.isChain) return false;
-        } else if (regionFilter !== 'ALL') {
-          const rReg = r.region || 'Haslet / DFW';
-          if (!r.isChain && rReg !== regionFilter) return false;
+        if (!liveScanRestaurants) {
+          if (regionFilter === 'CHAINS_ONLY') {
+            if (!r.isChain) return false;
+          } else if (regionFilter !== 'ALL') {
+            const rReg = r.region || 'Haslet / DFW';
+            if (!r.isChain && rReg !== regionFilter) return false;
+          }
         }
 
         if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
@@ -4634,6 +4800,16 @@
         list = list.filter(r => (Number(r.googleReviews) || 0) >= 250);
       } else if (sortMode === 'OUR_TOP') {
         list = list.filter(r => (Number(r.derekRating) || 0) > 0 || (Number(r.kiannaRating) || 0) > 0);
+      }
+
+      if (sortMode === 'NEARBY_SCORE') {
+        list.sort((a, b) => {
+          const na = a._score.nearbyScore ?? -1;
+          const nb = b._score.nearbyScore ?? -1;
+          if (nb !== na) return nb - na;
+          return (a._score.mins ?? 999) - (b._score.mins ?? 999);
+        });
+        return list;
       }
 
       if (sortMode === 'ULTIMATE') {
@@ -4734,7 +4910,7 @@
           : (diningMode === 'DATE' ? '🥂 Top 3 Date Night' : '⭐ Top 3 Spots');
 
         const topPicks = [...list]
-          .sort((a, b) => (b._score.total ?? -1) - (a._score.total ?? -1))
+          .sort((a, b) => (b._score.nearbyScore ?? -1) - (a._score.nearbyScore ?? -1))
           .slice(0, 3);
 
         sugRow.innerHTML = '';
@@ -4746,12 +4922,13 @@
           const sc = p._score;
           const metaParts = [];
           if (sc.mins !== null) metaParts.push(sc.mins + 'm');
-          if (sc.totalCost !== null) metaParts.push('$' + Math.round(sc.totalCost));
+          if (sc.totalCost !== null) metaParts.push((p.visited ? '$' : '~$') + Math.round(sc.totalCost));
           else if (p.googleRating) metaParts.push('★' + Number(p.googleRating).toFixed(1));
+          const displayScore = sc.nearbyScore !== null && sc.nearbyScore !== undefined ? sc.nearbyScore : sc.total;
           chip.innerHTML = `
             <div class="suggestion-chip-top">
               <span class="suggestion-rank r${rankNum}">#${rankNum}</span>
-              <span class="score-pill ${getScoreBadgeClass(sc.total)}" style="font-size:0.68rem; padding:2px 6px;">${sc.total !== null ? sc.total : '--'}</span>
+              <span class="score-pill ${getScoreBadgeClass(displayScore)}" style="font-size:0.68rem; padding:2px 6px;">${displayScore !== null ? displayScore : '--'}</span>
             </div>
             <div class="suggestion-name">${escapeHtml(p.name)}</div>
             <div class="suggestion-meta">${metaParts.join(' • ') || getDiningIcon(p.category)}</div>
@@ -4792,7 +4969,7 @@
           ? `<img src="${heroPhoto}" alt="${escapeHtml(r.name)}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=\\'rest-emoji-cover\\'>${getDiningIcon(r.category)}</div><div class=\\'rest-cat-mini\\'>${escapeHtml(r.category)}</div>';">`
           : `<div class="rest-emoji-cover">${getDiningIcon(r.category)}</div><div class="rest-cat-mini">${escapeHtml(r.category)}</div>`;
 
-        const costText = sc.totalCost !== null ? ('$' + Math.round(sc.totalCost) + ' total') : '';
+        const costText = sc.totalCost !== null ? ((r.visited ? '$' : '~$') + Math.round(sc.totalCost) + (r.visited ? ' total' : ' est')) : '';
         const distText = sc.mins !== null ? (sc.mins + ' min') : '';
         const dBadge = Number(r.derekRating) > 0 ? `<span class="rating-badge badge-derek">D: ★ ${r.derekRating}</span>` : '';
         const kBadge = Number(r.kiannaRating) > 0 ? `<span class="rating-badge badge-kianna">K: ★ ${r.kiannaRating}</span>` : '';
@@ -5504,14 +5681,14 @@
       syncTogglePillUI('data-mfilter', 'derek', mFilterDerek);
       syncTogglePillUI('data-mfilter', 'kianna', mFilterKianna);
 
-      // 3. Dining: Not visited out of the Top 100 Ultimate (All vibes)
+      // 3. Dining: Not visited out of Best Nearby (Distance + Rating + Cost)
       diningMode = 'ALL';
       document.querySelectorAll('.dining-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.dmode === 'ALL'));
       currentDiningScope = 'top100';
       dFilterDerek = isKianna ? 'ALL' : 'NOT_VISITED';
       dFilterKianna = isKianna ? 'NOT_VISITED' : 'ALL';
       if (document.getElementById('diningListPicker')) document.getElementById('diningListPicker').value = 'ALL_SPOTS';
-      if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'ULTIMATE';
+      if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'NEARBY_SCORE';
       syncTogglePillUI('data-dfilter', 'derek', dFilterDerek);
       syncTogglePillUI('data-dfilter', 'kianna', dFilterKianna);
       syncDiningQuickSortUI();
