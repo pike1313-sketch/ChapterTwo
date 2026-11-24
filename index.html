@@ -376,16 +376,26 @@
       white-space: nowrap;
     }
     .suggestions-row {
-      display: grid; grid-template-columns: 1fr; gap: 8px;
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
     }
     .suggestion-chip {
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-      padding: 9px 10px; cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; gap: 3px;
+      padding: 8px 7px; cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; gap: 4px;
+      min-width: 0;
     }
     .suggestion-chip:active { transform: scale(0.98); border-color: var(--accent); }
-    .suggestion-chip-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-    .suggestion-name { font-size: 0.8rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .suggestion-meta { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+    .suggestion-chip-top { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+    .suggestion-rank {
+      font-size: 0.68rem; font-weight: 900; padding: 2px 6px; border-radius: 5px; line-height: 1.1; flex-shrink: 0;
+    }
+    .suggestion-rank.r1 { background: rgba(251, 191, 36, 0.22); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.5); }
+    .suggestion-rank.r2 { background: rgba(203, 213, 225, 0.2); color: #e2e8f0; border: 1px solid rgba(203, 213, 225, 0.4); }
+    .suggestion-rank.r3 { background: rgba(217, 119, 6, 0.2); color: #f59e0b; border: 1px solid rgba(217, 119, 6, 0.45); }
+    .suggestion-name {
+      font-size: 0.72rem; font-weight: 800; color: #fff; line-height: 1.2;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .suggestion-meta { font-size: 0.64rem; color: var(--text-muted); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .score-pill {
       font-size: 0.72rem; font-weight: 900; padding: 2px 7px; border-radius: 6px; white-space: nowrap;
@@ -1143,11 +1153,14 @@
       </div>
     </div>
 
-    <!-- Dynamic Suggestions Banner (Family vs Date Night) -->
+    <!-- Dynamic Suggestions Banner (Top 3 in 1 row + Live GPS toggle) -->
     <div class="suggestions-banner" id="diningSuggestionsWrap" style="display:none;">
       <div class="suggestions-header">
-        <div class="suggestions-title" id="diningSuggestionsTitle">👨‍👩‍👧‍👦 Top Family Suggestions</div>
-        <button type="button" class="btn-spin" onclick="pickRandomRestaurant()">🎲 Pick For Us</button>
+        <div class="suggestions-title" id="diningSuggestionsTitle">⭐ Top 3 Spots</div>
+        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0;">
+          <button type="button" class="btn-spin" id="diningGpsBtn" style="background:var(--surface-elevated); color:#cbd5e1; border-color:var(--border);" onclick="toggleDiningGps()">📡 GPS</button>
+          <button type="button" class="btn-spin" onclick="pickRandomRestaurant()">🎲 Pick</button>
+        </div>
       </div>
       <div class="suggestions-row" id="diningSuggestionsRow"></div>
     </div>
@@ -4117,6 +4130,141 @@
       return calc > 0 ? Math.round(calc * 100) / 100 : null;
     }
 
+    let userGpsPos = null; // { lat, lng } when live phone GPS is active
+
+    const DFW_CITY_COORDS = {
+      'haslet': [32.9765, -97.3478],
+      'alliance': [32.9105, -97.3168],
+      'roanoke': [33.0040, -97.2258],
+      'trophy club': [32.9979, -97.1844],
+      'keller': [32.9346, -97.2292],
+      'southlake': [32.9412, -97.1342],
+      'grapevine': [32.9343, -97.0781],
+      'colleyville': [32.8809, -97.1550],
+      'north richland hills': [32.8556, -97.2289],
+      'nrh': [32.8556, -97.2289],
+      'watauga': [32.8630, -97.2547],
+      'hurst': [32.8235, -97.1706],
+      'euless': [32.8371, -97.0819],
+      'bedford': [32.8440, -97.1431],
+      'heb': [32.8440, -97.1431],
+      'saginaw': [32.8601, -97.3639],
+      'lake worth': [32.8150, -97.4380],
+      'justin': [33.0848, -97.2961],
+      'argyle': [33.1212, -97.1833],
+      'flower mound': [33.0146, -97.0969],
+      'lewisville': [33.0462, -97.0042],
+      'denton': [33.2148, -97.1331],
+      'stockyards': [32.7897, -97.3475],
+      'clearfork': [32.7115, -97.3965],
+      'magnolia': [32.7315, -97.3365],
+      'west 7th': [32.7510, -97.3610],
+      'fossil creek': [32.8350, -97.3150],
+      'hulen': [32.7050, -97.3620],
+      'ridglea': [32.7320, -97.4180],
+      'fort worth': [32.7555, -97.3308],
+      'arlington': [32.7357, -97.1081],
+      'coppell': [32.9546, -97.0150],
+      'las colinas': [32.8680, -96.9500],
+      'irving': [32.8140, -96.9489],
+      'azle': [32.8951, -97.5459],
+      'northlake': [33.0593, -97.2625],
+      'westlake': [32.9912, -97.1942],
+      'richland hills': [32.8112, -97.2292],
+      'haltom city': [32.7996, -97.2692],
+      'white settlement': [32.7590, -97.4547],
+      'benbrook': [32.6732, -97.4606],
+      'blue mound': [32.8551, -97.3389],
+      'rhome': [33.0540, -97.4720],
+      'newark': [32.9998, -97.4847],
+      'decatur': [33.2343, -97.5861],
+      'weatherford': [32.7593, -97.7972],
+      'aledo': [32.6957, -97.6022],
+      'burleson': [32.5421, -97.3208],
+      'mansfield': [32.5632, -97.1417],
+      'grand prairie': [32.7459, -96.9978],
+      'carrollton': [32.9537, -96.8903],
+      'plano': [33.0198, -96.6989],
+      'frisco': [33.1507, -96.8236],
+      'dallas': [32.7767, -96.7970]
+    };
+
+    function estimateDriveMinsBetween(lat1, lng1, lat2, lng2) {
+      const toRad = d => (d * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const miles = 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.max(2, Math.round((miles * 1.25 / 38) * 60 + 2));
+    }
+
+    function getRestaurantCoords(r) {
+      if (r.lat && r.lng) return [Number(r.lat), Number(r.lng)];
+      const text = ((r.location || '') + ' ' + (r.address || '')).toLowerCase();
+      for (const key in DFW_CITY_COORDS) {
+        if (text.includes(key)) return DFW_CITY_COORDS[key];
+      }
+      return null;
+    }
+
+    function getEffectiveDriveMins(r) {
+      if (userGpsPos) {
+        const coords = getRestaurantCoords(r);
+        if (coords) {
+          return estimateDriveMinsBetween(userGpsPos.lat, userGpsPos.lng, coords[0], coords[1]);
+        }
+      }
+      return (r.driveMins !== null && r.driveMins !== undefined && r.driveMins !== '') ? Number(r.driveMins) : null;
+    }
+
+    function syncDiningGpsBtnUI() {
+      const btn = document.getElementById('diningGpsBtn');
+      if (!btn) return;
+      if (userGpsPos) {
+        btn.textContent = '📡 Live GPS';
+        btn.style.background = 'rgba(16, 185, 129, 0.22)';
+        btn.style.color = '#34d399';
+        btn.style.borderColor = 'rgba(16, 185, 129, 0.55)';
+      } else {
+        btn.textContent = '📡 GPS';
+        btn.style.background = 'var(--surface-elevated)';
+        btn.style.color = '#cbd5e1';
+        btn.style.borderColor = 'var(--border)';
+      }
+    }
+
+    function toggleDiningGps() {
+      if (userGpsPos) {
+        userGpsPos = null;
+        syncDiningGpsBtnUI();
+        renderDining();
+        showToast('🏠 Switched back to Home (Haslet) drive times');
+        return;
+      }
+      if (!navigator.geolocation) {
+        showToast('GPS not supported on this browser');
+        return;
+      }
+      const btn = document.getElementById('diningGpsBtn');
+      if (btn) btn.textContent = '📡 Locating...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          syncDiningGpsBtnUI();
+          renderDining();
+          showToast('📡 Live GPS active — drive times & scores updated!');
+        },
+        (err) => {
+          userGpsPos = null;
+          syncDiningGpsBtnUI();
+          showToast('Location permission denied — using Home (Haslet)');
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 180000 }
+      );
+    }
+
     function computeRestaurantScore(r) {
       const dRate = Number(r.derekRating) || 0;
       const kRate = Number(r.kiannaRating) || 0;
@@ -4146,13 +4294,14 @@
         }
       }
 
-      const mins = (r.driveMins !== null && r.driveMins !== undefined && r.driveMins !== '') ? Number(r.driveMins) : null;
+      const mins = getEffectiveDriveMins(r);
       let distPts = 0;
       let distLabel = 'No time';
       if (mins !== null && !isNaN(mins)) {
-        if (mins <= 15) { distPts = 20; distLabel = mins + 'm (Full)'; }
-        else if (mins <= 30) { distPts = 10; distLabel = mins + 'm (Half)'; }
-        else { distPts = 0; distLabel = mins + 'm (0 pts)'; }
+        const suffix = userGpsPos ? ' GPS' : '';
+        if (mins <= 15) { distPts = 20; distLabel = mins + 'm' + suffix + ' (Full)'; }
+        else if (mins <= 30) { distPts = 10; distLabel = mins + 'm' + suffix + ' (Half)'; }
+        else { distPts = 0; distLabel = mins + 'm' + suffix + ' (0 pts)'; }
       }
 
       const hasAnyData = (avgFood !== null) || (totalCost !== null) || (mins !== null);
@@ -4408,33 +4557,35 @@
       document.getElementById('dRbKAvg').textContent = `★ ${kAvg}`;
       document.getElementById('dRbKCount').textContent = `${kRated.length} rated`;
 
-      // Suggestions Banner (Top 3 for Family / Date Night)
+      // Suggestions Banner (Top 3 in 1 clean row with clear #1 - #3 badges)
       if (list.length > 0) {
         sugWrap.style.display = 'block';
         sugTitle.textContent = diningMode === 'FAMILY'
-          ? '👨‍👩‍👧‍👦 Top Family Suggestions'
-          : (diningMode === 'DATE' ? '🥂 Top Date Night Suggestions' : '⭐ Top Overall Suggestions');
+          ? '👨‍👩‍👧‍👦 Top 3 Family'
+          : (diningMode === 'DATE' ? '🥂 Top 3 Date Night' : '⭐ Top 3 Spots');
 
         const topPicks = [...list]
           .sort((a, b) => (b._score.total ?? -1) - (a._score.total ?? -1))
           .slice(0, 3);
 
         sugRow.innerHTML = '';
-        topPicks.forEach(p => {
+        topPicks.forEach((p, idx) => {
+          const rankNum = idx + 1;
           const chip = document.createElement('div');
           chip.className = 'suggestion-chip';
           chip.onclick = () => openRestaurantModal(p);
           const sc = p._score;
+          const metaParts = [];
+          if (sc.mins !== null) metaParts.push(sc.mins + 'm');
+          if (sc.totalCost !== null) metaParts.push('$' + Math.round(sc.totalCost));
+          else if (p.googleRating) metaParts.push('★' + Number(p.googleRating).toFixed(1));
           chip.innerHTML = `
             <div class="suggestion-chip-top">
-              <div class="suggestion-name">${getDiningIcon(p.category)} ${escapeHtml(p.name)}</div>
-              <span class="score-pill ${getScoreBadgeClass(sc.total)}">${sc.total !== null ? sc.total : '--'}</span>
+              <span class="suggestion-rank r${rankNum}">#${rankNum}</span>
+              <span class="score-pill ${getScoreBadgeClass(sc.total)}" style="font-size:0.68rem; padding:2px 6px;">${sc.total !== null ? sc.total : '--'}</span>
             </div>
-            <div class="suggestion-meta">
-              ${sc.totalCost !== null ? '$' + Math.round(sc.totalCost) + ' total' : 'No cost'}
-              ${sc.mins !== null ? ' • ' + sc.mins + 'm' : ''}
-              ${sc.avgFood !== null ? ' • ★' + sc.avgFood.toFixed(1) : ''}
-            </div>
+            <div class="suggestion-name">${escapeHtml(p.name)}</div>
+            <div class="suggestion-meta">${metaParts.join(' • ') || getDiningIcon(p.category)}</div>
           `;
           sugRow.appendChild(chip);
         });
