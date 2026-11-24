@@ -2519,12 +2519,14 @@
       }
     }
 
-    function getOurCombinedRating(dRate, kRate) {
+    function getOurCombinedRating(dRate, kRate, dualBonus) {
       const vals = [];
       if (dRate > 0) vals.push(Number(dRate));
       if (kRate > 0) vals.push(Number(kRate));
       if (!vals.length) return 0;
-      return vals.reduce((s, v) => s + v, 0) / vals.length;
+      const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+      const bonus = (vals.length === 2 && dualBonus) ? Number(dualBonus) : 0;
+      return avg + bonus;
     }
 
     function bookMatchesListTag(b, tag) {
@@ -2582,8 +2584,8 @@
       } else if (bookSortMode === 'OUR_TOP') {
         pool = pool.filter(b => b.derekRating > 0 || b.kiannaRating > 0);
         pool.sort((a, b) => {
-          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
-          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating, 0.51);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating, 0.51);
           if (rb !== ra) return rb - ra;
           return b.numRatings - a.numRatings;
         });
@@ -2808,8 +2810,8 @@
       } else if (movieSortMode === 'OUR_TOP') {
         pool = pool.filter(m => m.derekRating > 0 || m.kiannaRating > 0);
         pool.sort((a, b) => {
-          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
-          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating, 1.01);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating, 1.01);
           if (rb !== ra) return rb - ra;
           return (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0);
         });
@@ -4323,8 +4325,8 @@
 
       list.sort((a, b) => {
         if (sortMode === 'OUR_TOP') {
-          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating);
-          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating);
+          const ra = getOurCombinedRating(a.derekRating, a.kiannaRating, 1.01);
+          const rb = getOurCombinedRating(b.derekRating, b.kiannaRating, 1.01);
           if (rb !== ra) return rb - ra;
           return (b._score.total ?? -1) - (a._score.total ?? -1);
         }
