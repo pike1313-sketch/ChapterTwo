@@ -836,6 +836,14 @@
             <option value="Thriller">🔪 Thriller</option>
           </select>
 
+          <div class="filter-section-label">Content Rating (MPAA)</div>
+          <select id="movieMpaaPicker" class="list-select" onchange="onMovieMpaaChange(this.value)">
+            <option value="ALL" selected>🎞️ All Content Ratings</option>
+            <option value="FAMILY">👨‍👩‍👧‍👦 Family-Safe (G / PG / PG-13)</option>
+            <option value="KIDS">🧸 Kids Safe (G / PG)</option>
+            <option value="MATURE">🔞 Mature (R / NC-17)</option>
+          </select>
+
           <div class="filter-section-label">Status</div>
           <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
             <div class="toggle-group" style="width:100%; justify-content:space-between;">
@@ -1833,6 +1841,7 @@
     let selectedMovieExtraLists = new Set(['Fill In Filmography']);
     let selectedTop250Year = 'ALL';
     let selectedMovieGenre = 'ALL';
+    let selectedMovieMpaa = 'ALL';
     let movieSortMode = 'ULTIMATE';
     let currentMovieScope = 'top100';
     let currentDiningScope = 'top100';
@@ -1986,6 +1995,11 @@
       renderMovies();
     }
 
+    function onMovieMpaaChange(val) {
+      selectedMovieMpaa = val;
+      renderMovies();
+    }
+
     function syncMovieListChipsUI() {
       document.querySelectorAll('#movieListChips button').forEach(btn => {
         const active = selectedMovieExtraLists.has(btn.dataset.mlist);
@@ -2099,6 +2113,7 @@
         if (movieSortMode !== 'ULTIMATE') count++;
         count += selectedMovieExtraLists.size;
         if (selectedMovieGenre !== 'ALL') count++;
+        if (selectedMovieMpaa !== 'ALL') count++;
         if (selectedTop250Year !== 'ALL') count++;
         if (mFilterDerek !== 'ALL') count++;
         if (mFilterKianna !== 'ALL') count++;
@@ -2145,6 +2160,7 @@
         movieSortMode = 'ULTIMATE';
         selectedMovieExtraLists = new Set(['Fill In Filmography']);
         selectedMovieGenre = 'ALL';
+        selectedMovieMpaa = 'ALL';
         selectedTop250Year = 'ALL';
         currentMovieScope = 'top100';
         mFilterDerek = 'ALL';
@@ -2152,6 +2168,7 @@
         document.getElementById('movieSortPicker').value = 'ULTIMATE';
         syncMovieListChipsUI();
         document.getElementById('movieGenreStackPicker').value = 'ALL';
+        if (document.getElementById('movieMpaaPicker')) document.getElementById('movieMpaaPicker').value = 'ALL';
         document.querySelectorAll('.toggle-pill[data-mfilter]').forEach(p => {
           p.classList.remove('active', 'd-on', 'k-on');
           if (p.dataset.val === 'ALL') p.classList.add('active');
@@ -2868,6 +2885,16 @@
       if (selectedMovieGenre !== 'ALL') {
         const genreTarget = selectedMovieGenre.toLowerCase().trim();
         pool = pool.filter(m => (m.genres || '').toLowerCase().includes(genreTarget));
+      }
+
+      if (selectedMovieMpaa !== 'ALL') {
+        pool = pool.filter(m => {
+          const r = String(m.mpaa || '').toUpperCase().trim();
+          if (selectedMovieMpaa === 'KIDS') return r === 'G' || r === 'PG' || r === 'TV-G' || r === 'TV-PG' || r === 'TV-Y' || r === 'TV-Y7' || r === 'APPROVED' || r === 'PASSED';
+          if (selectedMovieMpaa === 'FAMILY') return r === 'G' || r === 'PG' || r === 'PG-13' || r === 'TV-G' || r === 'TV-PG' || r === 'TV-14' || r === 'APPROVED' || r === 'PASSED';
+          if (selectedMovieMpaa === 'MATURE') return r === 'R' || r === 'NC-17' || r === 'TV-MA';
+          return true;
+        });
       }
 
       if (movieSortMode === 'ULTIMATE') {
