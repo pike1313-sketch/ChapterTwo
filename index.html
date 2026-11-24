@@ -614,6 +614,24 @@
     .filter-section-label { font-size: 0.76rem; margin: 16px 0 8px 0; }
     .drawer-title, .flag-sheet-title { font-size: 1.15rem; }
 
+    /* Frozen Top Bar: 4 Quick Pills + KPI Ribbon (Identical across Books, Movies & Dining) */
+    .sticky-tab-top {
+      position: sticky;
+      top: var(--header-h, 66px);
+      z-index: 40;
+      background: rgba(11, 12, 14, 0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px 10px 14px;
+    }
+    .sticky-tab-top .quick-pill-row {
+      display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+    }
+    .sticky-tab-top .quick-pill-row::-webkit-scrollbar { display: none; }
+    .sticky-tab-top .mini-kpi-ribbon {
+      margin: 8px 0 0 0;
+    }
+
     /* Full-Screen Popups & Drawers on Mobile (use the whole screen!) */
     .drawer-overlay, .modal-overlay, .flag-modal-overlay {
       align-items: stretch; justify-content: center; padding: 0;
@@ -922,34 +940,36 @@
 
   <!-- TAB 1: Books Catalog -->
   <main id="tabCatalog" class="tab-content active">
-    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="bookQuickRow">
-      <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-bquick="VOTES" onclick="setBookQuickPreset('VOTES')">🔥 Most Rated</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="RATING" onclick="setBookQuickPreset('RATING')">⭐ Highest Rated</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="HOLIDAY" onclick="setBookQuickPreset('HOLIDAY')">🎄 Holiday</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="OUR_TOP" onclick="setBookQuickPreset('OUR_TOP')">❤️ Our Top</button>
+    <div class="sticky-tab-top">
+      <div class="quick-pill-row" id="bookQuickRow">
+        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-bquick="VOTES" onclick="setBookQuickPreset('VOTES')">🔥 Most Rated</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="RATING" onclick="setBookQuickPreset('RATING')">⭐ Highest Rated</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" id="bookSeasonalBtn" data-bquick="SEASONAL" onclick="setBookQuickPreset('SEASONAL')">🎄 Christmas</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="OUR_TOP" onclick="setBookQuickPreset('OUR_TOP')">❤️ Our Top</button>
+      </div>
+
+      <div class="mini-kpi-ribbon">
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag derek">Derek</span>
+          <span class="kpi-ribbon-val" id="rbDCount">0 / 0</span>
+          <span class="kpi-ribbon-sub" id="rbDAvg">★ 0.0</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag kianna">Kianna</span>
+          <span class="kpi-ribbon-val" id="rbKCount">0 / 0</span>
+          <span class="kpi-ribbon-sub" id="rbKAvg">★ 0.0</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag both">Mutual</span>
+          <span class="kpi-ribbon-val" id="rbBothCount">0 reads</span>
+          <span class="kpi-ribbon-sub" id="rbBothPct">0% align</span>
+        </div>
+      </div>
     </div>
 
     <div class="filter-indicator" id="filterIndicator">
       <div>Active Filter: <span id="filterIndicatorText">Custom</span></div>
       <button onclick="resetDeepFilters()">✕ Clear</button>
-    </div>
-
-    <div class="mini-kpi-ribbon">
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag derek">Derek</span>
-        <span class="kpi-ribbon-val" id="rbDCount">0 / 0</span>
-        <span class="kpi-ribbon-sub" id="rbDAvg">★ 0.0</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag kianna">Kianna</span>
-        <span class="kpi-ribbon-val" id="rbKCount">0 / 0</span>
-        <span class="kpi-ribbon-sub" id="rbKAvg">★ 0.0</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag both">Mutual</span>
-        <span class="kpi-ribbon-val" id="rbBothCount">0 reads</span>
-        <span class="kpi-ribbon-sub" id="rbBothPct">0% align</span>
-      </div>
     </div>
 
     <div class="grid-container" id="booksGrid">
@@ -1062,28 +1082,30 @@
 
   <!-- TAB 3: Movies Catalog -->
   <main id="tabMovies" class="tab-content">
-    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="movieQuickRow">
-      <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-mquick="FILMOGRAPHY" onclick="setMovieQuickPreset('FILMOGRAPHY')">🎞️ Filmography</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="DISNEY" onclick="setMovieQuickPreset('DISNEY')">🏰 Disney</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="TOP250" onclick="setMovieQuickPreset('TOP250')">⭐ IMDb Top 250</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="OUR_TOP" onclick="setMovieQuickPreset('OUR_TOP')">❤️ Our Top</button>
-    </div>
+    <div class="sticky-tab-top">
+      <div class="quick-pill-row" id="movieQuickRow">
+        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-mquick="FILMOGRAPHY" onclick="setMovieQuickPreset('FILMOGRAPHY')">🎞️ Filmography</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" id="movieSeasonalBtn" data-mquick="SEASONAL" onclick="setMovieQuickPreset('SEASONAL')">🎄 Christmas</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="TOP250" onclick="setMovieQuickPreset('TOP250')">⭐ IMDb Top 250</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="OUR_TOP" onclick="setMovieQuickPreset('OUR_TOP')">❤️ Our Top</button>
+      </div>
 
-    <div class="mini-kpi-ribbon">
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag derek">Derek Watched</span>
-        <span class="kpi-ribbon-val" id="mRbDCount">0 / 100</span>
-        <span class="kpi-ribbon-sub" id="mRbDAvg">0% of cohort</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag kianna">Kianna Watched</span>
-        <span class="kpi-ribbon-val" id="mRbKCount">0 / 100</span>
-        <span class="kpi-ribbon-sub" id="mRbKAvg">0% of cohort</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag both">Mutual Watched</span>
-        <span class="kpi-ribbon-val" id="mRbBothCount">0 / 100</span>
-        <span class="kpi-ribbon-sub" id="mRbBothPct">0% mutual</span>
+      <div class="mini-kpi-ribbon">
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag derek">Derek Watched</span>
+          <span class="kpi-ribbon-val" id="mRbDCount">0 / 100</span>
+          <span class="kpi-ribbon-sub" id="mRbDAvg">0% of cohort</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag kianna">Kianna Watched</span>
+          <span class="kpi-ribbon-val" id="mRbKCount">0 / 100</span>
+          <span class="kpi-ribbon-sub" id="mRbKAvg">0% of cohort</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag both">Mutual Watched</span>
+          <span class="kpi-ribbon-val" id="mRbBothCount">0 / 100</span>
+          <span class="kpi-ribbon-sub" id="mRbBothPct">0% mutual</span>
+        </div>
       </div>
     </div>
 
@@ -1094,29 +1116,30 @@
 
   <!-- TAB 4: Dining / Restaurants -->
   <main id="tabDining" class="tab-content">
-    <!-- Quick Ranking Pills (scrolls cleanly, zero sticky bloat) -->
-    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="diningQuickSortRow">
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="DISTANCE" onclick="setDiningQuickSort('DISTANCE')">📍 Closest</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
-    </div>
+    <div class="sticky-tab-top">
+      <div class="quick-pill-row" id="diningQuickSortRow">
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="DISTANCE" onclick="setDiningQuickSort('DISTANCE')">📍 Closest</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
+      </div>
 
-    <div class="mini-kpi-ribbon">
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag" style="color:var(--emerald);">Visited</span>
-        <span class="kpi-ribbon-val" id="dRbVisited">0 / 0</span>
-        <span class="kpi-ribbon-sub" id="dRbVisitedPct">0% tried</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag derek">Derek Avg</span>
-        <span class="kpi-ribbon-val" id="dRbDAvg">★ --</span>
-        <span class="kpi-ribbon-sub" id="dRbDCount">0 rated</span>
-      </div>
-      <div class="kpi-ribbon-card">
-        <span class="kpi-ribbon-tag kianna">Kianna Avg</span>
-        <span class="kpi-ribbon-val" id="dRbKAvg">★ --</span>
-        <span class="kpi-ribbon-sub" id="dRbKCount">0 rated</span>
+      <div class="mini-kpi-ribbon">
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag" style="color:var(--emerald);">Visited</span>
+          <span class="kpi-ribbon-val" id="dRbVisited">0 / 0</span>
+          <span class="kpi-ribbon-sub" id="dRbVisitedPct">0% tried</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag derek">Derek Avg</span>
+          <span class="kpi-ribbon-val" id="dRbDAvg">★ --</span>
+          <span class="kpi-ribbon-sub" id="dRbDCount">0 rated</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag kianna">Kianna Avg</span>
+          <span class="kpi-ribbon-val" id="dRbKAvg">★ --</span>
+          <span class="kpi-ribbon-sub" id="dRbKCount">0 rated</span>
+        </div>
       </div>
     </div>
 
@@ -1834,31 +1857,92 @@
       });
     }
 
+    function getSeasonalPresetConfig() {
+      const m = new Date().getMonth(); // 0=Jan .. 8=Sep, 9=Oct, 10=Nov, 11=Dec
+      if (m === 8 || m === 9) {
+        return {
+          key: 'HALLOWEEN',
+          bookLabel: '🎃 Halloween',
+          bookMode: 'TAG',
+          bookVal: 'Halloween',
+          movieLabel: '🎃 Halloween',
+          movieVal: 'Halloween'
+        };
+      }
+      if (m === 10 || m === 11) {
+        return {
+          key: 'CHRISTMAS',
+          bookLabel: '🎄 Christmas',
+          bookMode: 'TAG',
+          bookVal: 'Christmas',
+          movieLabel: '🎄 Christmas',
+          movieVal: 'Christmas'
+        };
+      }
+      return {
+        key: 'OFFSEASON',
+        bookLabel: '🧸 Kids',
+        bookMode: 'GENRE',
+        bookVal: 'Children',
+        movieLabel: '🏰 Disney',
+        movieVal: 'Disney'
+      };
+    }
+
+    function syncSeasonalButtons() {
+      const cfg = getSeasonalPresetConfig();
+      const bBtn = document.getElementById('bookSeasonalBtn');
+      const mBtn = document.getElementById('movieSeasonalBtn');
+      if (bBtn) bBtn.textContent = cfg.bookLabel;
+      if (mBtn) mBtn.textContent = cfg.movieLabel;
+    }
+
+    function syncStickyHeaderHeight() {
+      const hdr = document.querySelector('header');
+      if (hdr) {
+        document.documentElement.style.setProperty('--header-h', hdr.offsetHeight + 'px');
+      }
+    }
+    window.addEventListener('resize', syncStickyHeaderHeight);
+
     function setBookQuickPreset(preset) {
       deepFilterPredicate = null;
       const ind = document.getElementById('filterIndicator');
       if (ind) ind.style.display = 'none';
       selectedList = 'ALL';
       selectedBookExtraLists.clear();
+      selectedBookGenre = 'ALL';
 
-      if (preset === 'HOLIDAY') {
-        selectedBookExtraLists.add('Christmas');
+      if (preset === 'SEASONAL') {
+        const cfg = getSeasonalPresetConfig();
+        if (cfg.bookMode === 'TAG') {
+          selectedBookExtraLists.add(cfg.bookVal);
+        } else {
+          selectedBookGenre = cfg.bookVal;
+        }
         bookSortMode = 'VOTES';
       } else {
         bookSortMode = preset; // 'VOTES' | 'RATING' | 'OUR_TOP'
       }
       const sp = document.getElementById('bookSortPicker');
       if (sp) sp.value = bookSortMode;
+      const gp = document.getElementById('bookGenreStackPicker');
+      if (gp) gp.value = selectedBookGenre;
       syncBookListChipsUI();
       syncBookQuickUI();
       renderBooks();
     }
 
     function syncBookQuickUI() {
+      const cfg = getSeasonalPresetConfig();
       let activePreset = '';
-      if (selectedBookExtraLists.size === 1 && selectedBookExtraLists.has('Christmas')) {
-        activePreset = 'HOLIDAY';
-      } else if (selectedBookExtraLists.size === 0) {
+      const isSeasonalActive = (cfg.bookMode === 'TAG')
+        ? (selectedBookExtraLists.size === 1 && selectedBookExtraLists.has(cfg.bookVal) && selectedBookGenre === 'ALL')
+        : (selectedBookExtraLists.size === 0 && selectedBookGenre === cfg.bookVal);
+
+      if (isSeasonalActive) {
+        activePreset = 'SEASONAL';
+      } else if (selectedBookExtraLists.size === 0 && selectedBookGenre === 'ALL') {
         activePreset = bookSortMode;
       }
       document.querySelectorAll('#bookQuickRow button').forEach(btn => {
@@ -1901,8 +1985,9 @@
       if (preset === 'FILMOGRAPHY') {
         selectedMovieExtraLists.add('Fill In Filmography');
         movieSortMode = 'RATING';
-      } else if (preset === 'DISNEY') {
-        selectedMovieExtraLists.add('Disney');
+      } else if (preset === 'SEASONAL') {
+        const cfg = getSeasonalPresetConfig();
+        selectedMovieExtraLists.add(cfg.movieVal);
         movieSortMode = 'RATING';
       } else if (preset === 'TOP250') {
         selectedMovieExtraLists.add('Top 250');
@@ -1918,11 +2003,12 @@
     }
 
     function syncMovieQuickUI() {
+      const cfg = getSeasonalPresetConfig();
       let activePreset = '';
       if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Fill In Filmography')) {
         activePreset = 'FILMOGRAPHY';
-      } else if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Disney')) {
-        activePreset = 'DISNEY';
+      } else if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has(cfg.movieVal)) {
+        activePreset = 'SEASONAL';
       } else if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Top 250')) {
         activePreset = 'TOP250';
       } else if (selectedMovieExtraLists.size === 0 && movieSortMode === 'OUR_TOP') {
@@ -2405,6 +2491,7 @@
         renderShelf();
       }
       updateFilterBadgeCount();
+      syncStickyHeaderHeight();
     }
 
     function updateScopeButtons(scope, count) {
@@ -5117,6 +5204,8 @@
     }
 
     function initDeviceUser() {
+      syncSeasonalButtons();
+      syncStickyHeaderHeight();
       const params = new URLSearchParams(window.location.search);
       const urlUser = params.get('user');
       if (urlUser && (urlUser.toLowerCase().startsWith('d') || urlUser.toLowerCase().startsWith('k'))) {
