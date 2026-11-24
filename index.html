@@ -1936,6 +1936,12 @@
         bookSortMode = 'VOTES';
       } else {
         bookSortMode = preset; // 'VOTES' | 'RATING' | 'OUR_TOP'
+        if (preset === 'OUR_TOP') {
+          filterDerek = 'ALL';
+          filterKianna = 'ALL';
+          syncTogglePillUI('data-filter', 'derek', 'ALL');
+          syncTogglePillUI('data-filter', 'kianna', 'ALL');
+        }
       }
       const sp = document.getElementById('bookSortPicker');
       if (sp) sp.value = bookSortMode;
@@ -2007,6 +2013,10 @@
         movieSortMode = 'RATING';
       } else if (preset === 'OUR_TOP') {
         movieSortMode = 'OUR_TOP';
+        mFilterDerek = 'ALL';
+        mFilterKianna = 'ALL';
+        syncTogglePillUI('data-mfilter', 'derek', 'ALL');
+        syncTogglePillUI('data-mfilter', 'kianna', 'ALL');
       }
       const sp = document.getElementById('movieSortPicker');
       if (sp) sp.value = movieSortMode;
@@ -4380,6 +4390,14 @@
     function setDiningQuickSort(mode) {
       const sel = document.getElementById('diningSortPicker');
       if (sel) sel.value = mode;
+      if (mode === 'OUR_TOP') {
+        const visSel = document.getElementById('diningVisitedPicker');
+        if (visSel) visSel.value = 'ALL';
+        dFilterDerek = 'ALL';
+        dFilterKianna = 'ALL';
+        syncTogglePillUI('data-dfilter', 'derek', 'ALL');
+        syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
+      }
       syncDiningQuickSortUI();
       renderDining();
     }
