@@ -3012,6 +3012,19 @@
         card.onclick = () => openMovieModal(m);
 
         const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
+        const dBadge = m.derekRating > 0
+          ? `<div class="rating-badge badge-derek">D: ★ ${m.derekRating}</div>`
+          : (m.derekWatched ? `<div class="rating-badge badge-derek">D: Seen</div>` : (m.derekWishlist ? `<div class="rating-badge badge-wish">D: Wish</div>` : ''));
+        const kBadge = m.kiannaRating > 0
+          ? `<div class="rating-badge badge-kianna">K: ★ ${m.kiannaRating}</div>`
+          : (m.kiannaWatched ? `<div class="rating-badge badge-kianna">K: Seen</div>` : (m.kiannaWishlist ? `<div class="rating-badge badge-wish">K: Wish</div>` : ''));
+        const imdbBadge = Number(m.avgRating) > 0
+          ? `<div class="rating-badge" style="color:var(--gold);">IMDb: ★ ${m.avgRating}</div>`
+          : '';
+        const mpaaPill = m.mpaa
+          ? `<span style="display:inline-block; font-size:0.68rem; font-weight:900; padding:1px 5px; border-radius:4px; border:1px solid var(--border); background:var(--surface-elevated); color:#e2e8f0; margin-right:5px;">${escapeHtml(m.mpaa)}</span>`
+          : '';
+
         card.innerHTML = `
           <div class="card-cover">
             <img src="${posterSrc}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Poster';" />
@@ -3020,8 +3033,9 @@
           <div class="card-body">
             <div>
               <div class="card-title" title="${escapeHtml(m.title)}">${escapeHtml(m.title)}</div>
-              <div class="card-author">${m.releaseYear || ''} ${m.runtime ? '• ' + m.runtime : ''}</div>
-              <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.genres || 'Feature Film'}</div>
+              <div class="card-author">${mpaaPill}${m.releaseYear || ''} ${m.runtime ? '• ' + m.runtime : ''}</div>
+              <div class="ratings-row">${dBadge}${kBadge}${imdbBadge}</div>
+              <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.genres || 'Feature Film'}</div>
             </div>
             <div>
               <div class="card-footer">
