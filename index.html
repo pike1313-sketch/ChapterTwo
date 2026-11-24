@@ -473,11 +473,11 @@
     .form-check-chip input { width: 16px; height: 16px; accent-color: var(--emerald); }
 
     .lightbox-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92); z-index: 200;
-      display: none; align-items: center; justify-content: center; padding: 20px;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); z-index: 300;
+      display: none; align-items: center; justify-content: center; padding: 12px;
     }
     .lightbox-overlay.open { display: flex; }
-    .lightbox-overlay img { max-width: 100%; max-height: 88vh; border-radius: 12px; object-fit: contain; }
+    .lightbox-overlay img { max-width: 96vw; max-height: 92dvh; border-radius: 12px; object-fit: contain; }
 
     /* ================= MOBILE-FIRST SLIM HEADER & FILTER DRAWER ================= */
     .top-bar-actions { display: flex; align-items: center; gap: 6px; }
@@ -1812,7 +1812,8 @@
 
   <!-- Fullscreen Photo Lightbox -->
   <div class="lightbox-overlay" id="photoLightbox" onclick="closePhotoLightbox()">
-    <img id="lightboxImg" src="" alt="Food photo">
+    <button type="button" onclick="closePhotoLightbox()" style="position:fixed; top:16px; right:16px; background:rgba(20,21,25,0.85); color:#fff; border:1px solid var(--border); border-radius:999px; width:46px; height:46px; font-size:1.2rem; font-weight:800; cursor:pointer; z-index:301;">✕</button>
+    <img id="lightboxImg" src="" alt="Full screen image" referrerpolicy="no-referrer">
   </div>
 
   <div id="toastNotification" class="toast-notification"></div>
@@ -2201,7 +2202,8 @@
       document.getElementById('mvOverview').textContent = m.overview || 'No overview available for this title.';
 
       const posterSrc = m.posterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
-      document.getElementById('movieModalCover').innerHTML = '<img src="' + posterSrc + '" style="width:100%; height:100%; object-fit:cover;" />';
+      const canZoomPoster = posterSrc && !posterSrc.includes('via.placeholder');
+      document.getElementById('movieModalCover').innerHTML = '<img src="' + posterSrc + '" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover;' + (canZoomPoster ? ' cursor:pointer;' : '') + '"' + (canZoomPoster ? ' onclick="openPhotoLightbox(this.src)"' : '') + ' />';
 
       renderMovieModalState();
 
@@ -3840,7 +3842,7 @@
       const validModalCover = (b.coverUrl && !b.coverUrl.includes('nophoto') && !b.coverUrl.includes('placeholder')) ? b.coverUrl : '';
       const coverBox = document.getElementById('modalCover');
       coverBox.innerHTML = validModalCover
-        ? '<img src="' + validModalCover + '" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\';" onload="if(this.naturalWidth < 10 || this.naturalHeight < 10){ this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\'; }" />'
+        ? '<img src="' + validModalCover + '" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="openPhotoLightbox(this.src)" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\';" onload="if(this.naturalWidth < 10 || this.naturalHeight < 10){ this.parentElement.innerHTML=\'<div class=\\\'cover-fallback-jacket\\\' style=\\\'height:100%;\\\'><span class=\\\'spine-title\\\'>' + escapeHtml(b.title).replace(/'/g, "\\'") + '</span></div>\'; }" />'
         : '<div class="cover-fallback-jacket" style="height:100%;"><span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
 
       renderBookModalState();
