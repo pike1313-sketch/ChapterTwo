@@ -591,8 +591,8 @@
     .verdict-skip { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
 
     /* ================= GLOBAL MOBILE READABILITY, TAP-TARGET & FULL-SCREEN POPUP BOOST ================= */
-    html { font-size: 20px; }
-    body { padding-bottom: calc(90px + var(--safe-bottom)); }
+    html { font-size: 20px; overscroll-behavior-x: none; }
+    body { padding-bottom: calc(90px + var(--safe-bottom)); overscroll-behavior-x: none; }
     header { padding: 10px 14px; }
     .top-bar { margin-bottom: 0; gap: 6px; }
     .controls-row { margin-top: 8px; }
@@ -948,7 +948,7 @@
             <option value="American">🍟 American</option>
             <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
             <option value="Seafood">🍤 Seafood</option>
-            <option value="Fast Food">🚗 Fast Food</option>
+            <option value="Chicken">🍗 Chicken</option>
             <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
             <option value="Other">🍽️ Other</option>
           </select>
@@ -1702,7 +1702,7 @@
               <option value="American">🍟 American</option>
               <option value="Breakfast / Brunch">🥞 Breakfast / Brunch</option>
               <option value="Seafood">🍤 Seafood</option>
-              <option value="Fast Food">🚗 Fast Food</option>
+              <option value="Chicken">🍗 Chicken</option>
               <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
               <option value="Other">🍽️ Other</option>
             </select>
@@ -4213,7 +4213,7 @@
       'American': '🍟',
       'Breakfast / Brunch': '🥞',
       'Seafood': '🍤',
-      'Fast Food': '🚗',
+      'Chicken': '🍗',
       'Bakery / Dessert': '🍦',
       'Other': '🍽️'
     };
@@ -5469,7 +5469,57 @@
       }
     }
 
+    let lastBackSwipeAt = 0;
+    function closeTopmostOverlayOnBack() {
+      const checks = [
+        ['photoLightbox', () => closePhotoLightbox()],
+        ['flagModal', () => closeFlagModal()],
+        ['restaurantFormModal', () => closeRestaurantFormModal()],
+        ['movieUploadModal', () => closeMovieUploadModal()],
+        ['seriesModal', () => closeSeriesModal()],
+        ['searchSheetOverlay', () => closeSearchSheet()],
+        ['filterDrawerOverlay', () => closeFilterDrawer()],
+        ['healthDrawerOverlay', () => closeHealthDrawer()],
+        ['bookModal', () => closeModal()],
+        ['movieModal', () => closeMovieModal()],
+        ['restaurantModal', () => closeRestaurantModal()]
+      ];
+      for (const [id, fn] of checks) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const isOpen = el.classList.contains('open') || (el.style && el.style.display === 'flex');
+        if (isOpen) {
+          fn();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function installSwipeBackGuard() {
+      try {
+        history.replaceState({ chapterTwoRoot: true }, '');
+        history.pushState({ chapterTwoGuard: true }, '');
+      } catch (e) {}
+
+      window.addEventListener('popstate', () => {
+        if (closeTopmostOverlayOnBack()) {
+          try { history.pushState({ chapterTwoGuard: true }, ''); } catch (e) {}
+          return;
+        }
+        const now = Date.now();
+        if (now - lastBackSwipeAt < 2500) {
+          // Second intentional back swipe within 2.5s — allow exit
+          return;
+        }
+        lastBackSwipeAt = now;
+        try { history.pushState({ chapterTwoGuard: true }, ''); } catch (e) {}
+        showToast('Swipe back again to exit ChapterTwo');
+      });
+    }
+
     function initDeviceUser() {
+      installSwipeBackGuard();
       syncSeasonalButtons();
       syncStickyHeaderHeight();
       const params = new URLSearchParams(window.location.search);
