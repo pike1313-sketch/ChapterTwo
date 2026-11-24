@@ -793,9 +793,9 @@
           <div class="filter-section-label">Rank / Sort By</div>
           <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
             <option value="SCORE" selected>🏆 Overall Score (/100)</option>
+            <option value="VOTES">🔥 Most Rated (Google)</option>
+            <option value="RATING">⭐ Highest Rated (250+ reviews)</option>
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
-            <option value="VOTES">🗳️ Most Ratings (Google)</option>
-            <option value="RATING">⭐ Avg Rating (250+ ratings)</option>
             <option value="COST_ASC">💵 Cost: Low → High</option>
             <option value="COST_DESC">💰 Cost: High → Low</option>
             <option value="DISTANCE">📍 Closest Drive</option>
@@ -1028,6 +1028,14 @@
 
   <!-- TAB 4: Dining / Restaurants -->
   <main id="tabDining" class="tab-content">
+    <!-- Quick Ranking Pills (scrolls cleanly, zero sticky bloat) -->
+    <div style="display:flex; gap:6px; overflow-x:auto; padding:10px 16px 0 16px; scrollbar-width:none;" id="diningQuickSortRow">
+      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="SCORE" onclick="setDiningQuickSort('SCORE')">🏆 Our Score</button>
+      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
+      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated (250+)</button>
+      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
+    </div>
+
     <div class="mini-kpi-ribbon">
       <div class="kpi-ribbon-card">
         <span class="kpi-ribbon-tag" style="color:var(--emerald);">Visited</span>
@@ -3947,7 +3955,22 @@
     }
 
     function onDiningFilterChange() {
+      syncDiningQuickSortUI();
       renderDining();
+    }
+
+    function setDiningQuickSort(mode) {
+      const sel = document.getElementById('diningSortPicker');
+      if (sel) sel.value = mode;
+      syncDiningQuickSortUI();
+      renderDining();
+    }
+
+    function syncDiningQuickSortUI() {
+      const cur = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+      document.querySelectorAll('#diningQuickSortRow button').forEach(btn => {
+        btn.classList.toggle('has-active', btn.dataset.dsort === cur);
+      });
     }
 
     function populateDiningRegions() {
@@ -4086,6 +4109,7 @@
       if (!grid) return;
 
       const fullList = getFilteredRestaurants();
+      syncDiningQuickSortUI();
       if (currentTab === 'dining') {
         updateScopeButtons(currentDiningScope, fullList.length);
         updateFilterBadgeCount();
