@@ -696,6 +696,14 @@
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
           </select>
 
+          <div class="filter-section-label">Holiday & Collections (Multi-Select)</div>
+          <div id="bookListChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="Christmas" onclick="toggleBookListChip(this)">🎄 Christmas / Holiday</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="Halloween" onclick="toggleBookListChip(this)">🎃 Halloween / Gothic</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="ADAPTATION" onclick="toggleBookListChip(this)">🎬 Movie Adaptations</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="1M" onclick="toggleBookListChip(this)">💎 1M+ Club</button>
+          </div>
+
           <div class="filter-section-label">Genre</div>
           <select id="bookGenreStackPicker" class="list-select" onchange="onBookGenreChange(this.value)">
             <option value="ALL" selected>🏷️ All Genres</option>
@@ -1731,6 +1739,7 @@
 
     let books = [];
     let selectedList = 'ALL';
+    let selectedBookExtraLists = new Set();
     let selectedBookGenre = 'ALL';
     let bookSortMode = 'VOTES';
     let currentViewScope = 'top100';
@@ -1776,6 +1785,25 @@
 
     function onBookSortChange(val) {
       bookSortMode = val;
+      renderBooks();
+    }
+
+    function toggleBookListChip(btn) {
+      const val = btn.dataset.blist;
+      if (!val) return;
+      if (selectedBookExtraLists.has(val)) {
+        selectedBookExtraLists.delete(val);
+        btn.classList.remove('active');
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'var(--border)';
+        btn.style.color = 'var(--text-muted)';
+      } else {
+        selectedBookExtraLists.add(val);
+        btn.classList.add('active');
+        btn.style.background = 'rgba(99, 102, 241, 0.28)';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = '#fff';
+      }
       renderBooks();
     }
 
@@ -1843,6 +1871,7 @@
 
       if (currentTab === 'catalog') {
         if (bookSortMode !== 'VOTES') count++;
+        count += selectedBookExtraLists.size;
         if (selectedBookGenre !== 'ALL') count++;
         if (filterDerek !== 'ALL') count++;
         if (filterKianna !== 'ALL') count++;
@@ -1878,11 +1907,18 @@
     function resetActiveTabFilters() {
       if (currentTab === 'catalog') {
         bookSortMode = 'VOTES';
+        selectedBookExtraLists.clear();
         selectedBookGenre = 'ALL';
         currentViewScope = 'top100';
         filterDerek = 'ALL';
         filterKianna = 'ALL';
         document.getElementById('bookSortPicker').value = 'VOTES';
+        document.querySelectorAll('#bookListChips button').forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'transparent';
+          b.style.borderColor = 'var(--border)';
+          b.style.color = 'var(--text-muted)';
+        });
         document.getElementById('bookGenreStackPicker').value = 'ALL';
         document.querySelectorAll('.toggle-pill[data-filter]').forEach(p => {
           p.classList.remove('active', 'd-on', 'k-on');
@@ -2296,33 +2332,40 @@
       return vals.reduce((s, v) => s + v, 0) / vals.length;
     }
 
+    function bookMatchesListTag(b, tag) {
+      if (!tag || tag === 'ALL') return true;
+      if (tag === 'ADAPTATION') {
+        if (!movies.length) loadMovieData();
+        const inSeries = (b.series || '').toLowerCase().includes('movie adaptation');
+        const bKey = cleanTitleForMatch(b.title);
+        return inSeries || (bKey && movieTitleSet.has(bKey));
+      }
+      if (tag === '1M') return b.numRatings >= 1000000;
+      if (tag === 'DNF') return b.derekDnf;
+      if (tag === 'Christmas') {
+        const g = (b.genres || '').toLowerCase();
+        const t = (b.title || '').toLowerCase();
+        return g.includes('christmas') || g.includes('holiday') || t.includes('christmas');
+      }
+      if (tag === 'Halloween') {
+        const g = (b.genres || '').toLowerCase();
+        const t = (b.title || '').toLowerCase();
+        return g.includes('halloween') || g.includes('gothic') || g.includes('horror') || t.includes('halloween');
+      }
+      return true;
+    }
+
     function getFilteredBookPool() {
       let pool = books.slice();
+      const activeBookTags = [];
+      if (selectedList && selectedList !== 'ALL') activeBookTags.push(selectedList);
+      selectedBookExtraLists.forEach(tag => {
+        if (!activeBookTags.includes(tag)) activeBookTags.push(tag);
+      });
 
-      if (selectedList === 'ADAPTATION') {
-        if (!movies.length) loadMovieData();
-        pool = pool.filter(b => {
-          const inSeries = (b.series || '').toLowerCase().includes('movie adaptation');
-          const bKey = cleanTitleForMatch(b.title);
-          return inSeries || (bKey && movieTitleSet.has(bKey));
-        });
-      } else if (selectedList === '1M') {
-        pool = pool.filter(b => b.numRatings >= 1000000);
-      } else if (selectedList === 'DNF') {
-        pool = pool.filter(b => b.derekDnf);
-      } else if (selectedList === 'Christmas') {
-        pool = pool.filter(b => {
-          const g = (b.genres || '').toLowerCase();
-          const t = (b.title || '').toLowerCase();
-          return g.includes('christmas') || g.includes('holiday') || t.includes('christmas');
-        });
-      } else if (selectedList === 'Halloween') {
-        pool = pool.filter(b => {
-          const g = (b.genres || '').toLowerCase();
-          const t = (b.title || '').toLowerCase();
-          return g.includes('halloween') || g.includes('gothic') || g.includes('horror') || t.includes('halloween');
-        });
-      }
+      activeBookTags.forEach(tag => {
+        pool = pool.filter(b => bookMatchesListTag(b, tag));
+      });
 
       if (selectedBookGenre && selectedBookGenre !== 'ALL') {
         const targetG = selectedBookGenre.toLowerCase().trim();
