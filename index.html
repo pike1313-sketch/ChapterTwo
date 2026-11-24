@@ -580,30 +580,77 @@
     .verdict-solid { background: rgba(251, 191, 36, 0.16); color: #fbbf24; }
     .verdict-skip { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
 
-    /* ================= GLOBAL MOBILE READABILITY & TAP-TARGET BOOST ================= */
-    html { font-size: 18px; }
-    body { padding-bottom: calc(82px + var(--safe-bottom)); }
-    header { padding: 12px 14px; }
-    .logo { font-size: 1.25rem; }
-    .list-select, .form-input { font-size: 0.92rem; padding: 11px 13px; min-height: 44px; }
-    .header-filter-btn { font-size: 0.88rem; padding: 8px 13px; min-height: 40px; }
-    .header-quick-btn { font-size: 0.88rem; padding: 8px 13px; min-height: 40px; }
-    #headerSearchBtn { font-size: 1.05rem; padding: 8px 13px; min-height: 40px; }
-    .dining-mode-btn { font-size: 0.84rem; padding: 9px 6px; min-height: 40px; }
-    .seg-btn { font-size: 0.82rem; padding: 10px 6px; min-height: 40px; }
-    .toggle-pill { font-size: 0.78rem; padding: 7px 10px; min-height: 36px; }
-    .btn-act { font-size: 0.88rem; padding: 12px 12px; min-height: 44px; }
-    .fp-back-btn { font-size: 0.86rem; padding: 8px 14px; min-height: 40px; }
-    .rate-pill { font-size: 0.84rem; padding: 10px 0; min-height: 40px; }
-    .visit-cta-btn { font-size: 0.86rem; padding: 11px 16px; min-height: 42px; }
-    .card-title { font-size: 0.96rem; }
-    .card-author { font-size: 0.8rem; }
-    .rating-badge, .rest-tag-pill, .audio-pill, .ratings-count-pill { font-size: 0.74rem; padding: 3px 7px; }
-    .score-pill { font-size: 0.78rem; padding: 3px 8px; }
-    .bottom-nav { height: calc(68px + var(--safe-bottom)); }
-    .nav-icon { font-size: 1.35rem; }
-    .nav-label { font-size: 0.75rem; }
-    .deck-btn { font-size: 0.86rem; padding: 10px 0; min-height: 40px; }
+    /* ================= GLOBAL MOBILE READABILITY, TAP-TARGET & FULL-SCREEN POPUP BOOST ================= */
+    html { font-size: 20px; }
+    body { padding-bottom: calc(90px + var(--safe-bottom)); }
+    header { padding: 10px 14px; }
+    .top-bar { margin-bottom: 0; gap: 6px; }
+    .controls-row { margin-top: 8px; }
+    .logo { font-size: 1.15rem; flex-shrink: 0; }
+    .list-select, .form-input { font-size: 0.98rem; padding: 13px 14px; min-height: 50px; }
+    .header-filter-btn { font-size: 0.9rem; padding: 10px 13px; min-height: 46px; }
+    .header-quick-btn { font-size: 0.9rem; padding: 10px 13px; min-height: 46px; }
+    #headerSearchBtn { font-size: 1.05rem; padding: 10px 12px; min-height: 46px; }
+    #deviceUserBtn { font-size: 0.9rem; padding: 10px 11px; min-height: 46px; }
+    .dining-mode-btn { font-size: 0.88rem; padding: 11px 6px; min-height: 46px; }
+    .seg-btn { font-size: 0.88rem; padding: 11px 6px; min-height: 46px; }
+    .toggle-pill { font-size: 0.84rem; padding: 9px 12px; min-height: 42px; }
+    .btn-act { font-size: 0.94rem; padding: 14px 14px; min-height: 50px; }
+    .fp-back-btn { font-size: 0.9rem; padding: 10px 15px; min-height: 46px; }
+    .flag-action-btn { font-size: 0.94rem; padding: 14px 16px; min-height: 52px; }
+    .flag-close-btn { font-size: 1.3rem; padding: 8px 12px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+    .dining-add-btn { font-size: 0.92rem; padding: 12px 16px; min-height: 48px; }
+    .rate-pill { font-size: 0.88rem; padding: 12px 0; min-height: 46px; }
+    .visit-cta-btn { font-size: 0.92rem; padding: 13px 18px; min-height: 48px; }
+    .btn-spin { font-size: 0.82rem; padding: 8px 12px; min-height: 40px; }
+    .card-title { font-size: 1rem; }
+    .card-author { font-size: 0.84rem; }
+    .rating-badge, .rest-tag-pill, .audio-pill, .ratings-count-pill { font-size: 0.78rem; padding: 4px 8px; }
+    .score-pill { font-size: 0.82rem; padding: 4px 9px; }
+    .bottom-nav { height: calc(74px + var(--safe-bottom)); }
+    .nav-icon { font-size: 1.45rem; }
+    .nav-label { font-size: 0.78rem; }
+    .deck-btn { font-size: 0.9rem; padding: 11px 0; min-height: 46px; }
+    .filter-section-label { font-size: 0.76rem; margin: 16px 0 8px 0; }
+    .drawer-title, .flag-sheet-title { font-size: 1.15rem; }
+
+    /* Full-Screen Popups & Drawers on Mobile (use the whole screen!) */
+    .drawer-overlay, .modal-overlay, .flag-modal-overlay {
+      align-items: stretch; justify-content: center; padding: 0;
+    }
+    .drawer-sheet, .modal-sheet, .flag-sheet {
+      width: 100% !important; max-width: 100% !important;
+      height: 100dvh; max-height: 100dvh !important;
+      border-radius: 0; border-top: none;
+      display: flex; flex-direction: column;
+      padding: 16px 18px calc(22px + var(--safe-bottom)) 18px;
+    }
+    .modal-overlay.fullscreen-modal .modal-sheet {
+      padding: 0;
+    }
+    .drawer-scroll-body, .form-scroll {
+      flex: 1; max-height: none !important; overflow-y: auto;
+    }
+    #whoModal .modal-sheet {
+      justify-content: center; padding: 28px 22px;
+    }
+    @media (min-width: 720px) {
+      .drawer-overlay, .modal-overlay, .flag-modal-overlay {
+        align-items: center; padding: 20px;
+      }
+      .drawer-sheet, .modal-sheet, .flag-sheet {
+        max-width: 720px !important; height: auto; max-height: 92vh !important;
+        border-radius: 18px; border: 1px solid var(--border);
+      }
+      .modal-overlay.fullscreen-modal .modal-sheet {
+        max-width: 760px !important; max-height: 94vh !important;
+      }
+    }
+    @media (max-width: 420px) {
+      .logo { font-size: 1.02rem; }
+      .header-filter-btn, .header-quick-btn { padding: 9px 10px; font-size: 0.84rem; }
+      #headerSearchBtn, #deviceUserBtn { padding: 9px 9px; }
+    }
   </style>
 </head>
 <body>
@@ -614,10 +661,10 @@
         CHAPTER<span>TWO</span><div class="stealth-pulse-dot" id="stealthDot"></div>
       </div>
       <div class="top-bar-actions">
-        <button type="button" class="header-filter-btn" id="deviceUserBtn" onclick="openWhoModal()" title="Switch Phone User" style="padding:6px 10px;">
+        <button type="button" class="header-filter-btn" id="deviceUserBtn" onclick="openWhoModal()" title="Switch Phone User">
           👤 <span id="deviceUserLabel">?</span>
         </button>
-        <button type="button" class="header-filter-btn" id="headerSearchBtn" onclick="openSearchSheet()" title="Search this tab" style="padding:6px 10px;">
+        <button type="button" class="header-filter-btn" id="headerSearchBtn" onclick="openSearchSheet()" title="Search this tab">
           🔍
         </button>
         <button type="button" class="header-filter-btn" id="headerFilterBtn" onclick="openFilterDrawer()">
@@ -626,18 +673,6 @@
         <button type="button" class="header-quick-btn" id="headerAddRestBtn" onclick="openRestaurantFormModal()">+ Add</button>
         <button type="button" class="header-quick-btn" id="headerCsvBtn" onclick="openMovieUploadModal()" style="background:var(--surface-elevated); border:1px solid var(--accent); color:#a5b4fc;">+ CSV</button>
       </div>
-    </div>
-
-    <!-- SLIM BOOK PRIMARY BAR -->
-    <div class="controls-row" id="catalogControls">
-      <select id="listPicker" class="list-select" onchange="onListChange(this.value)">
-        <option value="ALL" selected>📚 All Books (Catalog)</option>
-        <option value="ADAPTATION">🎬 Movie Adaptations</option>
-        <option value="1M">💎 1M+ Ratings Club</option>
-        <option value="Christmas">🎄 Christmas / Holiday</option>
-        <option value="Halloween">🎃 Halloween / Gothic</option>
-        <option value="DNF">🚫 Derek's Unfinished (DNF)</option>
-      </select>
     </div>
 
     <!-- SLIM MOVIE PRIMARY BAR -->
@@ -670,8 +705,8 @@
     <div class="drawer-sheet">
       <div class="drawer-header">
         <div class="drawer-title" id="filterDrawerTitle">⚙️ Filters & Sort</div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button type="button" onclick="resetActiveTabFilters()" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-size:0.72rem; font-weight:800; padding:4px 10px; border-radius:7px; cursor:pointer;">Reset</button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button type="button" onclick="resetActiveTabFilters()" style="background:none; border:1px solid var(--border); color:var(--text-muted); font-size:0.86rem; font-weight:800; padding:8px 14px; min-height:42px; border-radius:9px; cursor:pointer;">Reset</button>
           <button class="flag-close-btn" onclick="closeFilterDrawer()">✕</button>
         </div>
       </div>
@@ -697,11 +732,12 @@
           </select>
 
           <div class="filter-section-label">Holiday & Collections (Multi-Select)</div>
-          <div id="bookListChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="Christmas" onclick="toggleBookListChip(this)">🎄 Christmas / Holiday</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="Halloween" onclick="toggleBookListChip(this)">🎃 Halloween / Gothic</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="ADAPTATION" onclick="toggleBookListChip(this)">🎬 Movie Adaptations</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:7px 10px;" data-blist="1M" onclick="toggleBookListChip(this)">💎 1M+ Club</button>
+          <div id="bookListChips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="Christmas" onclick="toggleBookListChip(this)">🎄 Christmas / Holiday</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="Halloween" onclick="toggleBookListChip(this)">🎃 Halloween / Gothic</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="ADAPTATION" onclick="toggleBookListChip(this)">🎬 Movie Adaptations</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="1M" onclick="toggleBookListChip(this)">💎 1M+ Club</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="DNF" onclick="toggleBookListChip(this)">🚫 Derek's DNF</button>
           </div>
 
           <div class="filter-section-label">Genre</div>
@@ -761,15 +797,15 @@
           </select>
 
           <div class="filter-section-label">Combine Lists / Categories (Multi-Select AND)</div>
-          <div id="movieListChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Fill In Filmography" onclick="toggleMovieListChip(this)">🎞️ Filmography Poster</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Movie Puzzle" onclick="toggleMovieListChip(this)">🧩 Movie Puzzle</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Disney" onclick="toggleMovieListChip(this)">🏰 Disney Super List</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Top 250" onclick="toggleMovieListChip(this)">⭐ IMDb Top 250</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Book Adaptation" onclick="toggleMovieListChip(this)">📚 Based on Books</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Christmas" onclick="toggleMovieListChip(this)">🎄 Christmas</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="Halloween" onclick="toggleMovieListChip(this)">🎃 Halloween</button>
-            <button type="button" class="toggle-pill" style="border:1px solid var(--border); padding:6px 10px;" data-mlist="100k Club" onclick="toggleMovieListChip(this)">💎 100k Club</button>
+          <div id="movieListChips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Fill In Filmography" onclick="toggleMovieListChip(this)">🎞️ Filmography Poster</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Movie Puzzle" onclick="toggleMovieListChip(this)">🧩 Movie Puzzle</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Disney" onclick="toggleMovieListChip(this)">🏰 Disney Super List</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Top 250" onclick="toggleMovieListChip(this)">⭐ IMDb Top 250</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Book Adaptation" onclick="toggleMovieListChip(this)">📚 Based on Books</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Christmas" onclick="toggleMovieListChip(this)">🎄 Christmas</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Halloween" onclick="toggleMovieListChip(this)">🎃 Halloween</button>
+            <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="100k Club" onclick="toggleMovieListChip(this)">💎 100k Club</button>
           </div>
 
           <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; margin-top:8px; border-color:var(--gold);">
@@ -895,9 +931,9 @@
             <option value="Other">🍽️ Other</option>
           </select>
         </div>
-
-        <button type="button" class="dining-add-btn" style="width:100%; margin-top:16px; padding:11px;" onclick="closeFilterDrawer()">Done</button>
       </div>
+
+      <button type="button" class="dining-add-btn" style="width:100%; margin-top:12px; flex-shrink:0;" onclick="closeFilterDrawer()">Done</button>
     </div>
   </div>
 
@@ -1062,11 +1098,11 @@
   <!-- TAB 4: Dining / Restaurants -->
   <main id="tabDining" class="tab-content">
     <!-- Quick Ranking Pills (scrolls cleanly, zero sticky bloat) -->
-    <div style="display:flex; gap:6px; overflow-x:auto; padding:10px 16px 0 16px; scrollbar-width:none;" id="diningQuickSortRow">
-      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="SCORE" onclick="setDiningQuickSort('SCORE')">🏆 Our Score</button>
-      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
-      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated (250+)</button>
-      <button type="button" class="header-filter-btn" style="font-size:0.74rem; padding:5px 10px; white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
+    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 16px 0 16px; scrollbar-width:none;" id="diningQuickSortRow">
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="SCORE" onclick="setDiningQuickSort('SCORE')">🏆 Our Score</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated (250+)</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
     </div>
 
     <div class="mini-kpi-ribbon">
@@ -1227,12 +1263,15 @@
   </div>
 
   <!-- Series Drawer Modal -->
-  <div class="modal-overlay" id="seriesModal">
+  <div class="modal-overlay" id="seriesModal" onclick="if(event.target===this) closeSeriesModal()">
     <div class="modal-sheet">
-      <h2 class="modal-title" id="seriesTitle" style="margin-bottom:4px;">Series</h2>
-      <div id="seriesSub" style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:14px;"></div>
-      <div id="seriesList" style="max-height: 60vh; overflow-y: auto;"></div>
-      <div class="modal-actions">
+      <div class="drawer-header" style="margin-bottom:6px;">
+        <h2 class="modal-title" id="seriesTitle">Series</h2>
+        <button class="flag-close-btn" onclick="closeSeriesModal()">✕</button>
+      </div>
+      <div id="seriesSub" style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:14px;"></div>
+      <div id="seriesList" style="flex: 1; overflow-y: auto;"></div>
+      <div class="modal-actions" style="flex-shrink:0;">
         <button class="btn-act btn-close" onclick="closeSeriesModal()">Close</button>
       </div>
     </div>
@@ -2413,7 +2452,7 @@
         updateFilterBadgeCount();
       }
 
-      const isExemptShelf = (selectedList === 'DNF');
+      const isExemptShelf = (selectedList === 'DNF' || selectedBookExtraLists.has('DNF'));
       let targetCohort = scoped;
       if (!isExemptShelf) {
         if (currentViewScope === 'top100') targetCohort = scoped.slice(0, 100);
@@ -2856,13 +2895,25 @@
       renderBooks();
     }
 
-    function filterByChallengeYear(year) {
-      switchTab('catalog');
+    function clearBookListSelectionForDeepLink() {
       selectedList = 'ALL';
       selectedBookGenre = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
+      selectedBookExtraLists.clear();
+      document.querySelectorAll('#bookListChips .toggle-pill').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'transparent';
+        b.style.borderColor = 'var(--border)';
+        b.style.color = 'var(--text-muted)';
+      });
+      const lp = document.getElementById('listPicker');
+      if (lp) lp.value = 'ALL';
       const bgPicker = document.getElementById('bookGenreStackPicker');
       if (bgPicker) bgPicker.value = 'ALL';
+    }
+
+    function filterByChallengeYear(year) {
+      switchTab('catalog');
+      clearBookListSelectionForDeepLink();
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = (currentShelfUser === 'D' ? 'Derek' : (currentShelfUser === 'K' ? 'Kianna' : 'Both')) + ' ' + year + ' Challenge Reads';
 
@@ -2876,11 +2927,7 @@
 
     function filterByAllReads() {
       switchTab('catalog');
-      selectedList = 'ALL';
-      selectedBookGenre = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      const bgPicker = document.getElementById('bookGenreStackPicker');
-      if (bgPicker) bgPicker.value = 'ALL';
+      clearBookListSelectionForDeepLink();
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = 'Total Reads';
 
@@ -2894,11 +2941,7 @@
 
     function filterByFiveStars() {
       switchTab('catalog');
-      selectedList = 'ALL';
-      selectedBookGenre = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      const bgPicker = document.getElementById('bookGenreStackPicker');
-      if (bgPicker) bgPicker.value = 'ALL';
+      clearBookListSelectionForDeepLink();
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = '5-Star Favorites (★ 5.0)';
 
@@ -2912,11 +2955,7 @@
 
     function filterByMutualReads() {
       switchTab('catalog');
-      selectedList = 'ALL';
-      selectedBookGenre = 'ALL';
-      document.getElementById('listPicker').value = 'ALL';
-      const bgPicker = document.getElementById('bookGenreStackPicker');
-      if (bgPicker) bgPicker.value = 'ALL';
+      clearBookListSelectionForDeepLink();
       document.getElementById('filterIndicator').style.display = 'flex';
       document.getElementById('filterIndicatorText').textContent = 'Shared / Mutual Reads';
       deepFilterPredicate = (b) => (b.derekRead || b.derekRating > 0) && (b.kiannaRead || b.kiannaRating > 0);
