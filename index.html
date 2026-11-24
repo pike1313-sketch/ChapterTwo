@@ -154,9 +154,9 @@
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .grid-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 12px 16px; }
-    @media (min-width: 600px) {
-      .grid-container { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .grid-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 12px 14px; }
+    @media (min-width: 760px) {
+      .grid-container { max-width: 760px; margin: 14px auto; padding: 0 16px; }
     }
 
     .book-card {
@@ -376,7 +376,7 @@
       white-space: nowrap;
     }
     .suggestions-row {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;
+      display: grid; grid-template-columns: 1fr; gap: 8px;
     }
     .suggestion-chip {
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
@@ -4228,13 +4228,14 @@
 
       const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
 
-      // Upgraded KPI Ribbon: Visited | Derek Avg | Kianna Avg
-      const totalSpots = list.length;
-      const visitedCount = list.filter(r => r.visited).length;
+      // Upgraded KPI Ribbon: Always based on TOTAL restaurants (visited + unvisited)
+      const allRestaurants = restaurants || [];
+      const totalSpots = allRestaurants.length;
+      const visitedCount = allRestaurants.filter(r => r.visited).length;
       const visitedPct = totalSpots ? Math.round((visitedCount / totalSpots) * 100) : 0;
 
-      const dRated = list.filter(r => Number(r.derekRating) > 0);
-      const kRated = list.filter(r => Number(r.kiannaRating) > 0);
+      const dRated = allRestaurants.filter(r => Number(r.derekRating) > 0);
+      const kRated = allRestaurants.filter(r => Number(r.kiannaRating) > 0);
       const dAvg = dRated.length ? (dRated.reduce((s, r) => s + Number(r.derekRating), 0) / dRated.length).toFixed(1) : '--';
       const kAvg = kRated.length ? (kRated.reduce((s, r) => s + Number(r.kiannaRating), 0) / kRated.length).toFixed(1) : '--';
 
