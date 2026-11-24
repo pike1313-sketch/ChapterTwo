@@ -624,6 +624,23 @@
     .filter-section-label { font-size: 0.76rem; margin: 16px 0 8px 0; }
     .drawer-title, .flag-sheet-title { font-size: 1.15rem; }
 
+    /* Full-width 5-button Status Grids (Derek & Kianna across Books, Movies & Dining) */
+    .status-user-block { margin-bottom: 10px; }
+    .status-user-head {
+      font-size: 0.76rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px;
+      margin-bottom: 5px;
+    }
+    .status-btn-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 4px; width: 100%;
+    }
+    .status-btn-grid .toggle-pill {
+      padding: 10px 3px; min-height: 46px; font-size: 0.72rem; font-weight: 800;
+      text-align: center; line-height: 1.15; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
     /* Frozen Top Bar: 4 Quick Pills + KPI Ribbon (Identical across Books, Movies & Dining) */
     .sticky-tab-top {
       position: sticky;
@@ -766,28 +783,24 @@
           </select>
 
           <div class="filter-section-label">Status</div>
-          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-derek">Derek</span>
-              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
-                <button class="toggle-pill" data-filter="derek" data-val="NOT_RATED">Not Rated</button>
-                <button class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
-                <button class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-filter="derek" data-val="UNRATED">Read/No ★</button>
-                <button class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
-              </div>
+          <div class="status-user-block">
+            <div class="status-user-head label-derek">Derek</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
+              <button type="button" class="toggle-pill" data-filter="derek" data-val="UNRATED">Read (no ★)</button>
+              <button type="button" class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
+              <button type="button" class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
             </div>
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-kianna">Kianna</span>
-              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="NOT_RATED">Not Rated</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="UNRATED">Read/No ★</button>
-                <button class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
-              </div>
+          </div>
+          <div class="status-user-block">
+            <div class="status-user-head label-kianna">Kianna</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
+              <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNRATED">Read (no ★)</button>
+              <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
+              <button type="button" class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
             </div>
           </div>
         </div>
@@ -845,28 +858,24 @@
           </select>
 
           <div class="filter-section-label">Status</div>
-          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-derek">Derek</span>
-              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="NOT_RATED">Not Rated</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Watched</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Seen/No ★</button>
-                <button class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unwatched</button>
-              </div>
+          <div class="status-user-block">
+            <div class="status-user-head label-derek">Derek</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Seen</button>
+              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Seen (no ★)</button>
+              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unseen</button>
+              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
             </div>
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-kianna">Kianna</span>
-              <div style="display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="NOT_RATED">Not Rated</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Watched</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Seen/No ★</button>
-                <button class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unwatched</button>
-              </div>
+          </div>
+          <div class="status-user-block">
+            <div class="status-user-head label-kianna">Kianna</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Seen</button>
+              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Seen (no ★)</button>
+              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unseen</button>
+              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
             </div>
           </div>
         </div>
@@ -893,30 +902,25 @@
             <option value="NAME">🔤 A – Z</option>
           </select>
 
-          <div class="filter-section-label">Visited Status</div>
-          <select id="diningVisitedPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="ALL" selected>🍽️ All Spots (Visited + Want to Try)</option>
-            <option value="VISITED">✅ Visited Only</option>
-            <option value="UNVISITED">📌 Want to Try (Unvisited)</option>
-          </select>
-
-          <div class="filter-section-label">Derek & Kianna Ratings</div>
-          <div class="filter-pills-row" style="flex-direction:column; gap:8px;">
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-derek">Derek</span>
-              <div style="display:flex; gap:2px;">
-                <button class="toggle-pill active" data-dfilter="derek" data-val="ALL">All</button>
-                <button class="toggle-pill" data-dfilter="derek" data-val="RATED">Rated</button>
-                <button class="toggle-pill" data-dfilter="derek" data-val="NOT_RATED">Not Rated</button>
-              </div>
+          <div class="filter-section-label">Status</div>
+          <div class="status-user-block">
+            <div class="status-user-head label-derek">Derek</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-dfilter="derek" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="RATED">Rated</button>
+              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="VISITED_NO_STAR">Visited (no ★)</button>
+              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="NOT_VISITED">Not Visited</button>
+              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="WISH">Wish</button>
             </div>
-            <div class="toggle-group" style="width:100%; justify-content:space-between;">
-              <span class="toggle-label label-kianna">Kianna</span>
-              <div style="display:flex; gap:2px;">
-                <button class="toggle-pill active" data-dfilter="kianna" data-val="ALL">All</button>
-                <button class="toggle-pill" data-dfilter="kianna" data-val="RATED">Rated</button>
-                <button class="toggle-pill" data-dfilter="kianna" data-val="NOT_RATED">Not Rated</button>
-              </div>
+          </div>
+          <div class="status-user-block">
+            <div class="status-user-head label-kianna">Kianna</div>
+            <div class="status-btn-grid">
+              <button type="button" class="toggle-pill active" data-dfilter="kianna" data-val="ALL">All</button>
+              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="RATED">Rated</button>
+              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="VISITED_NO_STAR">Visited (no ★)</button>
+              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="NOT_VISITED">Not Visited</button>
+              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="WISH">Wish</button>
             </div>
           </div>
 
@@ -1579,9 +1583,10 @@
         <div id="rmCostBreakdown" style="font-size:0.75rem; color:#cbd5e1; background:var(--surface-elevated); border:1px solid var(--border); border-radius:9px; padding:8px 11px; margin-bottom:10px;"></div>
 
         <!-- Quick Mode Toggles -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-          <button type="button" id="btnRmFamilyToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('familyFriendly')">👨‍👩‍👧‍👦 Family Friendly</button>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+          <button type="button" id="btnRmFamilyToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('familyFriendly')">👨‍👩‍👧‍👦 Family</button>
           <button type="button" id="btnRmDateToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="quickToggleRestaurantFlag('dateNight')">🥂 Date Night</button>
+          <button type="button" id="btnRmWishToggle" class="btn-act" style="padding:8px; font-size:0.75rem; border:1px solid var(--border);" onclick="toggleDiningWishForActive()">📌 Wish</button>
         </div>
 
         <div id="rmKidsNotesBox" style="display:none; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); border-radius:10px; padding:9px 11px; margin-bottom:10px;">
@@ -2184,7 +2189,6 @@
         dFilterDerek = 'ALL';
         dFilterKianna = 'ALL';
         document.getElementById('diningListPicker').value = 'ALL_SPOTS';
-        document.getElementById('diningVisitedPicker').value = 'ALL';
         document.getElementById('diningRegionPicker').value = 'Haslet / DFW';
         document.getElementById('diningCategoryPicker').value = 'ALL';
         document.getElementById('diningSortPicker').value = 'ULTIMATE';
@@ -4529,27 +4533,79 @@
       if ([...picker.options].some(o => o.value === current)) picker.value = current;
     }
 
+    function getDiningWishSet(who) {
+      const key = 'chaptertwo_dining_wish_' + String(who || 'derek').toLowerCase();
+      try {
+        const arr = JSON.parse(localStorage.getItem(key) || '[]');
+        return new Set(Array.isArray(arr) ? arr : []);
+      } catch (e) { return new Set(); }
+    }
+
+    function saveDiningWishSet(who, setObj) {
+      const key = 'chaptertwo_dining_wish_' + String(who || 'derek').toLowerCase();
+      try { localStorage.setItem(key, JSON.stringify([...setObj])); } catch (e) {}
+    }
+
+    function isRestaurantWishedBy(r, who) {
+      const id = String(r.id || r.name || '').trim();
+      return id ? getDiningWishSet(who).has(id) : false;
+    }
+
+    function syncRestaurantWishBtnUI(r) {
+      const btn = document.getElementById('btnRmWishToggle');
+      if (!btn || !r) return;
+      const who = (deviceUser && deviceUser.toLowerCase().startsWith('k')) ? 'kianna' : 'derek';
+      const wished = isRestaurantWishedBy(r, who);
+      btn.style.background = wished ? 'rgba(99, 102, 241, 0.28)' : 'var(--surface-elevated)';
+      btn.style.borderColor = wished ? 'var(--accent)' : 'var(--border)';
+      btn.style.color = wished ? '#c7d2fe' : '#fff';
+      btn.textContent = wished ? '📌 Wished ✓' : '📌 Wish';
+    }
+
+    function toggleDiningWishForActive() {
+      if (!activeRestaurant) return;
+      const who = (deviceUser && deviceUser.toLowerCase().startsWith('k')) ? 'kianna' : 'derek';
+      const id = String(activeRestaurant.id || activeRestaurant.name || '').trim();
+      const setObj = getDiningWishSet(who);
+      if (setObj.has(id)) {
+        setObj.delete(id);
+        showToast('Removed from Wish list');
+      } else {
+        setObj.add(id);
+        showToast('📌 Added to Wish list!');
+      }
+      saveDiningWishSet(who, setObj);
+      syncRestaurantWishBtnUI(activeRestaurant);
+      renderDining();
+    }
+
     function getFilteredRestaurants() {
       const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
-      const visitedFilter = (document.getElementById('diningVisitedPicker') || {}).value || 'ALL';
       const regionFilter = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
       const catFilter = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
-      const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+      const sortMode = (document.getElementById('diningSortPicker') || {}).value || 'ULTIMATE';
+      const dWishSet = getDiningWishSet('derek');
+      const kWishSet = getDiningWishSet('kianna');
 
       let list = restaurants.filter(r => {
         if (listFilter === 'OUR_LIST' && !r.visited) return false;
         if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
         if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
 
-        if (visitedFilter === 'VISITED' && !r.visited) return false;
-        if (visitedFilter === 'UNVISITED' && r.visited) return false;
-
+        const rKey = String(r.id || r.name || '').trim();
         const dHasRate = Number(r.derekRating) > 0;
         const kHasRate = Number(r.kiannaRating) > 0;
+        const isVisited = Boolean(r.visited) || dHasRate || kHasRate;
+
         if (dFilterDerek === 'RATED' && !dHasRate) return false;
-        if (dFilterDerek === 'NOT_RATED' && dHasRate) return false;
+        if (dFilterDerek === 'VISITED_NO_STAR' && (!isVisited || dHasRate)) return false;
+        if (dFilterDerek === 'NOT_VISITED' && isVisited) return false;
+        if (dFilterDerek === 'WISH' && !dWishSet.has(rKey)) return false;
+
         if (dFilterKianna === 'RATED' && !kHasRate) return false;
-        if (dFilterKianna === 'NOT_RATED' && kHasRate) return false;
+        if (dFilterKianna === 'VISITED_NO_STAR' && (!isVisited || kHasRate)) return false;
+        if (dFilterKianna === 'NOT_VISITED' && isVisited) return false;
+        if (dFilterKianna === 'WISH' && !kWishSet.has(rKey)) return false;
 
         if (regionFilter === 'CHAINS_ONLY') {
           if (!r.isChain) return false;
@@ -4888,6 +4944,7 @@
 
       styleToggleBtn(document.getElementById('btnRmFamilyToggle'), !!r.familyFriendly, 'var(--emerald)');
       styleToggleBtn(document.getElementById('btnRmDateToggle'), !!r.dateNight, 'var(--kianna)');
+      syncRestaurantWishBtnUI(r);
 
       const kidsBox = document.getElementById('rmKidsNotesBox');
       if (r.kidsNotes) {
@@ -5421,26 +5478,26 @@
         btn.style.color = isKianna ? 'var(--kianna)' : 'var(--derek)';
       }
 
-      // 1. Books: Top 250 Ultimate that this user has NOT rated
+      // 1. Books: Top 250 Ultimate that this user has NOT read
       selectedList = 'ALL';
       selectedBookExtraLists.clear();
       bookSortMode = 'ULTIMATE';
       currentViewScope = 'top250';
-      filterDerek = isKianna ? 'ALL' : 'NOT_RATED';
-      filterKianna = isKianna ? 'NOT_RATED' : 'ALL';
+      filterDerek = isKianna ? 'ALL' : 'UNREAD';
+      filterKianna = isKianna ? 'UNREAD' : 'ALL';
       if (document.getElementById('bookSortPicker')) document.getElementById('bookSortPicker').value = 'ULTIMATE';
       syncBookListChipsUI();
       syncBookQuickUI();
       syncTogglePillUI('data-filter', 'derek', filterDerek);
       syncTogglePillUI('data-filter', 'kianna', filterKianna);
 
-      // 2. Movies: Ultimate on the Fill In Filmography poster that this user has NOT rated
+      // 2. Movies: Ultimate on the Fill In Filmography poster that this user has NOT seen
       selectedMovieList = 'ALL';
       selectedMovieExtraLists = new Set(['Fill In Filmography']);
       movieSortMode = 'ULTIMATE';
       currentMovieScope = 'top250';
-      mFilterDerek = isKianna ? 'ALL' : 'NOT_RATED';
-      mFilterKianna = isKianna ? 'NOT_RATED' : 'ALL';
+      mFilterDerek = isKianna ? 'ALL' : 'UNWATCHED';
+      mFilterKianna = isKianna ? 'UNWATCHED' : 'ALL';
       if (document.getElementById('movieSortPicker')) document.getElementById('movieSortPicker').value = 'ULTIMATE';
       syncMovieListChipsUI();
       syncMovieQuickUI();
@@ -5451,9 +5508,12 @@
       diningMode = 'ALL';
       document.querySelectorAll('.dining-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.dmode === 'ALL'));
       currentDiningScope = 'top100';
+      dFilterDerek = isKianna ? 'ALL' : 'NOT_VISITED';
+      dFilterKianna = isKianna ? 'NOT_VISITED' : 'ALL';
       if (document.getElementById('diningListPicker')) document.getElementById('diningListPicker').value = 'ALL_SPOTS';
       if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'ULTIMATE';
-      if (document.getElementById('diningVisitedPicker')) document.getElementById('diningVisitedPicker').value = 'UNVISITED';
+      syncTogglePillUI('data-dfilter', 'derek', dFilterDerek);
+      syncTogglePillUI('data-dfilter', 'kianna', dFilterKianna);
       syncDiningQuickSortUI();
 
       // 4. Our Shelf perspective
