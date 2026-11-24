@@ -674,30 +674,6 @@
         <button type="button" class="header-quick-btn" id="headerCsvBtn" onclick="openMovieUploadModal()" style="background:var(--surface-elevated); border:1px solid var(--accent); color:#a5b4fc;">+ CSV</button>
       </div>
     </div>
-
-    <!-- SLIM MOVIE PRIMARY BAR -->
-    <div class="controls-row" id="movieControls" style="display:none;">
-      <select id="movieUnifiedPicker" class="list-select" onchange="onMovieListChange(this.value)">
-        <option value="Fill In Filmography" selected>🎞️ Fill In Filmography</option>
-        <option value="ALL">🎬 All Movies (Catalog)</option>
-        <option value="Book Adaptation">📚 Based on Books</option>
-        <option value="Top 250">⭐ IMDb Top 250</option>
-        <option value="Disney">🏰 Disney</option>
-        <option value="Christmas">🎄 Christmas / Holiday</option>
-        <option value="Halloween">🎃 Halloween / Spooky</option>
-        <option value="Movie Puzzle">🧩 "The Movies" Puzzle Master</option>
-        <option value="100k Club">💎 100k Club (All Movies)</option>
-      </select>
-    </div>
-
-    <!-- SLIM DINING PRIMARY BAR -->
-    <div class="controls-row" id="diningControls" style="display:none;">
-      <div class="dining-mode-deck">
-        <button class="dining-mode-btn active" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
-        <button class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
-        <button class="dining-mode-btn" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
-      </div>
-    </div>
   </header>
 
   <!-- UNIFIED SLIDE-UP FILTERS & SORT DRAWER -->
@@ -791,8 +767,8 @@
         <div id="drawerMovieFilters" style="display:none;">
           <div class="filter-section-label">Rank / Sort By</div>
           <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)">
-            <option value="VOTES" selected>🗳️ Most Ratings</option>
-            <option value="RATING">⭐ Avg Rating (10k+ ratings)</option>
+            <option value="RATING" selected>⭐ Highest Rated</option>
+            <option value="VOTES">🗳️ Most Ratings</option>
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
           </select>
 
@@ -859,15 +835,22 @@
 
         <!-- DINING FILTERS -->
         <div id="drawerDiningFilters" style="display:none;">
+          <div class="filter-section-label">Vibe / Occasion</div>
+          <div class="dining-mode-deck" style="margin-bottom:4px;">
+            <button type="button" class="dining-mode-btn active" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
+            <button type="button" class="dining-mode-btn" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
+            <button type="button" class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
+          </div>
+
           <div class="filter-section-label">Rank / Sort By</div>
           <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="SCORE" selected>🏆 Overall Score (/100)</option>
-            <option value="VOTES">🔥 Most Rated (Google)</option>
+            <option value="DISTANCE">📍 Closest to Home</option>
+            <option value="VOTES" selected>🔥 Most Rated (Google)</option>
             <option value="RATING">⭐ Highest Rated (250+ reviews)</option>
             <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+            <option value="SCORE">🏆 Overall Score (/100)</option>
             <option value="COST_ASC">💵 Cost: Low → High</option>
             <option value="COST_DESC">💰 Cost: High → Low</option>
-            <option value="DISTANCE">📍 Closest Drive</option>
             <option value="NAME">🔤 A – Z</option>
           </select>
 
@@ -939,6 +922,13 @@
 
   <!-- TAB 1: Books Catalog -->
   <main id="tabCatalog" class="tab-content active">
+    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="bookQuickRow">
+      <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-bquick="VOTES" onclick="setBookQuickPreset('VOTES')">🔥 Most Rated</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="RATING" onclick="setBookQuickPreset('RATING')">⭐ Highest Rated</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="HOLIDAY" onclick="setBookQuickPreset('HOLIDAY')">🎄 Holiday</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-bquick="OUR_TOP" onclick="setBookQuickPreset('OUR_TOP')">❤️ Our Top</button>
+    </div>
+
     <div class="filter-indicator" id="filterIndicator">
       <div>Active Filter: <span id="filterIndicatorText">Custom</span></div>
       <button onclick="resetDeepFilters()">✕ Clear</button>
@@ -1072,6 +1062,13 @@
 
   <!-- TAB 3: Movies Catalog -->
   <main id="tabMovies" class="tab-content">
+    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="movieQuickRow">
+      <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-mquick="FILMOGRAPHY" onclick="setMovieQuickPreset('FILMOGRAPHY')">🎞️ Filmography</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="DISNEY" onclick="setMovieQuickPreset('DISNEY')">🏰 Disney</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="TOP250" onclick="setMovieQuickPreset('TOP250')">⭐ IMDb Top 250</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-mquick="OUR_TOP" onclick="setMovieQuickPreset('OUR_TOP')">❤️ Our Top</button>
+    </div>
+
     <div class="mini-kpi-ribbon">
       <div class="kpi-ribbon-card">
         <span class="kpi-ribbon-tag derek">Derek Watched</span>
@@ -1098,10 +1095,10 @@
   <!-- TAB 4: Dining / Restaurants -->
   <main id="tabDining" class="tab-content">
     <!-- Quick Ranking Pills (scrolls cleanly, zero sticky bloat) -->
-    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 16px 0 16px; scrollbar-width:none;" id="diningQuickSortRow">
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="SCORE" onclick="setDiningQuickSort('SCORE')">🏆 Our Score</button>
+    <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 14px 0 14px; scrollbar-width:none;" id="diningQuickSortRow">
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="DISTANCE" onclick="setDiningQuickSort('DISTANCE')">📍 Closest</button>
       <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="VOTES" onclick="setDiningQuickSort('VOTES')">🔥 Most Rated</button>
-      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated (250+)</button>
+      <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="RATING" onclick="setDiningQuickSort('RATING')">⭐ Highest Rated</button>
       <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-dsort="OUR_TOP" onclick="setDiningQuickSort('OUR_TOP')">❤️ Our Top</button>
     </div>
 
@@ -1793,11 +1790,11 @@
     let movies = [];
     let movieTitleSet = new Set();
     let bookTitleSet = new Set();
-    let selectedMovieList = 'Fill In Filmography';
-    let selectedMovieExtraLists = new Set();
+    let selectedMovieList = 'ALL';
+    let selectedMovieExtraLists = new Set(['Fill In Filmography']);
     let selectedTop250Year = 'ALL';
     let selectedMovieGenre = 'ALL';
-    let movieSortMode = 'VOTES';
+    let movieSortMode = 'RATING';
     let currentMovieScope = 'top100';
     let currentDiningScope = 'top100';
     let mFilterDerek = 'ALL';
@@ -1827,22 +1824,54 @@
       renderBooks();
     }
 
+    function syncBookListChipsUI() {
+      document.querySelectorAll('#bookListChips button').forEach(btn => {
+        const active = selectedBookExtraLists.has(btn.dataset.blist);
+        btn.classList.toggle('active', active);
+        btn.style.background = active ? 'rgba(99, 102, 241, 0.28)' : 'transparent';
+        btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+        btn.style.color = active ? '#fff' : 'var(--text-muted)';
+      });
+    }
+
+    function setBookQuickPreset(preset) {
+      deepFilterPredicate = null;
+      const ind = document.getElementById('filterIndicator');
+      if (ind) ind.style.display = 'none';
+      selectedList = 'ALL';
+      selectedBookExtraLists.clear();
+
+      if (preset === 'HOLIDAY') {
+        selectedBookExtraLists.add('Christmas');
+        bookSortMode = 'VOTES';
+      } else {
+        bookSortMode = preset; // 'VOTES' | 'RATING' | 'OUR_TOP'
+      }
+      const sp = document.getElementById('bookSortPicker');
+      if (sp) sp.value = bookSortMode;
+      syncBookListChipsUI();
+      syncBookQuickUI();
+      renderBooks();
+    }
+
+    function syncBookQuickUI() {
+      let activePreset = '';
+      if (selectedBookExtraLists.size === 1 && selectedBookExtraLists.has('Christmas')) {
+        activePreset = 'HOLIDAY';
+      } else if (selectedBookExtraLists.size === 0) {
+        activePreset = bookSortMode;
+      }
+      document.querySelectorAll('#bookQuickRow button').forEach(btn => {
+        btn.classList.toggle('has-active', btn.dataset.bquick === activePreset);
+      });
+    }
+
     function toggleBookListChip(btn) {
       const val = btn.dataset.blist;
       if (!val) return;
-      if (selectedBookExtraLists.has(val)) {
-        selectedBookExtraLists.delete(val);
-        btn.classList.remove('active');
-        btn.style.background = 'transparent';
-        btn.style.borderColor = 'var(--border)';
-        btn.style.color = 'var(--text-muted)';
-      } else {
-        selectedBookExtraLists.add(val);
-        btn.classList.add('active');
-        btn.style.background = 'rgba(99, 102, 241, 0.28)';
-        btn.style.borderColor = 'var(--accent)';
-        btn.style.color = '#fff';
-      }
+      if (selectedBookExtraLists.has(val)) selectedBookExtraLists.delete(val);
+      else selectedBookExtraLists.add(val);
+      syncBookListChipsUI();
       renderBooks();
     }
 
@@ -1851,26 +1880,65 @@
       renderMovies();
     }
 
-    function toggleMovieListChip(btn) {
-      const val = btn.dataset.mlist;
-      if (!val) return;
-      if (selectedMovieExtraLists.has(val)) {
-        selectedMovieExtraLists.delete(val);
-        btn.classList.remove('active');
-        btn.style.background = 'transparent';
-        btn.style.borderColor = 'var(--border)';
-        btn.style.color = 'var(--text-muted)';
-      } else {
-        selectedMovieExtraLists.add(val);
-        btn.classList.add('active');
-        btn.style.background = 'rgba(99, 102, 241, 0.28)';
-        btn.style.borderColor = 'var(--accent)';
-        btn.style.color = '#fff';
-      }
+    function syncMovieListChipsUI() {
+      document.querySelectorAll('#movieListChips button').forEach(btn => {
+        const active = selectedMovieExtraLists.has(btn.dataset.mlist);
+        btn.classList.toggle('active', active);
+        btn.style.background = active ? 'rgba(99, 102, 241, 0.28)' : 'transparent';
+        btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+        btn.style.color = active ? '#fff' : 'var(--text-muted)';
+      });
       const yearPicker = document.getElementById('top250YearPicker');
       if (yearPicker) {
         yearPicker.style.display = (selectedMovieList === 'Top 250' || selectedMovieExtraLists.has('Top 250')) ? 'inline-block' : 'none';
       }
+    }
+
+    function setMovieQuickPreset(preset) {
+      selectedMovieList = 'ALL';
+      selectedMovieExtraLists.clear();
+      selectedTop250Year = 'ALL';
+      if (preset === 'FILMOGRAPHY') {
+        selectedMovieExtraLists.add('Fill In Filmography');
+        movieSortMode = 'RATING';
+      } else if (preset === 'DISNEY') {
+        selectedMovieExtraLists.add('Disney');
+        movieSortMode = 'RATING';
+      } else if (preset === 'TOP250') {
+        selectedMovieExtraLists.add('Top 250');
+        movieSortMode = 'RATING';
+      } else if (preset === 'OUR_TOP') {
+        movieSortMode = 'OUR_TOP';
+      }
+      const sp = document.getElementById('movieSortPicker');
+      if (sp) sp.value = movieSortMode;
+      syncMovieListChipsUI();
+      syncMovieQuickUI();
+      renderMovies();
+    }
+
+    function syncMovieQuickUI() {
+      let activePreset = '';
+      if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Fill In Filmography')) {
+        activePreset = 'FILMOGRAPHY';
+      } else if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Disney')) {
+        activePreset = 'DISNEY';
+      } else if (selectedMovieExtraLists.size === 1 && selectedMovieExtraLists.has('Top 250')) {
+        activePreset = 'TOP250';
+      } else if (selectedMovieExtraLists.size === 0 && movieSortMode === 'OUR_TOP') {
+        activePreset = 'OUR_TOP';
+      }
+      document.querySelectorAll('#movieQuickRow button').forEach(btn => {
+        btn.classList.toggle('has-active', btn.dataset.mquick === activePreset);
+      });
+    }
+
+    function toggleMovieListChip(btn) {
+      const val = btn.dataset.mlist;
+      if (!val) return;
+      if (selectedMovieExtraLists.has(val)) selectedMovieExtraLists.delete(val);
+      else selectedMovieExtraLists.add(val);
+      syncMovieListChipsUI();
       renderMovies();
     }
 
@@ -1916,7 +1984,7 @@
         if (filterKianna !== 'ALL') count++;
         if (currentViewScope !== 'top100') count++;
       } else if (currentTab === 'movies') {
-        if (movieSortMode !== 'VOTES') count++;
+        if (movieSortMode !== 'RATING') count++;
         count += selectedMovieExtraLists.size;
         if (selectedMovieGenre !== 'ALL') count++;
         if (selectedTop250Year !== 'ALL') count++;
@@ -1928,12 +1996,13 @@
         const visF = (document.getElementById('diningVisitedPicker') || {}).value || 'ALL';
         const regF = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
         const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
-        const sortF = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+        const sortF = (document.getElementById('diningSortPicker') || {}).value || 'VOTES';
+        if (diningMode !== 'ALL') count++;
         if (listF !== 'ALL_SPOTS') count++;
         if (visF !== 'ALL') count++;
         if (regF !== 'Haslet / DFW') count++;
         if (catF !== 'ALL') count++;
-        if (sortF !== 'SCORE') count++;
+        if (sortF !== 'VOTES') count++;
         if (dFilterDerek !== 'ALL') count++;
         if (dFilterKianna !== 'ALL') count++;
         if (currentDiningScope !== 'top100') count++;
@@ -1965,20 +2034,16 @@
         });
         renderBooks();
       } else if (currentTab === 'movies') {
-        movieSortMode = 'VOTES';
-        selectedMovieExtraLists.clear();
+        selectedMovieList = 'ALL';
+        movieSortMode = 'RATING';
+        selectedMovieExtraLists = new Set(['Fill In Filmography']);
         selectedMovieGenre = 'ALL';
         selectedTop250Year = 'ALL';
         currentMovieScope = 'top100';
         mFilterDerek = 'ALL';
         mFilterKianna = 'ALL';
-        document.getElementById('movieSortPicker').value = 'VOTES';
-        document.querySelectorAll('#movieListChips button').forEach(b => {
-          b.classList.remove('active');
-          b.style.background = 'transparent';
-          b.style.borderColor = 'var(--border)';
-          b.style.color = 'var(--text-muted)';
-        });
+        document.getElementById('movieSortPicker').value = 'RATING';
+        syncMovieListChipsUI();
         document.getElementById('movieGenreStackPicker').value = 'ALL';
         document.querySelectorAll('.toggle-pill[data-mfilter]').forEach(p => {
           p.classList.remove('active', 'd-on', 'k-on');
@@ -1986,6 +2051,10 @@
         });
         renderMovies();
       } else if (currentTab === 'dining') {
+        diningMode = 'ALL';
+        document.querySelectorAll('.dining-mode-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.dmode === 'ALL');
+        });
         currentDiningScope = 'top100';
         dFilterDerek = 'ALL';
         dFilterKianna = 'ALL';
@@ -1993,7 +2062,7 @@
         document.getElementById('diningVisitedPicker').value = 'ALL';
         document.getElementById('diningRegionPicker').value = 'Haslet / DFW';
         document.getElementById('diningCategoryPicker').value = 'ALL';
-        document.getElementById('diningSortPicker').value = 'SCORE';
+        document.getElementById('diningSortPicker').value = 'VOTES';
         syncTogglePillUI('data-dfilter', 'derek', 'ALL');
         syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
         renderDining();
@@ -2447,6 +2516,7 @@
       grid.innerHTML = '';
 
       let scoped = getFilteredBookPool();
+      syncBookQuickUI();
       if (currentTab === 'catalog') {
         updateScopeButtons(currentViewScope, scoped.length);
         updateFilterBadgeCount();
@@ -2644,7 +2714,9 @@
       }
 
       if (movieSortMode === 'RATING') {
-        pool = pool.filter(m => Number(m.totalRatings) >= 10000);
+        if (activeTags.length === 0) {
+          pool = pool.filter(m => Number(m.totalRatings) >= 10000);
+        }
         pool.sort((a, b) => (parseFloat(b.avgRating) || 0) - (parseFloat(a.avgRating) || 0) || (Number(b.totalRatings) - Number(a.totalRatings)));
       } else if (movieSortMode === 'OUR_TOP') {
         pool = pool.filter(m => m.derekRating > 0 || m.kiannaRating > 0);
@@ -2732,6 +2804,7 @@
       grid.innerHTML = '';
 
       let scoped = getFilteredMoviePool();
+      syncMovieQuickUI();
       if (currentTab === 'movies') {
         updateScopeButtons(currentMovieScope, scoped.length);
         updateFilterBadgeCount();
@@ -3911,7 +3984,7 @@
     // =========================================================================
     let restaurants = [];
     let diningLoaded = false;
-    let diningMode = 'FAMILY'; // 'FAMILY' | 'DATE' | 'ALL'
+    let diningMode = 'ALL'; // 'ALL' | 'FAMILY' | 'DATE'
     let dFilterDerek = 'ALL';
     let dFilterKianna = 'ALL';
     let activeRestaurant = null;
@@ -4074,7 +4147,7 @@
     }
 
     function syncDiningQuickSortUI() {
-      const cur = (document.getElementById('diningSortPicker') || {}).value || 'SCORE';
+      const cur = (document.getElementById('diningSortPicker') || {}).value || 'VOTES';
       document.querySelectorAll('#diningQuickSortRow button').forEach(btn => {
         btn.classList.toggle('has-active', btn.dataset.dsort === cur);
       });
@@ -4997,31 +5070,38 @@
 
       // 1. Books: Top 250 most rated that this user has NOT rated
       selectedList = 'ALL';
+      selectedBookExtraLists.clear();
       bookSortMode = 'VOTES';
       currentViewScope = 'top250';
       filterDerek = isKianna ? 'ALL' : 'NOT_RATED';
       filterKianna = isKianna ? 'NOT_RATED' : 'ALL';
-      if (document.getElementById('listPicker')) document.getElementById('listPicker').value = 'ALL';
       if (document.getElementById('bookSortPicker')) document.getElementById('bookSortPicker').value = 'VOTES';
+      syncBookListChipsUI();
+      syncBookQuickUI();
       syncTogglePillUI('data-filter', 'derek', filterDerek);
       syncTogglePillUI('data-filter', 'kianna', filterKianna);
 
-      // 2. Movies: Top 250 most rated that this user has NOT rated
+      // 2. Movies: Highest rated on the Fill In Filmography poster that this user has NOT rated
       selectedMovieList = 'ALL';
-      movieSortMode = 'VOTES';
+      selectedMovieExtraLists = new Set(['Fill In Filmography']);
+      movieSortMode = 'RATING';
       currentMovieScope = 'top250';
       mFilterDerek = isKianna ? 'ALL' : 'NOT_RATED';
       mFilterKianna = isKianna ? 'NOT_RATED' : 'ALL';
-      if (document.getElementById('movieUnifiedPicker')) document.getElementById('movieUnifiedPicker').value = 'ALL';
-      if (document.getElementById('movieSortPicker')) document.getElementById('movieSortPicker').value = 'VOTES';
+      if (document.getElementById('movieSortPicker')) document.getElementById('movieSortPicker').value = 'RATING';
+      syncMovieListChipsUI();
+      syncMovieQuickUI();
       syncTogglePillUI('data-mfilter', 'derek', mFilterDerek);
       syncTogglePillUI('data-mfilter', 'kianna', mFilterKianna);
 
-      // 3. Dining: Not visited out of the 100 most rated
+      // 3. Dining: Not visited out of the 100 most rated (All vibes)
+      diningMode = 'ALL';
+      document.querySelectorAll('.dining-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.dmode === 'ALL'));
       currentDiningScope = 'top100';
       if (document.getElementById('diningListPicker')) document.getElementById('diningListPicker').value = 'ALL_SPOTS';
       if (document.getElementById('diningSortPicker')) document.getElementById('diningSortPicker').value = 'VOTES';
       if (document.getElementById('diningVisitedPicker')) document.getElementById('diningVisitedPicker').value = 'UNVISITED';
+      syncDiningQuickSortUI();
 
       // 4. Our Shelf perspective
       currentShelfUser = isKianna ? 'K' : 'D';
