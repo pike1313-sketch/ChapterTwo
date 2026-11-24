@@ -1,6 +1,7 @@
 # Keep Google Apps Script backend & local deploy helper out of the public GitHub Pages repo
 gas/
 deploy.ps1
+.commit_msg
 *.log
 .DS_Store
 Thumbs.db

@@ -1097,7 +1097,7 @@
       <div class="fp-topbar">
         <button type="button" class="fp-back-btn" onclick="closeModal()">← Back</button>
         <div class="fp-top-title">Book Details</div>
-        <button type="button" class="fp-back-btn" style="color:#f87171; border-color:rgba(239,68,68,0.35);" onclick="openQuickFlagModal()">⚠️ Flag</button>
+        <button type="button" class="fp-back-btn" style="color:#f87171; border-color:rgba(239,68,68,0.35);" onclick="openQuickFlagModal('BOOK')">⚠️ Flag</button>
       </div>
       <div class="fp-body">
         <div class="modal-header">
@@ -1144,7 +1144,7 @@
       <div class="fp-topbar">
         <button type="button" class="fp-back-btn" onclick="closeMovieModal()">← Back</button>
         <div class="fp-top-title">Movie Details</div>
-        <div style="width:60px;"></div>
+        <button type="button" class="fp-back-btn" style="color:#f87171; border-color:rgba(239,68,68,0.35);" onclick="openQuickFlagModal('MOVIE')">⚠️ Flag</button>
       </div>
       <div class="fp-body">
         <div class="modal-header">
@@ -1197,18 +1197,42 @@
     </div>
   </div>
 
-  <!-- Quick Flag Modal -->
-  <div id="flagModal" class="flag-modal-overlay" style="display:none;" onclick="if(event.target===this) closeFlagModal()">
-    <div class="flag-sheet" style="max-width:480px;">
+  <!-- Universal Issue Flag Modal (Books, Movies & Dining) -->
+  <div id="flagModal" class="flag-modal-overlay" style="display:none; z-index:150;" onclick="if(event.target===this) closeFlagModal()">
+    <div class="flag-sheet" style="max-width:500px;">
       <div class="flag-sheet-header">
-        <span class="flag-sheet-title">Report / Fix Book</span>
+        <span class="flag-sheet-title" id="flagModalHeading">⚠️ Flag Issue</span>
         <button class="flag-close-btn" onclick="closeFlagModal()">✕</button>
       </div>
-      <div style="color:#94a3b8; font-size:13px; margin-bottom:16px;" id="flagBookTitle">Book Title</div>
-      <button class="flag-action-btn primary" onclick="submitQuickFix('auto_cover')">
-        <strong>⚡ Auto-Fix Cover</strong>
+      <div style="color:#94a3b8; font-size:13px; margin-bottom:12px;" id="flagBookTitle">Item Title</div>
+
+      <div class="form-group">
+        <label class="form-label">Issue Type</label>
+        <select id="flagReasonSelect" class="form-input">
+          <option value="Not a Single Book / Box Set">📦 Box Set / Not a Single Item</option>
+          <option value="Duplicate Entry">👯 Duplicate Entry</option>
+          <option value="Wrong Category / Genre">🏷️ Wrong Category / Genre</option>
+          <option value="Wrong Rating / Count">⭐ Wrong Rating / Count</option>
+          <option value="Remove from List">🗑️ Remove from List</option>
+          <option value="Broken Cover / Link">🖼️ Broken Cover / Link</option>
+          <option value="Other">✏️ Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notes (Free-Form — Saved to IssueFlags Sheet)</label>
+        <textarea id="flagNotesInput" class="form-input" rows="3" placeholder="e.g. Harry Potter box set isn't a single book — please remove it from Top 100"></textarea>
+      </div>
+
+      <button type="button" id="btnSubmitIssueFlag" class="flag-action-btn primary" style="justify-content:center; font-weight:800;" onclick="submitFreeFormFlag()">
+        🚩 Log Issue to Sheet
       </button>
-      <button class="btn-act btn-close" style="width:100%; margin-top:8px;" onclick="closeFlagModal()">Cancel</button>
+
+      <button type="button" id="btnAutoFixCover" class="flag-action-btn" style="justify-content:center;" onclick="submitQuickFix('auto_cover')">
+        <strong>⚡ Auto-Fix Book Cover Now</strong>
+      </button>
+
+      <button class="btn-act btn-close" style="width:100%; margin-top:4px;" onclick="closeFlagModal()">Cancel</button>
     </div>
   </div>
 
@@ -1344,7 +1368,10 @@
       <div class="fp-topbar">
         <button type="button" class="fp-back-btn" onclick="closeRestaurantModal()">← Back</button>
         <div class="fp-top-title" id="rmTopTitle">Restaurant</div>
-        <button type="button" class="fp-back-btn" onclick="editActiveRestaurant()">✏️ Edit</button>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="fp-back-btn" style="color:#f87171; border-color:rgba(239,68,68,0.35); padding:6px 9px;" onclick="openQuickFlagModal('DINING')">⚠️</button>
+          <button type="button" class="fp-back-btn" onclick="editActiveRestaurant()">✏️ Edit</button>
+        </div>
       </div>
 
       <div class="fp-body">
@@ -3514,13 +3541,61 @@
       }
     });
 
-    function openQuickFlagModal() {
-      if (!activeBook) return;
-      document.getElementById('flagBookTitle').textContent = '"' + activeBook.title + '" by ' + activeBook.author;
+    let activeFlagContext = null;
+
+    function openQuickFlagModal(itemType) {
+      const type = itemType || (currentTab === 'movies' ? 'MOVIE' : (currentTab === 'dining' ? 'DINING' : 'BOOK'));
+      let title = '';
+      let itemId = '';
+      if (type === 'BOOK' && activeBook) {
+        title = '"' + activeBook.title + '" by ' + activeBook.author;
+        itemId = activeBook.isbn || String(activeBook.rowIndex || '');
+      } else if (type === 'MOVIE' && activeMovie) {
+        title = activeMovie.title + (activeMovie.releaseYear ? ' (' + activeMovie.releaseYear + ')' : '');
+        itemId = activeMovie.imdbId || String(activeMovie.rowIndex || '');
+      } else if (type === 'DINING' && activeRestaurant) {
+        title = activeRestaurant.name + (activeRestaurant.location ? ' — ' + activeRestaurant.location : '');
+        itemId = activeRestaurant.id || '';
+      } else {
+        return;
+      }
+
+      activeFlagContext = { itemType: type, itemId, title };
+      document.getElementById('flagModalHeading').textContent = '⚠️ Flag ' + (type === 'BOOK' ? 'Book' : (type === 'MOVIE' ? 'Movie' : 'Restaurant')) + ' Issue';
+      document.getElementById('flagBookTitle').textContent = title;
+      document.getElementById('flagNotesInput').value = '';
+      document.getElementById('btnAutoFixCover').style.display = (type === 'BOOK') ? 'flex' : 'none';
       document.getElementById('flagModal').style.display = 'flex';
     }
 
     function closeFlagModal() { document.getElementById('flagModal').style.display = 'none'; }
+
+    function submitFreeFormFlag() {
+      if (!activeFlagContext) return;
+      const reason = document.getElementById('flagReasonSelect').value;
+      const notes = document.getElementById('flagNotesInput').value.trim();
+      const payload = {
+        action: 'submitIssueFlag',
+        itemType: activeFlagContext.itemType,
+        itemId: activeFlagContext.itemId,
+        title: activeFlagContext.title,
+        flaggedBy: deviceUser || 'Derek',
+        reason,
+        notes
+      };
+      closeFlagModal();
+      showToast('🚩 Flag logged to IssueFlags sheet!');
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.apiSubmitIssueFlag(payload);
+      } else {
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(err => console.error('Flag submit error:', err));
+      }
+    }
 
     function submitQuickFix(issueType) {
       if (!activeBook) return;
