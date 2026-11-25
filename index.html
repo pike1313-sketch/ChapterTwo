@@ -1346,12 +1346,15 @@
   </nav>
 
   <!-- Search Sheet -->
-  <div class="search-sheet-overlay" id="searchSheetOverlay">
+  <div class="search-sheet-overlay" id="searchSheetOverlay" onclick="if(event.target===this) closeSearchSheet()">
     <div class="search-sheet">
-      <input type="text" id="searchSheetInput" class="search-sheet-input" placeholder="Search by title, author, or director...">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+      <input type="text" id="searchSheetInput" class="search-sheet-input" placeholder="Search by title, author, director, or restaurant...">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px;">
         <span id="searchResultCount" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Start typing...</span>
-        <button class="btn-act btn-close" style="flex:none; padding:8px 16px;" onclick="closeSearchSheet()">Done</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-act btn-close" style="flex:none; padding:8px 14px;" onclick="clearActiveSearch(); closeSearchSheet();">✕ Clear</button>
+          <button type="button" class="btn-act" style="flex:none; padding:8px 18px; background:var(--accent); color:#fff;" onclick="closeSearchSheet()">Done</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2368,6 +2371,19 @@
       btn.style.background = count === 0 ? '#b91c1c' : 'var(--accent)';
     }
 
+    function clearActiveSearch() {
+      searchQuery = '';
+      const sIn = document.getElementById('searchSheetInput');
+      if (sIn) sIn.value = '';
+      const sBtn = document.getElementById('headerSearchBtn');
+      if (sBtn) sBtn.classList.remove('has-active');
+      const sCnt = document.getElementById('searchResultCount');
+      if (sCnt) sCnt.textContent = 'Start typing...';
+      if (currentTab === 'catalog') renderBooks();
+      else if (currentTab === 'movies') renderMovies();
+      else if (currentTab === 'dining') renderDining();
+    }
+
     function renderActiveFilterChips(tab) {
       const statusLabels = {
         READ: 'Read', UNRATED: 'No ★', UNREAD: 'Unread', WISH: 'Wish',
@@ -2375,6 +2391,13 @@
         RATED: 'Rated', VISITED_NO_STAR: 'Visited (no ★)', NOT_VISITED: 'Not Visited'
       };
       const chips = [];
+      if (searchQuery) {
+        chips.push({
+          label: `🔍 "${searchQuery}"`,
+          isSearch: true,
+          clear: () => clearActiveSearch()
+        });
+      }
 
       if (tab === 'catalog') {
         const wrap = document.getElementById('bookActiveChips');
@@ -2426,6 +2449,11 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'active-chip';
+        if (c.isSearch) {
+          btn.style.background = 'rgba(56, 189, 248, 0.22)';
+          btn.style.borderColor = 'rgba(56, 189, 248, 0.65)';
+          btn.style.color = '#e0f2fe';
+        }
         btn.textContent = c.label + ' ✕';
         btn.onclick = c.clear;
         wrap.appendChild(btn);
