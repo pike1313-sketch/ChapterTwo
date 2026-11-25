@@ -3087,33 +3087,36 @@
 
       updateRibbon(targetCohort);
 
-      const displayList = targetCohort.filter(b => {
-        if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
-        if (searchQuery) {
-          const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
-          const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
-          const matchSeries = (b.series || '').toLowerCase().includes(searchQuery);
-          const matchGenre = (b.genres || '').toLowerCase().includes(searchQuery);
-          if (!matchTitle && !matchAuthor && !matchSeries && !matchGenre) return false;
-        }
+      const displayList = searchQuery
+        ? books
+            .filter(b => {
+              const matchTitle = (b.title || '').toLowerCase().includes(searchQuery);
+              const matchAuthor = (b.author || '').toLowerCase().includes(searchQuery);
+              const matchSeries = (b.series || '').toLowerCase().includes(searchQuery);
+              const matchGenre = (b.genres || '').toLowerCase().includes(searchQuery);
+              return matchTitle || matchAuthor || matchSeries || matchGenre;
+            })
+            .sort((a, b) => (b.numRatings || 0) - (a.numRatings || 0))
+        : targetCohort.filter(b => {
+            if (deepFilterPredicate && !deepFilterPredicate(b)) return false;
 
-        const dRead = b.derekRead || b.derekRating > 0;
-        const kRead = b.kiannaRead || b.kiannaRating > 0;
+            const dRead = b.derekRead || b.derekRating > 0;
+            const kRead = b.kiannaRead || b.kiannaRating > 0;
 
-        if (filterDerek === 'NOT_RATED' && b.derekRating > 0) return false;
-        if (filterDerek === 'READ' && !dRead) return false;
-        if (filterDerek === 'WISH' && !b.derekWishlist) return false;
-        if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
-        if (filterDerek === 'UNREAD' && dRead) return false;
+            if (filterDerek === 'NOT_RATED' && b.derekRating > 0) return false;
+            if (filterDerek === 'READ' && !dRead) return false;
+            if (filterDerek === 'WISH' && !b.derekWishlist) return false;
+            if (filterDerek === 'UNRATED' && (!dRead || b.derekRating > 0)) return false;
+            if (filterDerek === 'UNREAD' && dRead) return false;
 
-        if (filterKianna === 'NOT_RATED' && b.kiannaRating > 0) return false;
-        if (filterKianna === 'READ' && !kRead) return false;
-        if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
-        if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
-        if (filterKianna === 'UNREAD' && kRead) return false;
+            if (filterKianna === 'NOT_RATED' && b.kiannaRating > 0) return false;
+            if (filterKianna === 'READ' && !kRead) return false;
+            if (filterKianna === 'WISH' && !b.kiannaWishlist) return false;
+            if (filterKianna === 'UNRATED' && (!kRead || b.kiannaRating > 0)) return false;
+            if (filterKianna === 'UNREAD' && kRead) return false;
 
-        return true;
-      });
+            return true;
+          });
 
       renderActiveFilterChips('catalog');
       if (currentTab === 'catalog') updateFilterDrawerDoneBtn(displayList.length, 'Book', 'Books');
@@ -3387,30 +3390,33 @@
 
       updateMovieRibbon(targetCohort);
 
-      const displayList = targetCohort.filter(m => {
-        if (searchQuery) {
-          const matchTitle = (m.title || '').toLowerCase().includes(searchQuery);
-          const matchDirector = (m.director || '').toLowerCase().includes(searchQuery);
-          if (!matchTitle && !matchDirector) return false;
-        }
+      const displayList = searchQuery
+        ? movies
+            .filter(m => {
+              const matchTitle = (m.title || '').toLowerCase().includes(searchQuery);
+              const matchDirector = (m.director || '').toLowerCase().includes(searchQuery);
+              const matchGenre = (m.genres || '').toLowerCase().includes(searchQuery);
+              return matchTitle || matchDirector || matchGenre;
+            })
+            .sort((a, b) => (Number(b.totalRatings) || 0) - (Number(a.totalRatings) || 0))
+        : targetCohort.filter(m => {
+            const dWatched = m.derekWatched || m.derekRating > 0;
+            const kWatched = m.kiannaWatched || m.kiannaRating > 0;
 
-        const dWatched = m.derekWatched || m.derekRating > 0;
-        const kWatched = m.kiannaWatched || m.kiannaRating > 0;
+            if (mFilterDerek === 'NOT_RATED' && m.derekRating > 0) return false;
+            if (mFilterDerek === 'WATCHED' && !dWatched) return false;
+            if (mFilterDerek === 'WISH' && !m.derekWishlist) return false;
+            if (mFilterDerek === 'UNRATED' && (!dWatched || m.derekRating > 0)) return false;
+            if (mFilterDerek === 'UNWATCHED' && dWatched) return false;
 
-        if (mFilterDerek === 'NOT_RATED' && m.derekRating > 0) return false;
-        if (mFilterDerek === 'WATCHED' && !dWatched) return false;
-        if (mFilterDerek === 'WISH' && !m.derekWishlist) return false;
-        if (mFilterDerek === 'UNRATED' && (!dWatched || m.derekRating > 0)) return false;
-        if (mFilterDerek === 'UNWATCHED' && dWatched) return false;
+            if (mFilterKianna === 'NOT_RATED' && m.kiannaRating > 0) return false;
+            if (mFilterKianna === 'WATCHED' && !kWatched) return false;
+            if (mFilterKianna === 'WISH' && !m.kiannaWishlist) return false;
+            if (mFilterKianna === 'UNRATED' && (!kWatched || m.kiannaRating > 0)) return false;
+            if (mFilterKianna === 'UNWATCHED' && kWatched) return false;
 
-        if (mFilterKianna === 'NOT_RATED' && m.kiannaRating > 0) return false;
-        if (mFilterKianna === 'WATCHED' && !kWatched) return false;
-        if (mFilterKianna === 'WISH' && !m.kiannaWishlist) return false;
-        if (mFilterKianna === 'UNRATED' && (!kWatched || m.kiannaRating > 0)) return false;
-        if (mFilterKianna === 'UNWATCHED' && kWatched) return false;
-
-        return true;
-      });
+            return true;
+          });
 
       renderActiveFilterChips('movies');
       if (currentTab === 'movies') updateFilterDrawerDoneBtn(displayList.length, 'Movie', 'Movies');
@@ -5465,68 +5471,75 @@
       const kWishSet = getDiningWishSet('kianna');
       const sourcePool = Array.isArray(liveScanRestaurants) ? liveScanRestaurants : restaurants;
 
-      let list = sourcePool.filter(r => {
-        if (!liveScanRestaurants) {
-          if (listFilter === 'OUR_LIST' && !r.visited) return false;
-          if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
-          if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
-        }
-
-        const rKey = String(r.id || r.name || '').trim();
-        const dHasRate = Number(r.derekRating) > 0;
-        const kHasRate = Number(r.kiannaRating) > 0;
-        const isVisited = Boolean(r.visited) || dHasRate || kHasRate;
-
-        if (dFilterDerek === 'RATED' && !dHasRate) return false;
-        if (dFilterDerek === 'VISITED_NO_STAR' && (!isVisited || dHasRate)) return false;
-        if (dFilterDerek === 'NOT_VISITED' && isVisited) return false;
-        if (dFilterDerek === 'WISH' && !dWishSet.has(rKey)) return false;
-
-        if (dFilterKianna === 'RATED' && !kHasRate) return false;
-        if (dFilterKianna === 'VISITED_NO_STAR' && (!isVisited || kHasRate)) return false;
-        if (dFilterKianna === 'NOT_VISITED' && isVisited) return false;
-        if (dFilterKianna === 'WISH' && !kWishSet.has(rKey)) return false;
-
-        if (!liveScanRestaurants) {
-          if (regionFilter === 'CHAINS_ONLY') {
-            if (!r.isChain) return false;
-          } else if (regionFilter !== 'ALL') {
-            const rReg = r.region || 'Haslet / DFW';
-            if (!r.isChain && rReg !== regionFilter) return false;
-          }
-        }
-
-        if (maxDiningDriveMins && maxDiningDriveMins < 999) {
-          const effMins = getEffectiveDriveMins(r);
-          if (effMins === null || isNaN(effMins) || effMins > maxDiningDriveMins) return false;
-        }
-
-        const isTreatSpot = (r.category || '') === 'Bakery / Dessert';
-        if (catFilter !== 'Bakery / Dessert') {
-          if (diningPlaceType === 'MEALS' && isTreatSpot) return false;
-          if (diningPlaceType === 'TREATS' && !isTreatSpot) return false;
-        }
-
-        if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
-        if (diningMode === 'DATE' && !r.dateNight) return false;
-
-        if (catFilter !== 'ALL' && (r.category || 'Other') !== catFilter) return false;
-
-        if (searchQuery) {
+      let list;
+      if (searchQuery) {
+        // Search always bypasses all filters so you can find any spot (visited, unvisited, treats, far away)!
+        list = sourcePool.filter(r => {
           const dishText = (r.dishes || []).map(d => d.name + ' ' + (d.notes || '')).join(' ');
           const visitText = (r.visits || []).map(v => (v.companions || '') + ' ' + (v.notes || '') + ' ' + (v.date || '')).join(' ');
           const haystack = `${r.name} ${r.category} ${r.location} ${r.address} ${r.notes} ${r.kidsNotes || ''} ${dishText} ${visitText}`.toLowerCase();
-          if (!haystack.includes(searchQuery)) return false;
-        }
-        return true;
-      });
+          return haystack.includes(searchQuery);
+        });
+      } else {
+        list = sourcePool.filter(r => {
+          if (!liveScanRestaurants) {
+            if (listFilter === 'OUR_LIST' && !r.visited) return false;
+            if (listFilter === 'MOST_RATED' && !(r.lists || []).includes('Most Rated 100')) return false;
+            if (listFilter === 'HIGHEST_RATED' && !(r.lists || []).includes('Highest Rated 100')) return false;
+          }
+
+          const rKey = String(r.id || r.name || '').trim();
+          const dHasRate = Number(r.derekRating) > 0;
+          const kHasRate = Number(r.kiannaRating) > 0;
+          const isVisited = Boolean(r.visited) || dHasRate || kHasRate;
+
+          if (dFilterDerek === 'RATED' && !dHasRate) return false;
+          if (dFilterDerek === 'VISITED_NO_STAR' && (!isVisited || dHasRate)) return false;
+          if (dFilterDerek === 'NOT_VISITED' && isVisited) return false;
+          if (dFilterDerek === 'WISH' && !dWishSet.has(rKey)) return false;
+
+          if (dFilterKianna === 'RATED' && !kHasRate) return false;
+          if (dFilterKianna === 'VISITED_NO_STAR' && (!isVisited || kHasRate)) return false;
+          if (dFilterKianna === 'NOT_VISITED' && isVisited) return false;
+          if (dFilterKianna === 'WISH' && !kWishSet.has(rKey)) return false;
+
+          if (!liveScanRestaurants) {
+            if (regionFilter === 'CHAINS_ONLY') {
+              if (!r.isChain) return false;
+            } else if (regionFilter !== 'ALL') {
+              const rReg = r.region || 'Haslet / DFW';
+              if (!r.isChain && rReg !== regionFilter) return false;
+            }
+          }
+
+          if (maxDiningDriveMins && maxDiningDriveMins < 999) {
+            const effMins = getEffectiveDriveMins(r);
+            if (effMins === null || isNaN(effMins) || effMins > maxDiningDriveMins) return false;
+          }
+
+          const isTreatSpot = (r.category || '') === 'Bakery / Dessert';
+          if (catFilter !== 'Bakery / Dessert') {
+            if (diningPlaceType === 'MEALS' && isTreatSpot) return false;
+            if (diningPlaceType === 'TREATS' && !isTreatSpot) return false;
+          }
+
+          if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
+          if (diningMode === 'DATE' && !r.dateNight) return false;
+
+          if (catFilter !== 'ALL' && (r.category || 'Other') !== catFilter) return false;
+
+          return true;
+        });
+      }
 
       list = list.map(r => ({ ...r, _score: computeRestaurantScore(r) }));
 
-      if (sortMode === 'RATING') {
-        list = list.filter(r => (Number(r.googleReviews) || 0) >= 250);
-      } else if (sortMode === 'OUR_TOP') {
-        list = list.filter(r => (Number(r.derekRating) || 0) > 0 || (Number(r.kiannaRating) || 0) > 0);
+      if (!searchQuery) {
+        if (sortMode === 'RATING') {
+          list = list.filter(r => (Number(r.googleReviews) || 0) >= 250);
+        } else if (sortMode === 'OUR_TOP') {
+          list = list.filter(r => (Number(r.derekRating) || 0) > 0 || (Number(r.kiannaRating) || 0) > 0);
+        }
       }
 
       if (sortMode === 'NEARBY_SCORE') {
@@ -5606,8 +5619,10 @@
       }
 
       let list = fullList;
-      if (currentDiningScope === 'top100') list = fullList.slice(0, 100);
-      else if (currentDiningScope === 'top250') list = fullList.slice(0, 250);
+      if (!searchQuery) {
+        if (currentDiningScope === 'top100') list = fullList.slice(0, 100);
+        else if (currentDiningScope === 'top250') list = fullList.slice(0, 250);
+      }
 
       renderActiveFilterChips('dining');
       if (currentTab === 'dining') updateFilterDrawerDoneBtn(list.length, 'Spot', 'Spots');
