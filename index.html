@@ -741,6 +741,36 @@
       .header-filter-btn, .header-quick-btn { padding: 9px 10px; font-size: 0.84rem; }
       #headerSearchBtn, #deviceUserBtn { padding: 9px 9px; }
     }
+
+    /* Active Filter Chips Bar on Main Screen */
+    .active-chips-row {
+      display: none; flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none;
+      padding: 8px 14px 2px 14px; align-items: center;
+    }
+    .active-chips-row::-webkit-scrollbar { display: none; }
+    .active-chips-row.has-chips { display: flex; }
+    .active-chip {
+      display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+      background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #c7d2fe; font-size: 0.72rem; font-weight: 800; padding: 5px 10px;
+      border-radius: 999px; cursor: pointer; white-space: nowrap;
+    }
+    .active-chip.reset-chip {
+      background: var(--surface-elevated); border-color: var(--border); color: var(--text-muted);
+    }
+
+    /* Collapsible More / Advanced Filters inside Drawer */
+    .more-filters-toggle {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface); border: 1px solid var(--border); color: #cbd5e1;
+      border-radius: 10px; padding: 12px 14px; margin-top: 16px;
+      font-size: 0.84rem; font-weight: 800; cursor: pointer; min-height: 46px;
+    }
+    .more-filters-box {
+      display: none; margin-top: 10px; padding: 12px;
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px;
+    }
+    .more-filters-box.open { display: block; }
   </style>
 </head>
 <body>
@@ -778,27 +808,23 @@
       </div>
 
       <div class="drawer-scroll-body">
-        <!-- SHARED SCOPE (Top 100 | Top 250 | All) -->
-        <div id="filterScopeSection">
-          <div class="filter-section-label">List Size / Scope</div>
-          <div class="segmented-3">
-            <button type="button" class="seg-btn active" id="scopeTop100Btn" onclick="setViewScope('top100')">Top 100</button>
-            <button type="button" class="seg-btn" id="scopeTop250Btn" onclick="setViewScope('top250')">Top 250</button>
-            <button type="button" class="seg-btn" id="scopeAllBtn" onclick="setViewScope('all')">All (<span id="categoryTotalCount">0</span>)</button>
-          </div>
-        </div>
-
-        <!-- BOOK FILTERS -->
+        <!-- BOOK FILTERS (ESSENTIALS) -->
         <div id="drawerBookFilters">
-          <div class="filter-section-label">Rank / Sort By</div>
-          <select id="bookSortPicker" class="list-select" onchange="onBookSortChange(this.value)">
-            <option value="ULTIMATE" selected>🏆 Ultimate (Rating + Popularity)</option>
-            <option value="VOTES">🔥 Most Ratings</option>
-            <option value="RATING">⭐ Avg Rating (100k+ ratings)</option>
-            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
-          </select>
+          <div class="filter-section-label" style="margin-top:0;">Your Status</div>
+          <div id="bookPrimaryStatusSlot">
+            <div class="status-user-block" id="bookStatusDerek">
+              <div class="status-user-head label-derek">Derek</div>
+              <div class="status-btn-grid">
+                <button type="button" class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
+                <button type="button" class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
+                <button type="button" class="toggle-pill" data-filter="derek" data-val="UNRATED">Read (no ★)</button>
+                <button type="button" class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
+                <button type="button" class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
+              </div>
+            </div>
+          </div>
 
-          <div class="filter-section-label">Holiday & Collections (Multi-Select)</div>
+          <div class="filter-section-label">Holiday & Collections</div>
           <div id="bookListChips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
             <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="Christmas" onclick="toggleBookListChip(this)">🎄 Christmas / Holiday</button>
             <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-blist="Halloween" onclick="toggleBookListChip(this)">🎃 Halloween / Gothic</button>
@@ -826,41 +852,11 @@
             <option value="Nonfiction">🧠 Nonfiction</option>
             <option value="Memoir">📖 Memoir & Biography</option>
           </select>
-
-          <div class="filter-section-label">Status</div>
-          <div class="status-user-block">
-            <div class="status-user-head label-derek">Derek</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-filter="derek" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-filter="derek" data-val="READ">Read</button>
-              <button type="button" class="toggle-pill" data-filter="derek" data-val="UNRATED">Read (no ★)</button>
-              <button type="button" class="toggle-pill" data-filter="derek" data-val="UNREAD">Unread</button>
-              <button type="button" class="toggle-pill" data-filter="derek" data-val="WISH">Wish</button>
-            </div>
-          </div>
-          <div class="status-user-block">
-            <div class="status-user-head label-kianna">Kianna</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
-              <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNRATED">Read (no ★)</button>
-              <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
-              <button type="button" class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
-            </div>
-          </div>
         </div>
 
-        <!-- MOVIE FILTERS -->
+        <!-- MOVIE FILTERS (ESSENTIALS) -->
         <div id="drawerMovieFilters" style="display:none;">
-          <div class="filter-section-label">Rank / Sort By</div>
-          <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)">
-            <option value="ULTIMATE" selected>🏆 Ultimate (Rating + Popularity)</option>
-            <option value="RATING">⭐ Highest Rated</option>
-            <option value="VOTES">🔥 Most Ratings</option>
-            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
-          </select>
-
-          <div class="filter-section-label">Combine Lists / Categories (Multi-Select AND)</div>
+          <div class="filter-section-label" style="margin-top:0;">Lists & Collections</div>
           <div id="movieListChips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
             <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Fill In Filmography" onclick="toggleMovieListChip(this)">🎞️ Filmography Poster</button>
             <button type="button" class="toggle-pill" style="border:1px solid var(--border);" data-mlist="Movie Puzzle" onclick="toggleMovieListChip(this)">🧩 Movie Puzzle</button>
@@ -874,6 +870,28 @@
 
           <select id="top250YearPicker" class="list-select" onchange="onTop250YearChange(this.value)" style="display:none; margin-top:8px; border-color:var(--gold);">
             <option value="ALL" selected>⭐ All-Time Master</option>
+          </select>
+
+          <div class="filter-section-label">Your Status</div>
+          <div id="moviePrimaryStatusSlot">
+            <div class="status-user-block" id="movieStatusDerek">
+              <div class="status-user-head label-derek">Derek</div>
+              <div class="status-btn-grid">
+                <button type="button" class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
+                <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Seen</button>
+                <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Seen (no ★)</button>
+                <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unseen</button>
+                <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-section-label">Content Rating (MPAA)</div>
+          <select id="movieMpaaPicker" class="list-select" onchange="onMovieMpaaChange(this.value)">
+            <option value="ALL" selected>🎞️ All Content Ratings</option>
+            <option value="FAMILY">👨‍👩‍👧‍👦 Family-Safe (G / PG / PG-13)</option>
+            <option value="KIDS">🧸 Kids Safe (G / PG)</option>
+            <option value="MATURE">🔞 Mature (R / NC-17)</option>
           </select>
 
           <div class="filter-section-label">Genre</div>
@@ -893,52 +911,15 @@
             <option value="Sci-Fi">🚀 Sci-Fi</option>
             <option value="Thriller">🔪 Thriller</option>
           </select>
-
-          <div class="filter-section-label">Content Rating (MPAA)</div>
-          <select id="movieMpaaPicker" class="list-select" onchange="onMovieMpaaChange(this.value)">
-            <option value="ALL" selected>🎞️ All Content Ratings</option>
-            <option value="FAMILY">👨‍👩‍👧‍👦 Family-Safe (G / PG / PG-13)</option>
-            <option value="KIDS">🧸 Kids Safe (G / PG)</option>
-            <option value="MATURE">🔞 Mature (R / NC-17)</option>
-          </select>
-
-          <div class="filter-section-label">Status</div>
-          <div class="status-user-block">
-            <div class="status-user-head label-derek">Derek</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-mfilter="derek" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WATCHED">Seen</button>
-              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNRATED">Seen (no ★)</button>
-              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="UNWATCHED">Unseen</button>
-              <button type="button" class="toggle-pill" data-mfilter="derek" data-val="WISH">Wish</button>
-            </div>
-          </div>
-          <div class="status-user-block">
-            <div class="status-user-head label-kianna">Kianna</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Seen</button>
-              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Seen (no ★)</button>
-              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unseen</button>
-              <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
-            </div>
-          </div>
         </div>
 
-        <!-- DINING FILTERS -->
+        <!-- DINING FILTERS (ESSENTIALS) -->
         <div id="drawerDiningFilters" style="display:none;">
-          <div class="filter-section-label">Restaurants vs Treats</div>
+          <div class="filter-section-label" style="margin-top:0;">Restaurants vs Treats</div>
           <div class="segmented-3" id="diningTypeRow" style="margin-bottom:4px;">
             <button type="button" class="seg-btn active" data-dtype="MEALS" onclick="setDiningPlaceType('MEALS')">🍽️ Restaurants</button>
             <button type="button" class="seg-btn" data-dtype="TREATS" onclick="setDiningPlaceType('TREATS')">🍦 Treats</button>
             <button type="button" class="seg-btn" data-dtype="ALL" onclick="setDiningPlaceType('ALL')">✨ Both</button>
-          </div>
-
-          <div class="filter-section-label">Vibe / Occasion</div>
-          <div class="dining-mode-deck" style="margin-bottom:4px;">
-            <button type="button" class="dining-mode-btn active" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
-            <button type="button" class="dining-mode-btn" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
-            <button type="button" class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
           </div>
 
           <div class="filter-section-label">Max Drive Time</div>
@@ -950,56 +931,12 @@
             <button type="button" class="toggle-pill" data-maxdrive="999" onclick="setMaxDiningDrive(999)">Any</button>
           </div>
 
-          <div class="filter-section-label">Rank / Sort By</div>
-          <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="NEARBY_SCORE" selected>📍 Best Nearby (Distance + Rating + Cost)</option>
-            <option value="ULTIMATE">🏆 Ultimate (Rating + Reviews)</option>
-            <option value="DISTANCE">🚗 Closest Drive</option>
-            <option value="VOTES">🔥 Most Rated (Google)</option>
-            <option value="RATING">⭐ Highest Rated (250+ reviews)</option>
-            <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
-            <option value="SCORE">📊 Overall Score (/100)</option>
-            <option value="COST_ASC">💵 Cost: Low → High</option>
-            <option value="COST_DESC">💰 Cost: High → Low</option>
-            <option value="NAME">🔤 A – Z</option>
-          </select>
-
-          <div class="filter-section-label">Status</div>
-          <div class="status-user-block">
-            <div class="status-user-head label-derek">Derek</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-dfilter="derek" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="RATED">Rated</button>
-              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="VISITED_NO_STAR">Visited (no ★)</button>
-              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="NOT_VISITED">Not Visited</button>
-              <button type="button" class="toggle-pill" data-dfilter="derek" data-val="WISH">Wish</button>
-            </div>
+          <div class="filter-section-label">Vibe / Occasion</div>
+          <div class="dining-mode-deck" style="margin-bottom:4px;">
+            <button type="button" class="dining-mode-btn active" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
+            <button type="button" class="dining-mode-btn" data-dmode="FAMILY" onclick="setDiningMode('FAMILY')">👨‍👩‍👧‍👦 Family</button>
+            <button type="button" class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
           </div>
-          <div class="status-user-block">
-            <div class="status-user-head label-kianna">Kianna</div>
-            <div class="status-btn-grid">
-              <button type="button" class="toggle-pill active" data-dfilter="kianna" data-val="ALL">All</button>
-              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="RATED">Rated</button>
-              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="VISITED_NO_STAR">Visited (no ★)</button>
-              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="NOT_VISITED">Not Visited</button>
-              <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="WISH">Wish</button>
-            </div>
-          </div>
-
-          <div class="filter-section-label">List / Source</div>
-          <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="ALL_SPOTS" selected>📋 All Restaurants</option>
-            <option value="OUR_LIST">⭐ Visited / Our List</option>
-            <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
-            <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
-          </select>
-
-          <div class="filter-section-label">Region / Travel</div>
-          <select id="diningRegionPicker" class="list-select" onchange="onDiningFilterChange()">
-            <option value="Haslet / DFW" selected>📍 Haslet / DFW (+Chains)</option>
-            <option value="CHAINS_ONLY">🔗 Chains Only</option>
-            <option value="ALL">🌎 All Regions</option>
-          </select>
 
           <div class="filter-section-label">Category</div>
           <select id="diningCategoryPicker" class="list-select" onchange="onDiningFilterChange()">
@@ -1018,10 +955,138 @@
             <option value="Bakery / Dessert">🍦 Bakery / Dessert</option>
             <option value="Other">🍽️ Other</option>
           </select>
+
+          <div class="filter-section-label">Your Status</div>
+          <div id="diningPrimaryStatusSlot">
+            <div class="status-user-block" id="diningStatusDerek">
+              <div class="status-user-head label-derek">Derek</div>
+              <div class="status-btn-grid">
+                <button type="button" class="toggle-pill active" data-dfilter="derek" data-val="ALL">All</button>
+                <button type="button" class="toggle-pill" data-dfilter="derek" data-val="RATED">Rated</button>
+                <button type="button" class="toggle-pill" data-dfilter="derek" data-val="VISITED_NO_STAR">Visited (no ★)</button>
+                <button type="button" class="toggle-pill" data-dfilter="derek" data-val="NOT_VISITED">Not Visited</button>
+                <button type="button" class="toggle-pill" data-dfilter="derek" data-val="WISH">Wish</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE MORE / ADVANCED FILTERS -->
+        <button type="button" class="more-filters-toggle" id="moreFiltersToggleBtn" onclick="toggleMoreFiltersBox()">
+          <span id="moreFiltersToggleLabel">▸ More Filters (Sort, List Size, Spouse...)</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);" id="moreFiltersArrow">▼</span>
+        </button>
+
+        <div class="more-filters-box" id="moreFiltersBox">
+          <!-- SHARED SCOPE (Top 100 | Top 250 | All) -->
+          <div id="filterScopeSection">
+            <div class="filter-section-label" style="margin-top:0;">List Size / Scope</div>
+            <div class="segmented-3">
+              <button type="button" class="seg-btn active" id="scopeTop100Btn" onclick="setViewScope('top100')">Top 100</button>
+              <button type="button" class="seg-btn" id="scopeTop250Btn" onclick="setViewScope('top250')">Top 250</button>
+              <button type="button" class="seg-btn" id="scopeAllBtn" onclick="setViewScope('all')">All (<span id="categoryTotalCount">0</span>)</button>
+            </div>
+          </div>
+
+          <!-- BOOK ADVANCED -->
+          <div id="drawerBookAdv">
+            <div class="filter-section-label">Rank / Sort By</div>
+            <select id="bookSortPicker" class="list-select" onchange="onBookSortChange(this.value)">
+              <option value="ULTIMATE" selected>🏆 Ultimate (Rating + Popularity)</option>
+              <option value="VOTES">🔥 Most Ratings</option>
+              <option value="RATING">⭐ Avg Rating (100k+ ratings)</option>
+              <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+            </select>
+
+            <div class="filter-section-label">Other Person's Status</div>
+            <div id="bookSecondaryStatusSlot">
+              <div class="status-user-block" id="bookStatusKianna">
+                <div class="status-user-head label-kianna">Kianna</div>
+                <div class="status-btn-grid">
+                  <button type="button" class="toggle-pill active" data-filter="kianna" data-val="ALL">All</button>
+                  <button type="button" class="toggle-pill" data-filter="kianna" data-val="READ">Read</button>
+                  <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNRATED">Read (no ★)</button>
+                  <button type="button" class="toggle-pill" data-filter="kianna" data-val="UNREAD">Unread</button>
+                  <button type="button" class="toggle-pill" data-filter="kianna" data-val="WISH">Wish</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MOVIE ADVANCED -->
+          <div id="drawerMovieAdv" style="display:none;">
+            <div class="filter-section-label">Rank / Sort By</div>
+            <select id="movieSortPicker" class="list-select" onchange="onMovieSortChange(this.value)">
+              <option value="ULTIMATE" selected>🏆 Ultimate (Rating + Popularity)</option>
+              <option value="RATING">⭐ Highest Rated</option>
+              <option value="VOTES">🔥 Most Ratings</option>
+              <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+            </select>
+
+            <div class="filter-section-label">Other Person's Status</div>
+            <div id="movieSecondaryStatusSlot">
+              <div class="status-user-block" id="movieStatusKianna">
+                <div class="status-user-head label-kianna">Kianna</div>
+                <div class="status-btn-grid">
+                  <button type="button" class="toggle-pill active" data-mfilter="kianna" data-val="ALL">All</button>
+                  <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WATCHED">Seen</button>
+                  <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNRATED">Seen (no ★)</button>
+                  <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="UNWATCHED">Unseen</button>
+                  <button type="button" class="toggle-pill" data-mfilter="kianna" data-val="WISH">Wish</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DINING ADVANCED -->
+          <div id="drawerDiningAdv" style="display:none;">
+            <div class="filter-section-label">Rank / Sort By</div>
+            <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
+              <option value="NEARBY_SCORE" selected>📍 Best Nearby (Distance + Rating + Cost)</option>
+              <option value="ULTIMATE">🏆 Ultimate (Rating + Reviews)</option>
+              <option value="DISTANCE">🚗 Closest Drive</option>
+              <option value="VOTES">🔥 Most Rated (Google)</option>
+              <option value="RATING">⭐ Highest Rated (250+ reviews)</option>
+              <option value="OUR_TOP">❤️ Our Top Rated (D & K)</option>
+              <option value="SCORE">📊 Overall Score (/100)</option>
+              <option value="COST_ASC">💵 Cost: Low → High</option>
+              <option value="COST_DESC">💰 Cost: High → Low</option>
+              <option value="NAME">🔤 A – Z</option>
+            </select>
+
+            <div class="filter-section-label">Other Person's Status</div>
+            <div id="diningSecondaryStatusSlot">
+              <div class="status-user-block" id="diningStatusKianna">
+                <div class="status-user-head label-kianna">Kianna</div>
+                <div class="status-btn-grid">
+                  <button type="button" class="toggle-pill active" data-dfilter="kianna" data-val="ALL">All</button>
+                  <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="RATED">Rated</button>
+                  <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="VISITED_NO_STAR">Visited (no ★)</button>
+                  <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="NOT_VISITED">Not Visited</button>
+                  <button type="button" class="toggle-pill" data-dfilter="kianna" data-val="WISH">Wish</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-section-label">Region / Travel</div>
+            <select id="diningRegionPicker" class="list-select" onchange="onDiningFilterChange()">
+              <option value="Haslet / DFW" selected>📍 Haslet / DFW (+Chains)</option>
+              <option value="CHAINS_ONLY">🔗 Chains Only</option>
+              <option value="ALL">🌎 All Regions</option>
+            </select>
+
+            <div class="filter-section-label">List / Source</div>
+            <select id="diningListPicker" class="list-select" onchange="onDiningFilterChange()">
+              <option value="ALL_SPOTS" selected>📋 All Restaurants</option>
+              <option value="OUR_LIST">⭐ Visited / Our List</option>
+              <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
+              <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <button type="button" class="dining-add-btn" style="width:100%; margin-top:12px; flex-shrink:0;" onclick="closeFilterDrawer()">Done</button>
+      <button type="button" id="filterDrawerDoneBtn" class="dining-add-btn" style="width:100%; margin-top:12px; flex-shrink:0;" onclick="closeFilterDrawer()">Show Results</button>
     </div>
   </div>
 
@@ -1053,6 +1118,8 @@
         </div>
       </div>
     </div>
+
+    <div class="active-chips-row" id="bookActiveChips"></div>
 
     <div class="filter-indicator" id="filterIndicator">
       <div>Active Filter: <span id="filterIndicatorText">Custom</span></div>
@@ -1196,6 +1263,8 @@
       </div>
     </div>
 
+    <div class="active-chips-row" id="movieActiveChips"></div>
+
     <div class="grid-container" id="movieGrid">
       <div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading movies...</div>
     </div>
@@ -1229,6 +1298,8 @@
         </div>
       </div>
     </div>
+
+    <div class="active-chips-row" id="diningActiveChips"></div>
 
     <!-- Live Travel / Anywhere Scan Banner -->
     <div id="liveScanBanner" style="display:none; margin:10px 14px 0 14px; padding:10px 12px; background:rgba(16, 185, 129, 0.14); border:1px solid rgba(16, 185, 129, 0.45); border-radius:10px; align-items:center; justify-content:space-between; gap:8px;">
@@ -2241,22 +2312,143 @@
       renderMovies();
     }
 
+    function syncFilterDrawerStatusSlots() {
+      const isK = Boolean(deviceUser && deviceUser.toLowerCase().startsWith('k'));
+      const pairs = [
+        ['bookPrimaryStatusSlot', 'bookSecondaryStatusSlot', 'bookStatusDerek', 'bookStatusKianna'],
+        ['moviePrimaryStatusSlot', 'movieSecondaryStatusSlot', 'movieStatusDerek', 'movieStatusKianna'],
+        ['diningPrimaryStatusSlot', 'diningSecondaryStatusSlot', 'diningStatusDerek', 'diningStatusKianna']
+      ];
+      pairs.forEach(([primId, secId, dId, kId]) => {
+        const prim = document.getElementById(primId);
+        const sec = document.getElementById(secId);
+        const dEl = document.getElementById(dId);
+        const kEl = document.getElementById(kId);
+        if (!prim || !sec || !dEl || !kEl) return;
+        const primaryEl = isK ? kEl : dEl;
+        const secondaryEl = isK ? dEl : kEl;
+        if (primaryEl.parentElement !== prim) prim.appendChild(primaryEl);
+        if (secondaryEl.parentElement !== sec) sec.appendChild(secondaryEl);
+      });
+    }
+
+    function toggleMoreFiltersBox(forceState) {
+      const box = document.getElementById('moreFiltersBox');
+      const arrow = document.getElementById('moreFiltersArrow');
+      if (!box) return;
+      const shouldOpen = (typeof forceState === 'boolean') ? forceState : !box.classList.contains('open');
+      box.classList.toggle('open', shouldOpen);
+      if (arrow) arrow.textContent = shouldOpen ? '▲' : '▼';
+    }
+
+    function updateFilterDrawerDoneBtn(count, singular, plural) {
+      const btn = document.getElementById('filterDrawerDoneBtn');
+      if (!btn) return;
+      const label = count === 1 ? singular : plural;
+      btn.textContent = `Show ${count} ${label}`;
+      btn.style.background = count === 0 ? '#b91c1c' : 'var(--accent)';
+    }
+
+    function renderActiveFilterChips(tab) {
+      const statusLabels = {
+        READ: 'Read', UNRATED: 'No ★', UNREAD: 'Unread', WISH: 'Wish',
+        WATCHED: 'Seen', UNWATCHED: 'Unseen',
+        RATED: 'Rated', VISITED_NO_STAR: 'Visited (no ★)', NOT_VISITED: 'Not Visited'
+      };
+      const chips = [];
+
+      if (tab === 'catalog') {
+        const wrap = document.getElementById('bookActiveChips');
+        if (!wrap) return;
+        if (filterDerek !== 'ALL') chips.push({ label: `Derek: ${statusLabels[filterDerek] || filterDerek}`, clear: () => { filterDerek = 'ALL'; syncTogglePillUI('data-filter', 'derek', 'ALL'); renderBooks(); } });
+        if (filterKianna !== 'ALL') chips.push({ label: `Kianna: ${statusLabels[filterKianna] || filterKianna}`, clear: () => { filterKianna = 'ALL'; syncTogglePillUI('data-filter', 'kianna', 'ALL'); renderBooks(); } });
+        selectedBookExtraLists.forEach(tag => {
+          chips.push({ label: tag, clear: () => { selectedBookExtraLists.delete(tag); syncBookListChipsUI(); renderBooks(); } });
+        });
+        if (selectedBookGenre !== 'ALL') chips.push({ label: `Genre: ${selectedBookGenre}`, clear: () => { selectedBookGenre = 'ALL'; const g = document.getElementById('bookGenreStackPicker'); if (g) g.value = 'ALL'; renderBooks(); } });
+        if (currentViewScope !== 'top100') chips.push({ label: currentViewScope === 'top250' ? 'Top 250' : 'All Books', clear: () => { currentViewScope = 'top100'; renderBooks(); } });
+        mountActiveChips(wrap, chips);
+      } else if (tab === 'movies') {
+        const wrap = document.getElementById('movieActiveChips');
+        if (!wrap) return;
+        if (mFilterDerek !== 'ALL') chips.push({ label: `Derek: ${statusLabels[mFilterDerek] || mFilterDerek}`, clear: () => { mFilterDerek = 'ALL'; syncTogglePillUI('data-mfilter', 'derek', 'ALL'); renderMovies(); } });
+        if (mFilterKianna !== 'ALL') chips.push({ label: `Kianna: ${statusLabels[mFilterKianna] || mFilterKianna}`, clear: () => { mFilterKianna = 'ALL'; syncTogglePillUI('data-mfilter', 'kianna', 'ALL'); renderMovies(); } });
+        selectedMovieExtraLists.forEach(tag => {
+          chips.push({ label: tag === 'Fill In Filmography' ? '🎞️ Filmography' : tag, clear: () => { selectedMovieExtraLists.delete(tag); syncMovieListChipsUI(); renderMovies(); } });
+        });
+        if (selectedMovieMpaa !== 'ALL') {
+          const mpLbl = selectedMovieMpaa === 'FAMILY' ? 'Family-Safe' : (selectedMovieMpaa === 'KIDS' ? 'Kids (G/PG)' : 'Mature (R)');
+          chips.push({ label: mpLbl, clear: () => { selectedMovieMpaa = 'ALL'; const el = document.getElementById('movieMpaaPicker'); if (el) el.value = 'ALL'; renderMovies(); } });
+        }
+        if (selectedMovieGenre !== 'ALL') chips.push({ label: `Genre: ${selectedMovieGenre}`, clear: () => { selectedMovieGenre = 'ALL'; const g = document.getElementById('movieGenreStackPicker'); if (g) g.value = 'ALL'; renderMovies(); } });
+        mountActiveChips(wrap, chips);
+      } else if (tab === 'dining') {
+        const wrap = document.getElementById('diningActiveChips');
+        if (!wrap) return;
+        if (diningPlaceType !== 'MEALS') chips.push({ label: diningPlaceType === 'TREATS' ? '🍦 Treats' : '✨ Meals + Treats', clear: () => setDiningPlaceType('MEALS') });
+        if (maxDiningDriveMins !== 20) chips.push({ label: maxDiningDriveMins >= 999 ? 'Any Drive' : `≤ ${maxDiningDriveMins}m`, clear: () => setMaxDiningDrive(20) });
+        if (diningMode !== 'ALL') chips.push({ label: diningMode === 'FAMILY' ? '👨‍👩‍👧‍👦 Family' : '🥂 Date Night', clear: () => setDiningMode('ALL') });
+        const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
+        if (catF !== 'ALL') chips.push({ label: catF, clear: () => { document.getElementById('diningCategoryPicker').value = 'ALL'; renderDining(); } });
+        if (dFilterDerek !== 'ALL') chips.push({ label: `Derek: ${statusLabels[dFilterDerek] || dFilterDerek}`, clear: () => { dFilterDerek = 'ALL'; syncTogglePillUI('data-dfilter', 'derek', 'ALL'); renderDining(); } });
+        if (dFilterKianna !== 'ALL') chips.push({ label: `Kianna: ${statusLabels[dFilterKianna] || dFilterKianna}`, clear: () => { dFilterKianna = 'ALL'; syncTogglePillUI('data-dfilter', 'kianna', 'ALL'); renderDining(); } });
+        mountActiveChips(wrap, chips);
+      }
+    }
+
+    function mountActiveChips(wrap, chips) {
+      wrap.innerHTML = '';
+      if (!chips.length) {
+        wrap.classList.remove('has-chips');
+        return;
+      }
+      wrap.classList.add('has-chips');
+      chips.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'active-chip';
+        btn.textContent = c.label + ' ✕';
+        btn.onclick = c.clear;
+        wrap.appendChild(btn);
+      });
+      if (chips.length >= 2) {
+        const rst = document.createElement('button');
+        rst.type = 'button';
+        rst.className = 'active-chip reset-chip';
+        rst.textContent = 'Clear All';
+        rst.onclick = () => resetActiveTabFilters();
+        wrap.appendChild(rst);
+      }
+    }
+
     function openFilterDrawer() {
+      syncFilterDrawerStatusSlots();
       const bSec = document.getElementById('drawerBookFilters');
       const mSec = document.getElementById('drawerMovieFilters');
       const dSec = document.getElementById('drawerDiningFilters');
+      const bAdv = document.getElementById('drawerBookAdv');
+      const mAdv = document.getElementById('drawerMovieAdv');
+      const dAdv = document.getElementById('drawerDiningAdv');
       const scopeSec = document.getElementById('filterScopeSection');
       const titleEl = document.getElementById('filterDrawerTitle');
 
       if (bSec) bSec.style.display = (currentTab === 'catalog') ? 'block' : 'none';
       if (mSec) mSec.style.display = (currentTab === 'movies') ? 'block' : 'none';
       if (dSec) dSec.style.display = (currentTab === 'dining') ? 'block' : 'none';
+      if (bAdv) bAdv.style.display = (currentTab === 'catalog') ? 'block' : 'none';
+      if (mAdv) mAdv.style.display = (currentTab === 'movies') ? 'block' : 'none';
+      if (dAdv) dAdv.style.display = (currentTab === 'dining') ? 'block' : 'none';
       if (scopeSec) scopeSec.style.display = (currentTab === 'shelf') ? 'none' : 'block';
 
+      toggleMoreFiltersBox(false);
+
       if (titleEl) {
-        titleEl.textContent = currentTab === 'catalog' ? '📚 Book Filters & Sort'
-          : (currentTab === 'movies' ? '🎬 Movie Filters & Sort' : '🍽️ Dining Filters & Sort');
+        titleEl.textContent = currentTab === 'catalog' ? '📚 Book Filters'
+          : (currentTab === 'movies' ? '🎬 Movie Filters' : '🍽️ Dining Filters');
       }
+      if (currentTab === 'catalog') renderBooks();
+      else if (currentTab === 'movies') renderMovies();
+      else if (currentTab === 'dining') renderDining();
       document.getElementById('filterDrawerOverlay').classList.add('open');
     }
 
@@ -2905,6 +3097,9 @@
         return true;
       });
 
+      renderActiveFilterChips('catalog');
+      if (currentTab === 'catalog') updateFilterDrawerDoneBtn(displayList.length, 'Book', 'Books');
+
       if (displayList.length === 0) {
         grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No books match these filters.</div>';
         return;
@@ -3198,6 +3393,9 @@
 
         return true;
       });
+
+      renderActiveFilterChips('movies');
+      if (currentTab === 'movies') updateFilterDrawerDoneBtn(displayList.length, 'Movie', 'Movies');
 
       if (displayList.length === 0) {
         grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">No movies match these filters.</div>';
@@ -5392,6 +5590,9 @@
       let list = fullList;
       if (currentDiningScope === 'top100') list = fullList.slice(0, 100);
       else if (currentDiningScope === 'top250') list = fullList.slice(0, 250);
+
+      renderActiveFilterChips('dining');
+      if (currentTab === 'dining') updateFilterDrawerDoneBtn(list.length, 'Spot', 'Spots');
 
       const listFilter = (document.getElementById('diningListPicker') || {}).value || 'ALL_SPOTS';
 
