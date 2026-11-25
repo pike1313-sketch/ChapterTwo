@@ -927,6 +927,13 @@
 
         <!-- DINING FILTERS -->
         <div id="drawerDiningFilters" style="display:none;">
+          <div class="filter-section-label">Restaurants vs Treats</div>
+          <div class="segmented-3" id="diningTypeRow" style="margin-bottom:4px;">
+            <button type="button" class="seg-btn active" data-dtype="MEALS" onclick="setDiningPlaceType('MEALS')">🍽️ Restaurants</button>
+            <button type="button" class="seg-btn" data-dtype="TREATS" onclick="setDiningPlaceType('TREATS')">🍦 Treats</button>
+            <button type="button" class="seg-btn" data-dtype="ALL" onclick="setDiningPlaceType('ALL')">✨ Both</button>
+          </div>
+
           <div class="filter-section-label">Vibe / Occasion</div>
           <div class="dining-mode-deck" style="margin-bottom:4px;">
             <button type="button" class="dining-mode-btn active" data-dmode="ALL" onclick="setDiningMode('ALL')">🍽️ All</button>
@@ -2284,6 +2291,7 @@
         const regF = (document.getElementById('diningRegionPicker') || {}).value || 'Haslet / DFW';
         const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
         const sortF = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
+        if (diningPlaceType !== 'MEALS') count++;
         if (diningMode !== 'ALL') count++;
         if (maxDiningDriveMins !== 20) count++;
         if (listF !== 'ALL_SPOTS') count++;
@@ -2335,6 +2343,8 @@
         });
         renderMovies();
       } else if (currentTab === 'dining') {
+        diningPlaceType = 'MEALS';
+        syncDiningPlaceTypeUI();
         diningMode = 'ALL';
         maxDiningDriveMins = 20;
         syncMaxDiningDriveUI();
@@ -4657,6 +4667,19 @@
     let dFilterDerek = 'ALL';
     let dFilterKianna = 'ALL';
     let maxDiningDriveMins = 20;
+    let diningPlaceType = 'MEALS'; // 'MEALS' | 'TREATS' | 'ALL'
+
+    function syncDiningPlaceTypeUI() {
+      document.querySelectorAll('#diningTypeRow button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.dtype === diningPlaceType);
+      });
+    }
+
+    function setDiningPlaceType(type) {
+      diningPlaceType = type || 'MEALS';
+      syncDiningPlaceTypeUI();
+      renderDining();
+    }
 
     function syncMaxDiningDriveUI() {
       document.querySelectorAll('#diningMaxDriveRow button').forEach(btn => {
@@ -5262,6 +5285,12 @@
           if (effMins === null || isNaN(effMins) || effMins > maxDiningDriveMins) return false;
         }
 
+        const isTreatSpot = (r.category || '') === 'Bakery / Dessert';
+        if (catFilter !== 'Bakery / Dessert') {
+          if (diningPlaceType === 'MEALS' && isTreatSpot) return false;
+          if (diningPlaceType === 'TREATS' && !isTreatSpot) return false;
+        }
+
         if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
         if (diningMode === 'DATE' && !r.dateNight) return false;
 
@@ -5465,6 +5494,11 @@
           ? '<span class="rest-tag-pill rest-tag-family">✓ Visited</span>'
           : '<span class="rest-tag-pill" style="color:var(--text-muted);">📌 Try</span>';
 
+        const activeDiningSort = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
+        const cardScore = (activeDiningSort === 'SCORE' && sc.total !== null)
+          ? sc.total
+          : ((sc.nearbyScore !== null && sc.nearbyScore !== undefined) ? sc.nearbyScore : sc.total);
+
         card.innerHTML = `
           <div class="rest-card-thumb">
             ${r.rank ? `<div class="series-badge">#${r.rank}</div>` : ''}
@@ -5474,7 +5508,7 @@
             <div>
               <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
                 <div class="card-title">${escapeHtml(r.name)}</div>
-                <span class="score-pill ${getScoreBadgeClass(sc.total)}">${sc.total !== null ? sc.total + '/100' : '--'}</span>
+                <span class="score-pill ${getScoreBadgeClass(cardScore)}">${cardScore !== null ? cardScore + '/100' : '--'}</span>
               </div>
               <div class="card-author">${escapeHtml(r.category)}${r.location ? ' • ' + escapeHtml(r.location) : ''}${distText ? ' • ' + distText : ''}</div>
               <div class="ratings-row">
@@ -6163,7 +6197,9 @@
       syncTogglePillUI('data-mfilter', 'derek', mFilterDerek);
       syncTogglePillUI('data-mfilter', 'kianna', mFilterKianna);
 
-      // 3. Dining: Not visited out of Best Nearby within 20m (Distance + Rating + Cost)
+      // 3. Dining: Not visited out of Best Nearby within 20m (Restaurants only by default)
+      diningPlaceType = 'MEALS';
+      syncDiningPlaceTypeUI();
       diningMode = 'ALL';
       maxDiningDriveMins = 20;
       syncMaxDiningDriveUI();
