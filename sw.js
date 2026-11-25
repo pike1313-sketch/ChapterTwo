@@ -1,5 +1,5 @@
 // Increment version string whenever pushing a major frontend update
-const CACHE_NAME = 'chaptertwo-v45';
+const CACHE_NAME = 'chaptertwo-v46';
 
 const ASSETS_TO_CACHE = [
   './',

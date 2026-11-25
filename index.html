@@ -791,6 +791,7 @@
           ⚙️ Filters <span class="filter-badge-dot" id="headerFilterCount">0</span>
         </button>
         <button type="button" class="header-quick-btn" id="headerAddRestBtn" onclick="openRestaurantFormModal()">+ Add</button>
+        <button type="button" class="header-quick-btn" id="headerAddEatInBtn" onclick="openEatInFormModal()">+ Add</button>
         <button type="button" class="header-quick-btn" id="headerCsvBtn" onclick="openMovieUploadModal()" style="background:var(--surface-elevated); border:1px solid var(--accent); color:#a5b4fc;">+ CSV</button>
       </div>
     </div>
@@ -971,6 +972,49 @@
           </div>
         </div>
 
+        <!-- EAT IN FILTERS (ESSENTIALS) -->
+        <div id="drawerEatInFilters" style="display:none;">
+          <div class="filter-section-label" style="margin-top:0;">Shelf Stability</div>
+          <div class="segmented-3" id="eatInStabilityRow" style="margin-bottom:4px;">
+            <button type="button" class="seg-btn active" data-estab="ALL" onclick="setEatInStabilityFilter('ALL')">✨ All</button>
+            <button type="button" class="seg-btn" data-estab="Pantry" onclick="setEatInStabilityFilter('Pantry')">🥫 Pantry</button>
+            <button type="button" class="seg-btn" data-estab="Fresh" onclick="setEatInStabilityFilter('Fresh')">🥬 Fresh</button>
+          </div>
+
+          <div class="filter-section-label">Effort (LOE)</div>
+          <div class="status-btn-grid" id="eatInLoeRow" style="grid-template-columns:repeat(4,1fr); margin-bottom:4px;">
+            <button type="button" class="toggle-pill active" data-eloe="ALL" onclick="setEatInLoeFilter('ALL')">All</button>
+            <button type="button" class="toggle-pill" data-eloe="Easy" onclick="setEatInLoeFilter('Easy')">⚡ Easy</button>
+            <button type="button" class="toggle-pill" data-eloe="Medium" onclick="setEatInLoeFilter('Medium')">🍳 Med</button>
+            <button type="button" class="toggle-pill" data-eloe="Project" onclick="setEatInLoeFilter('Project')">🔥 Proj</button>
+          </div>
+
+          <div class="filter-section-label">Category</div>
+          <select id="eatInCategoryPicker" class="list-select" onchange="renderEatIn()">
+            <option value="ALL" selected>🏷️ All Categories</option>
+            <option value="Pasta">🍝 Pasta</option>
+            <option value="Mexican">🌮 Mexican</option>
+            <option value="Chicken">🍗 Chicken</option>
+            <option value="Beef / Pork">🥩 Beef / Pork</option>
+            <option value="Burgers & Sandwiches">🥪 Burgers & Sandwiches</option>
+            <option value="Pizza & Flatbread">🍕 Pizza & Flatbread</option>
+            <option value="Soup & Chili">🥣 Soup & Chili</option>
+            <option value="Salads & Bowls">🥗 Salads & Bowls</option>
+            <option value="Breakfast">🍳 Breakfast</option>
+            <option value="Slow Cooker">🍲 Slow Cooker</option>
+            <option value="Sides">🥐 Sides</option>
+            <option value="Treats">🍪 Treats</option>
+            <option value="Other">🍽️ Other</option>
+          </select>
+
+          <div class="filter-section-label">Liked By (7+ Rating)</div>
+          <select id="eatInPersonPicker" class="list-select" onchange="renderEatIn()">
+            <option value="ALL" selected>👥 Anyone</option>
+            <option value="Derek">Derek (7+)</option>
+            <option value="Kianna">Kianna (7+)</option>
+          </select>
+        </div>
+
         <!-- COLLAPSIBLE MORE / ADVANCED FILTERS -->
         <button type="button" class="more-filters-toggle" id="moreFiltersToggleBtn" onclick="toggleMoreFiltersBox()">
           <span id="moreFiltersToggleLabel">▸ More Filters (Sort, List Size, Spouse...)</span>
@@ -1081,6 +1125,18 @@
               <option value="OUR_LIST">⭐ Visited / Our List</option>
               <option value="MOST_RATED">🔥 Top 100 Most Rated</option>
               <option value="HIGHEST_RATED">🏆 Top 100 Highest Rated</option>
+            </select>
+          </div>
+
+          <!-- EAT IN ADVANCED -->
+          <div id="drawerEatInAdv" style="display:none;">
+            <div class="filter-section-label">Rank / Sort By</div>
+            <select id="eatInSortPicker" class="list-select" onchange="renderEatIn()">
+              <option value="FAVS" selected>🏆 Family Favs (Highest Rated)</option>
+              <option value="EASY">⚡ Easiest First (LOE)</option>
+              <option value="NOT_LATELY">🕰️ Not Made Lately</option>
+              <option value="MOST_MADE">🔁 Most Made</option>
+              <option value="NAME">🔤 A – Z</option>
             </select>
           </div>
         </div>
@@ -1319,6 +1375,46 @@
     </div>
   </main>
 
+  <!-- TAB 5: Eat In (Home Meals & Recipes) -->
+  <main id="tabEatIn" class="tab-content">
+    <div class="sticky-tab-top">
+      <div class="quick-pill-row" id="eatInQuickRow">
+        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-equick="FAVS" onclick="setEatInQuickPreset('FAVS')">🏆 Family Favs</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="EASY" onclick="setEatInQuickPreset('EASY')">⚡ Easy</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="PANTRY" onclick="setEatInQuickPreset('PANTRY')">🥫 Pantry</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="NOT_LATELY" onclick="setEatInQuickPreset('NOT_LATELY')">🕰️ Not Lately</button>
+      </div>
+
+      <div class="mini-kpi-ribbon">
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag" style="color:var(--emerald);">Meals</span>
+          <span class="kpi-ribbon-val" id="eRbTotal">0</span>
+          <span class="kpi-ribbon-sub" id="eRbVersions">0 versions</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag derek">🥫 Pantry</span>
+          <span class="kpi-ribbon-val" id="eRbPantry">0</span>
+          <span class="kpi-ribbon-sub">always ready</span>
+        </div>
+        <div class="kpi-ribbon-card">
+          <span class="kpi-ribbon-tag kianna">⚡ Easy</span>
+          <span class="kpi-ribbon-val" id="eRbEasy">0</span>
+          <span class="kpi-ribbon-sub">quick nights</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="active-chips-row" id="eatInActiveChips"></div>
+
+    <div style="display:flex; gap:8px; margin:10px 14px 0 14px;">
+      <button type="button" class="btn-spin" style="flex:1; min-height:44px;" onclick="pickRandomEatInMeal()">🎲 Pick Tonight's Meal</button>
+    </div>
+
+    <div class="grid-container" id="eatInGrid">
+      <div style="text-align:center; padding: 40px; color: var(--text-muted);">Loading home meals...</div>
+    </div>
+  </main>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navCatalog" onclick="switchTab('catalog')">
@@ -1331,11 +1427,15 @@
     </button>
     <button class="nav-item" id="navDining" onclick="switchTab('dining')">
       <div class="nav-icon">🍽️</div>
-      <div class="nav-label">Dining</div>
+      <div class="nav-label">Eat Out</div>
+    </button>
+    <button class="nav-item" id="navEatIn" onclick="switchTab('eatin')">
+      <div class="nav-icon">🍳</div>
+      <div class="nav-label">Eat In</div>
     </button>
     <button class="nav-item" id="navShelf" onclick="switchTab('shelf')">
       <div class="nav-icon">📊</div>
-      <div class="nav-label">Our Shelf</div>
+      <div class="nav-label">Shelf</div>
     </button>
   </nav>
 
@@ -2051,6 +2151,214 @@
     </div>
   </div>
 
+  <!-- Eat In Detail Modal (Full Page: Meal -> Versions + Flexible Person Ratings) -->
+  <div class="modal-overlay fullscreen-modal" id="eatInModal" onclick="if(event.target===this) closeEatInModal()">
+    <div class="modal-sheet">
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeEatInModal()">← Back</button>
+        <div class="fp-top-title" id="emTopTitle">Home Meal</div>
+        <button type="button" class="fp-back-btn" onclick="editActiveEatInMeal()">✏️ Edit</button>
+      </div>
+
+      <div class="fp-body">
+        <div class="modal-header">
+          <div id="emThumb" class="rest-card-thumb" style="width:90px; min-width:90px; height:110px; border-radius:10px; border:1px solid var(--border);"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <h2 class="modal-title" id="emName" style="margin-bottom:2px;"></h2>
+              <span id="emAvgBadge" class="score-pill score-high"></span>
+            </div>
+            <div class="modal-author" id="emMeta" style="margin-bottom:6px;"></div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="emTagsWrap"></div>
+          </div>
+        </div>
+
+        <!-- Made Tonight CTA -->
+        <div class="visit-cta-card">
+          <div>
+            <div style="font-size:0.84rem; font-weight:900; color:#fff;" id="emMadeTitle">Ready to cook this?</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);" id="emMadeSub">Log tonight to track when you last made it</div>
+          </div>
+          <button type="button" class="visit-cta-btn" onclick="markActiveEatInMade()">🍳 Made Tonight</button>
+        </div>
+
+        <!-- Flexible Family & Guest Ratings (Derek, Kianna, Finn, Grandma, Anyone!) -->
+        <div class="dk-rating-card">
+          <div style="font-size:0.8rem; font-weight:900; color:#fff; margin-bottom:10px;">⭐ Family & Guest Ratings (1–10)</div>
+
+          <div class="rate-row-head">
+            <span style="color:var(--derek);">Derek</span>
+            <span id="emDRateVal" style="color:var(--derek);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="emDRateStrip"></div>
+
+          <div class="rate-row-head">
+            <span style="color:var(--kianna);">Kianna</span>
+            <span id="emKRateVal" style="color:var(--kianna);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="emKRateStrip"></div>
+
+          <!-- Other People (Finn, Grandma, etc.) -->
+          <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:10px;">
+            <div style="font-size:0.72rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">👥 Kids & Guests</div>
+            <div id="emOtherRatingsWrap" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;"></div>
+            <div id="emKnownPeopleChips" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;"></div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input type="text" id="emCustomPersonName" class="form-input" placeholder="Name (e.g. Finn, Grandma)" style="flex:1.4; min-height:42px; padding:8px 10px;">
+              <input type="number" id="emCustomPersonScore" class="form-input" min="1" max="10" step="0.5" placeholder="1–10" style="flex:0.7; min-height:42px; padding:8px 10px;">
+              <button type="button" class="dining-add-btn" style="min-height:42px; padding:8px 12px;" onclick="addCustomEatInRating('MEAL')">+ Rate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe & Notes -->
+        <div id="emSourceWrap" style="display:none; margin-bottom:10px; font-size:0.78rem;"></div>
+        <div id="emRecipeBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px;">
+          <div style="font-size:0.7rem; font-weight:900; color:var(--accent); text-transform:uppercase; margin-bottom:4px;">📖 Base Recipe / Ingredients</div>
+          <div id="emRecipeText" style="font-size:0.8rem; color:#e2e8f0; line-height:1.45; white-space:pre-wrap;"></div>
+        </div>
+        <p id="emNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
+
+        <!-- Versions / Variations -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+          <div style="font-size:0.86rem; font-weight:900; color:#fff;">🍽️ Versions & Variations</div>
+          <button type="button" class="dining-add-btn" style="padding:7px 12px; min-height:40px; font-size:0.76rem;" onclick="toggleEatInVersionForm()">+ Add Version</button>
+        </div>
+
+        <!-- Inline Add / Edit Version Form -->
+        <div id="eatInVersionFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-top:10px;">
+          <input type="hidden" id="evEditId">
+          <div class="form-group">
+            <label class="form-label">Version Name *</label>
+            <input type="text" id="evNameInput" class="form-input" placeholder="e.g. Manwich, Homemade Sauce, Baked Ziti">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Effort (LOE)</label>
+              <select id="evLoeInput" class="form-input">
+                <option value="Easy">⚡ Easy (15m)</option>
+                <option value="Medium">🍳 Medium (30–45m)</option>
+                <option value="Project">🔥 Project (1hr+)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stability</label>
+              <select id="evStabInput" class="form-input">
+                <option value="Pantry">🥫 Pantry / Freezer</option>
+                <option value="Fresh">🥬 Needs Fresh</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Source (Book or URL)</label>
+              <input type="text" id="evSourceInput" class="form-input" placeholder="e.g. Cookbook p.42 or https://...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">📷 Photo (Optional)</label>
+              <input type="file" id="evPhotoInput" accept="image/*" class="form-input" style="padding:6px; font-size:0.75rem;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Recipe / Ingredients</label>
+            <textarea id="evRecipeInput" class="form-input" rows="3" placeholder="Ingredients or quick steps..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes (Optional)</label>
+            <input type="text" id="evNotesInput" class="form-input" placeholder="e.g. Kids love this version!">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="btnSaveEatInVer" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="submitEatInVersion()">Save Version</button>
+            <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="toggleEatInVersionForm(false)">Cancel</button>
+          </div>
+        </div>
+
+        <div id="emVersionsList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+      </div>
+
+      <div class="fp-footer">
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInMeal()">✏️ Edit Meal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Eat In Meal Modal -->
+  <div class="modal-overlay" id="eatInFormModal" onclick="if(event.target===this) closeEatInFormModal()">
+    <div class="modal-sheet">
+      <div class="flag-sheet-header" style="margin-bottom:10px;">
+        <span class="flag-sheet-title" id="efModalTitle">🍳 Add Home Meal</span>
+        <button class="flag-close-btn" onclick="closeEatInFormModal()">✕</button>
+      </div>
+
+      <div class="form-scroll">
+        <input type="hidden" id="efId">
+        <div class="form-group">
+          <label class="form-label">Meal Name *</label>
+          <input type="text" id="efName" class="form-input" placeholder="e.g. Spaghetti, Sloppy Joes, Chicken Alfredo">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="efCategory" class="form-input">
+              <option value="Pasta">🍝 Pasta</option>
+              <option value="Mexican">🌮 Mexican</option>
+              <option value="Chicken">🍗 Chicken</option>
+              <option value="Beef / Pork">🥩 Beef / Pork</option>
+              <option value="Burgers & Sandwiches">🥪 Burgers & Sandwiches</option>
+              <option value="Pizza & Flatbread">🍕 Pizza & Flatbread</option>
+              <option value="Soup & Chili">🥣 Soup & Chili</option>
+              <option value="Salads & Bowls">🥗 Salads & Bowls</option>
+              <option value="Breakfast">🍳 Breakfast</option>
+              <option value="Slow Cooker">🍲 Slow Cooker</option>
+              <option value="Sides">🥐 Sides</option>
+              <option value="Treats">🍪 Treats</option>
+              <option value="Other">🍽️ Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Effort (LOE)</label>
+            <select id="efLoe" class="form-input">
+              <option value="Easy">⚡ Easy (15m)</option>
+              <option value="Medium">🍳 Medium (30–45m)</option>
+              <option value="Project">🔥 Project (1hr+)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Shelf Stability</label>
+            <select id="efStability" class="form-input">
+              <option value="Pantry">🥫 Pantry / Freezer</option>
+              <option value="Fresh">🥬 Needs Fresh</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source (Book or URL)</label>
+            <input type="text" id="efSource" class="form-input" placeholder="e.g. Magnolia Table or https://...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">📷 Photo (Optional)</label>
+          <input type="file" id="efPhotoInput" accept="image/*" class="form-input" style="padding:6px; font-size:0.78rem;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">📖 Recipe / Ingredients</label>
+          <textarea id="efRecipe" class="form-input" rows="4" placeholder="Ingredients & quick directions..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">📝 Notes</label>
+          <textarea id="efNotes" class="form-input" rows="2" placeholder="Sides, tips, kid modifications..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="flex-shrink:0;">
+        <button type="button" id="btnSaveEatInMeal" class="btn-act" style="background:var(--accent); color:#fff; font-weight:800;" onclick="submitEatInMealForm()">💾 Save Meal</button>
+        <button type="button" id="btnDeleteEatInMeal" class="btn-act btn-flag" style="display:none; flex:none; padding:10px 14px;" onclick="deleteEditingEatInMeal()">🗑️</button>
+        <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="closeEatInFormModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Who's Phone Picker Modal (Saved per device) -->
   <div class="modal-overlay" id="whoModal" onclick="if(event.target===this && localStorage.getItem('chaptertwo_device_user')) closeWhoModal()">
     <div class="modal-sheet" style="text-align:center;">
@@ -2376,6 +2684,7 @@
       if (currentTab === 'catalog') renderBooks();
       else if (currentTab === 'movies') renderMovies();
       else if (currentTab === 'dining') renderDining();
+      else if (currentTab === 'eatin') renderEatIn();
     }
 
     function renderActiveFilterChips(tab) {
@@ -2429,6 +2738,16 @@
         if (dFilterDerek !== 'ALL') chips.push({ label: `Derek: ${statusLabels[dFilterDerek] || dFilterDerek}`, clear: () => { dFilterDerek = 'ALL'; syncTogglePillUI('data-dfilter', 'derek', 'ALL'); renderDining(); } });
         if (dFilterKianna !== 'ALL') chips.push({ label: `Kianna: ${statusLabels[dFilterKianna] || dFilterKianna}`, clear: () => { dFilterKianna = 'ALL'; syncTogglePillUI('data-dfilter', 'kianna', 'ALL'); renderDining(); } });
         mountActiveChips(wrap, chips);
+      } else if (tab === 'eatin') {
+        const wrap = document.getElementById('eatInActiveChips');
+        if (!wrap) return;
+        if (eatInStabilityFilter !== 'ALL') chips.push({ label: eatInStabilityFilter === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh', clear: () => setEatInStabilityFilter('ALL') });
+        if (eatInLoeFilter !== 'ALL') chips.push({ label: `LOE: ${eatInLoeFilter}`, clear: () => setEatInLoeFilter('ALL') });
+        const catF = (document.getElementById('eatInCategoryPicker') || {}).value || 'ALL';
+        if (catF !== 'ALL') chips.push({ label: catF, clear: () => { document.getElementById('eatInCategoryPicker').value = 'ALL'; renderEatIn(); } });
+        const perF = (document.getElementById('eatInPersonPicker') || {}).value || 'ALL';
+        if (perF !== 'ALL') chips.push({ label: `Liked by ${perF}`, clear: () => { document.getElementById('eatInPersonPicker').value = 'ALL'; renderEatIn(); } });
+        mountActiveChips(wrap, chips);
       }
     }
 
@@ -2467,29 +2786,34 @@
       const bSec = document.getElementById('drawerBookFilters');
       const mSec = document.getElementById('drawerMovieFilters');
       const dSec = document.getElementById('drawerDiningFilters');
+      const eSec = document.getElementById('drawerEatInFilters');
       const bAdv = document.getElementById('drawerBookAdv');
       const mAdv = document.getElementById('drawerMovieAdv');
       const dAdv = document.getElementById('drawerDiningAdv');
+      const eAdv = document.getElementById('drawerEatInAdv');
       const scopeSec = document.getElementById('filterScopeSection');
       const titleEl = document.getElementById('filterDrawerTitle');
 
       if (bSec) bSec.style.display = (currentTab === 'catalog') ? 'block' : 'none';
       if (mSec) mSec.style.display = (currentTab === 'movies') ? 'block' : 'none';
       if (dSec) dSec.style.display = (currentTab === 'dining') ? 'block' : 'none';
+      if (eSec) eSec.style.display = (currentTab === 'eatin') ? 'block' : 'none';
       if (bAdv) bAdv.style.display = (currentTab === 'catalog') ? 'block' : 'none';
       if (mAdv) mAdv.style.display = (currentTab === 'movies') ? 'block' : 'none';
       if (dAdv) dAdv.style.display = (currentTab === 'dining') ? 'block' : 'none';
-      if (scopeSec) scopeSec.style.display = (currentTab === 'shelf') ? 'none' : 'block';
+      if (eAdv) eAdv.style.display = (currentTab === 'eatin') ? 'block' : 'none';
+      if (scopeSec) scopeSec.style.display = (currentTab === 'shelf' || currentTab === 'eatin') ? 'none' : 'block';
 
       toggleMoreFiltersBox(false);
 
       if (titleEl) {
         titleEl.textContent = currentTab === 'catalog' ? '📚 Book Filters'
-          : (currentTab === 'movies' ? '🎬 Movie Filters' : '🍽️ Dining Filters');
+          : (currentTab === 'movies' ? '🎬 Movie Filters' : (currentTab === 'eatin' ? '🍳 Eat In Filters' : '🍽️ Eat Out Filters'));
       }
       if (currentTab === 'catalog') renderBooks();
       else if (currentTab === 'movies') renderMovies();
       else if (currentTab === 'dining') renderDining();
+      else if (currentTab === 'eatin') renderEatIn();
       document.getElementById('filterDrawerOverlay').classList.add('open');
     }
 
@@ -2534,6 +2858,15 @@
         if (dFilterDerek !== 'ALL') count++;
         if (dFilterKianna !== 'ALL') count++;
         if (currentDiningScope !== 'top100') count++;
+      } else if (currentTab === 'eatin') {
+        const catF = (document.getElementById('eatInCategoryPicker') || {}).value || 'ALL';
+        const perF = (document.getElementById('eatInPersonPicker') || {}).value || 'ALL';
+        const sortF = (document.getElementById('eatInSortPicker') || {}).value || 'FAVS';
+        if (eatInStabilityFilter !== 'ALL') count++;
+        if (eatInLoeFilter !== 'ALL') count++;
+        if (catF !== 'ALL') count++;
+        if (perF !== 'ALL') count++;
+        if (sortF !== 'FAVS') count++;
       }
 
       badge.textContent = count;
@@ -2594,6 +2927,14 @@
         syncTogglePillUI('data-dfilter', 'derek', 'ALL');
         syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
         renderDining();
+      } else if (currentTab === 'eatin') {
+        eatInStabilityFilter = 'ALL';
+        eatInLoeFilter = 'ALL';
+        syncEatInFilterButtonsUI();
+        if (document.getElementById('eatInCategoryPicker')) document.getElementById('eatInCategoryPicker').value = 'ALL';
+        if (document.getElementById('eatInPersonPicker')) document.getElementById('eatInPersonPicker').value = 'ALL';
+        if (document.getElementById('eatInSortPicker')) document.getElementById('eatInSortPicker').value = 'FAVS';
+        renderEatIn();
       }
       showToast('Filters reset');
     }
@@ -2890,6 +3231,7 @@
       const filterBtn = document.getElementById('headerFilterBtn');
       const searchBtn = document.getElementById('headerSearchBtn');
       const addRestBtn = document.getElementById('headerAddRestBtn');
+      const addEatInBtn = document.getElementById('headerAddEatInBtn');
       const csvBtn = document.getElementById('headerCsvBtn');
 
       if (searchQuery) {
@@ -2902,35 +3244,28 @@
       if (filterBtn) filterBtn.style.display = (tab === 'shelf') ? 'none' : 'inline-flex';
       if (searchBtn) searchBtn.style.display = (tab === 'shelf') ? 'none' : 'inline-flex';
       if (addRestBtn) addRestBtn.style.display = (tab === 'dining') ? 'inline-block' : 'none';
+      if (addEatInBtn) addEatInBtn.style.display = (tab === 'eatin') ? 'inline-block' : 'none';
       if (csvBtn) csvBtn.style.display = (tab === 'movies') ? 'inline-block' : 'none';
 
       if (tab === 'catalog') {
         document.getElementById('navCatalog').classList.add('active');
         document.getElementById('tabCatalog').classList.add('active');
-        if (bookControls) bookControls.style.display = 'flex';
-        if (movieControls) movieControls.style.display = 'none';
-        if (diningControls) diningControls.style.display = 'none';
         updateScopeButtons(currentViewScope, getBookScopedCount());
       } else if (tab === 'movies') {
         document.getElementById('navMovies').classList.add('active');
         document.getElementById('tabMovies').classList.add('active');
-        if (bookControls) bookControls.style.display = 'none';
-        if (movieControls) movieControls.style.display = 'flex';
-        if (diningControls) diningControls.style.display = 'none';
         loadMovieData();
       } else if (tab === 'dining') {
         document.getElementById('navDining').classList.add('active');
         document.getElementById('tabDining').classList.add('active');
-        if (bookControls) bookControls.style.display = 'none';
-        if (movieControls) movieControls.style.display = 'none';
-        if (diningControls) diningControls.style.display = 'flex';
         loadRestaurantsData();
+      } else if (tab === 'eatin') {
+        document.getElementById('navEatIn').classList.add('active');
+        document.getElementById('tabEatIn').classList.add('active');
+        loadEatInData();
       } else {
         document.getElementById('navShelf').classList.add('active');
         document.getElementById('tabShelf').classList.add('active');
-        if (bookControls) bookControls.style.display = 'none';
-        if (movieControls) movieControls.style.display = 'none';
-        if (diningControls) diningControls.style.display = 'none';
         renderShelf();
       }
       updateFilterBadgeCount();
@@ -4647,6 +4982,9 @@
       } else if (currentTab === 'dining') {
         renderDining();
         document.getElementById('searchResultCount').textContent = document.querySelectorAll('#diningGrid .book-card').length + ' spots found';
+      } else if (currentTab === 'eatin') {
+        renderEatIn();
+        document.getElementById('searchResultCount').textContent = document.querySelectorAll('#eatInGrid .book-card').length + ' meals found';
       } else {
         renderBooks();
         document.getElementById('searchResultCount').textContent = document.querySelectorAll('#booksGrid .book-card').length + ' books found';
@@ -6584,12 +6922,730 @@
       }
     }
 
+    // =========================================================================
+    // EAT IN (HOME MEALS, VERSIONS & FLEXIBLE FAMILY/GUEST RATINGS)
+    // =========================================================================
+    let eatInMeals = [];
+    let eatInLoaded = false;
+    let activeEatInMeal = null;
+    let eatInStabilityFilter = 'ALL'; // 'ALL' | 'Pantry' | 'Fresh'
+    let eatInLoeFilter = 'ALL';       // 'ALL' | 'Easy' | 'Medium' | 'Project'
+
+    const EATIN_ICONS = {
+      'Pasta': '🍝', 'Mexican': '🌮', 'Chicken': '🍗', 'Beef / Pork': '🥩',
+      'Burgers & Sandwiches': '🥪', 'Pizza & Flatbread': '🍕', 'Soup & Chili': '🥣',
+      'Salads & Bowls': '🥗', 'Breakfast': '🍳', 'Slow Cooker': '🍲',
+      'Sides': '🥐', 'Treats': '🍪', 'Other': '🍽️'
+    };
+
+    function getEatInIcon(cat) {
+      return EATIN_ICONS[cat] || '🍳';
+    }
+
+    function saveEatInCache() {
+      try { localStorage.setItem('chaptertwo_eatin_cache', JSON.stringify(eatInMeals)); } catch (e) {}
+    }
+
+    function postEatInApi(payload, callback) {
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(res => { if (callback) callback(res); })
+        .catch(err => { if (callback) callback({ success: false, error: String(err) }); });
+    }
+
+    function loadEatInData(forceRefresh) {
+      if (!forceRefresh && !eatInLoaded) {
+        const cached = localStorage.getItem('chaptertwo_eatin_cache');
+        if (cached) {
+          try {
+            eatInMeals = JSON.parse(cached);
+            populateEatInPeopleFilter();
+            renderEatIn();
+          } catch (e) {}
+        }
+      }
+      fetch(`${API_URL}?action=getEatInData`)
+        .then(r => r.json())
+        .then(res => {
+          if (res && res.success && Array.isArray(res.meals)) {
+            eatInMeals = res.meals;
+            eatInLoaded = true;
+            saveEatInCache();
+            populateEatInPeopleFilter();
+            renderEatIn();
+          }
+        })
+        .catch(err => console.error('EatIn load error:', err));
+    }
+
+    function getEatInAllKnownPeople() {
+      const set = new Set();
+      (eatInMeals || []).forEach(m => {
+        Object.keys(m.ratings || {}).forEach(p => { if (p) set.add(p); });
+        (m.versions || []).forEach(v => {
+          Object.keys(v.ratings || {}).forEach(p => { if (p) set.add(p); });
+        });
+      });
+      return [...set].sort();
+    }
+
+    function populateEatInPeopleFilter() {
+      const sel = document.getElementById('eatInPersonPicker');
+      if (!sel) return;
+      const cur = sel.value || 'ALL';
+      const people = new Set(['Derek', 'Kianna', ...getEatInAllKnownPeople()]);
+      sel.innerHTML = '<option value="ALL">👥 Anyone</option>';
+      [...people].forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p + ' (7+)';
+        sel.appendChild(opt);
+      });
+      if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+    }
+
+    function getMealEffectiveRatings(m) {
+      // Combine parent ratings with highest version rating per person so filtering & averages reflect versions too
+      const combined = { ...(m.ratings || {}) };
+      (m.versions || []).forEach(v => {
+        Object.entries(v.ratings || {}).forEach(([person, score]) => {
+          const s = Number(score) || 0;
+          if (s > 0 && (!combined[person] || s > Number(combined[person]))) {
+            combined[person] = s;
+          }
+        });
+      });
+      return combined;
+    }
+
+    function getRatingsAverage(ratingsObj) {
+      const vals = Object.values(ratingsObj || {}).map(Number).filter(v => !isNaN(v) && v > 0);
+      if (!vals.length) return null;
+      return vals.reduce((s, v) => s + v, 0) / vals.length;
+    }
+
+    function syncEatInFilterButtonsUI() {
+      document.querySelectorAll('#eatInStabilityRow button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.estab === eatInStabilityFilter);
+      });
+      document.querySelectorAll('#eatInLoeRow button').forEach(btn => {
+        const active = btn.dataset.eloe === eatInLoeFilter;
+        btn.classList.toggle('active', active);
+        btn.style.background = active ? 'var(--accent)' : 'transparent';
+        btn.style.color = active ? '#fff' : 'var(--text-muted)';
+      });
+    }
+
+    function setEatInStabilityFilter(val) {
+      eatInStabilityFilter = val || 'ALL';
+      syncEatInFilterButtonsUI();
+      renderEatIn();
+    }
+
+    function setEatInLoeFilter(val) {
+      eatInLoeFilter = val || 'ALL';
+      syncEatInFilterButtonsUI();
+      renderEatIn();
+    }
+
+    function setEatInQuickPreset(preset) {
+      const sortEl = document.getElementById('eatInSortPicker');
+      eatInStabilityFilter = 'ALL';
+      eatInLoeFilter = 'ALL';
+      if (preset === 'FAVS') {
+        if (sortEl) sortEl.value = 'FAVS';
+      } else if (preset === 'EASY') {
+        eatInLoeFilter = 'Easy';
+        if (sortEl) sortEl.value = 'FAVS';
+      } else if (preset === 'PANTRY') {
+        eatInStabilityFilter = 'Pantry';
+        if (sortEl) sortEl.value = 'FAVS';
+      } else if (preset === 'NOT_LATELY') {
+        if (sortEl) sortEl.value = 'NOT_LATELY';
+      }
+      syncEatInFilterButtonsUI();
+      renderEatIn();
+    }
+
+    function syncEatInQuickUI() {
+      const sortVal = (document.getElementById('eatInSortPicker') || {}).value || 'FAVS';
+      let active = '';
+      if (eatInStabilityFilter === 'Pantry' && eatInLoeFilter === 'ALL') active = 'PANTRY';
+      else if (eatInLoeFilter === 'Easy' && eatInStabilityFilter === 'ALL') active = 'EASY';
+      else if (eatInStabilityFilter === 'ALL' && eatInLoeFilter === 'ALL') {
+        if (sortVal === 'NOT_LATELY') active = 'NOT_LATELY';
+        else if (sortVal === 'FAVS') active = 'FAVS';
+      }
+      document.querySelectorAll('#eatInQuickRow button').forEach(btn => {
+        btn.classList.toggle('has-active', btn.dataset.equick === active);
+      });
+    }
+
+    function getFilteredEatInMeals() {
+      const catF = (document.getElementById('eatInCategoryPicker') || {}).value || 'ALL';
+      const personF = (document.getElementById('eatInPersonPicker') || {}).value || 'ALL';
+      const sortF = (document.getElementById('eatInSortPicker') || {}).value || 'FAVS';
+
+      let list;
+      if (searchQuery) {
+        list = (eatInMeals || []).filter(m => {
+          const verText = (m.versions || []).map(v => `${v.name} ${v.recipe} ${v.notes} ${v.source} ${Object.keys(v.ratings || {}).join(' ')}`).join(' ');
+          const raterText = Object.keys(m.ratings || {}).join(' ');
+          const hay = `${m.name} ${m.category} ${m.recipe} ${m.notes} ${m.source} ${raterText} ${verText}`.toLowerCase();
+          return hay.includes(searchQuery);
+        });
+      } else {
+        list = (eatInMeals || []).filter(m => {
+          if (eatInStabilityFilter !== 'ALL') {
+            const hasMatch = m.stability === eatInStabilityFilter || (m.versions || []).some(v => v.stability === eatInStabilityFilter);
+            if (!hasMatch) return false;
+          }
+          if (eatInLoeFilter !== 'ALL') {
+            const hasLoe = m.loe === eatInLoeFilter || (m.versions || []).some(v => v.loe === eatInLoeFilter);
+            if (!hasLoe) return false;
+          }
+          if (catF !== 'ALL' && m.category !== catF) return false;
+          if (personF !== 'ALL') {
+            const eff = getMealEffectiveRatings(m);
+            if (!(Number(eff[personF]) >= 7)) return false;
+          }
+          return true;
+        });
+      }
+
+      const loeOrder = { 'Easy': 1, 'Medium': 2, 'Project': 3 };
+      list.sort((a, b) => {
+        if (sortF === 'EASY') {
+          return (loeOrder[a.loe] || 2) - (loeOrder[b.loe] || 2) || (a.name || '').localeCompare(b.name || '');
+        }
+        if (sortF === 'NOT_LATELY') {
+          const da = a.lastMade || '0000-00-00';
+          const db = b.lastMade || '0000-00-00';
+          if (da !== db) return da.localeCompare(db);
+          return (a.name || '').localeCompare(b.name || '');
+        }
+        if (sortF === 'MOST_MADE') {
+          return (b.timesMade || 0) - (a.timesMade || 0) || (a.name || '').localeCompare(b.name || '');
+        }
+        if (sortF === 'NAME') {
+          return (a.name || '').localeCompare(b.name || '');
+        }
+        // Default: FAVS (highest avg rating, then most versions/times made)
+        const ra = getRatingsAverage(getMealEffectiveRatings(a)) ?? -1;
+        const rb = getRatingsAverage(getMealEffectiveRatings(b)) ?? -1;
+        if (rb !== ra) return rb - ra;
+        return (b.versions || []).length - (a.versions || []).length || (a.name || '').localeCompare(b.name || '');
+      });
+      return list;
+    }
+
+    function renderEatIn() {
+      const grid = document.getElementById('eatInGrid');
+      if (!grid) return;
+
+      syncEatInQuickUI();
+      const all = eatInMeals || [];
+      const totalVersions = all.reduce((s, m) => s + (m.versions || []).length, 0);
+      const pantryCount = all.filter(m => m.stability === 'Pantry').length;
+      const easyCount = all.filter(m => m.loe === 'Easy').length;
+
+      if (document.getElementById('eRbTotal')) document.getElementById('eRbTotal').textContent = all.length;
+      if (document.getElementById('eRbVersions')) document.getElementById('eRbVersions').textContent = `${totalVersions} versions`;
+      if (document.getElementById('eRbPantry')) document.getElementById('eRbPantry').textContent = pantryCount;
+      if (document.getElementById('eRbEasy')) document.getElementById('eRbEasy').textContent = easyCount;
+
+      const list = getFilteredEatInMeals();
+      renderActiveFilterChips('eatin');
+      if (currentTab === 'eatin') {
+        updateFilterBadgeCount();
+        updateFilterDrawerDoneBtn(list.length, 'Meal', 'Meals');
+      }
+
+      grid.innerHTML = '';
+      if (!list.length) {
+        grid.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+          <div style="font-size:2rem; margin-bottom:8px;">🍳</div>
+          <div style="font-size:0.95rem; font-weight:800; color:#fff; margin-bottom:6px;">No matching home meals</div>
+          <button type="button" class="dining-add-btn" style="margin-top:8px;" onclick="openEatInFormModal()">+ Add Meal</button>
+        </div>`;
+        return;
+      }
+
+      list.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.onclick = () => openEatInModal(m);
+
+        const heroPhoto = m.photoUrl || ((m.versions || []).find(v => v.photoUrl) || {}).photoUrl || '';
+        const thumbHtml = heroPhoto
+          ? `<img src="${heroPhoto}" alt="${escapeHtml(m.name)}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=\\'rest-emoji-cover\\'>${getEatInIcon(m.category)}</div><div class=\\'rest-cat-mini\\'>${escapeHtml(m.category)}</div>';">`
+          : `<div class="rest-emoji-cover">${getEatInIcon(m.category)}</div><div class="rest-cat-mini">${escapeHtml(m.category)}</div>`;
+
+        const effRatings = getMealEffectiveRatings(m);
+        const avg = getRatingsAverage(effRatings);
+        const avgBadge = avg !== null
+          ? `<span class="score-pill ${avg >= 8 ? 'score-high' : (avg >= 6 ? 'score-mid' : 'score-low')}">★ ${avg.toFixed(1)}</span>`
+          : '';
+
+        const ratingBadges = Object.entries(effRatings)
+          .filter(([, v]) => Number(v) > 0)
+          .slice(0, 4)
+          .map(([p, v]) => {
+            const cls = p === 'Derek' ? 'badge-derek' : (p === 'Kianna' ? 'badge-kianna' : '');
+            const lbl = p === 'Derek' ? 'D' : (p === 'Kianna' ? 'K' : p);
+            return `<span class="rating-badge ${cls}">${escapeHtml(lbl)}: ★ ${v}</span>`;
+          }).join('');
+
+        const stabPill = m.stability === 'Pantry'
+          ? '<span class="rest-tag-pill rest-tag-family">🥫 Pantry</span>'
+          : '<span class="rest-tag-pill" style="color:#fbbf24;">🥬 Fresh</span>';
+        const loeIcon = m.loe === 'Easy' ? '⚡ Easy' : (m.loe === 'Project' ? '🔥 Project' : '🍳 Medium');
+        const vCount = (m.versions || []).length;
+
+        card.innerHTML = `
+          <div class="rest-card-thumb">${thumbHtml}</div>
+          <div class="card-body">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
+                <div class="card-title">${escapeHtml(m.name)}</div>
+                ${avgBadge}
+              </div>
+              <div class="card-author">${escapeHtml(m.category)} • ${loeIcon}</div>
+              <div class="ratings-row">
+                ${stabPill}
+                ${ratingBadges}
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="ratings-count-pill">${vCount} version${vCount === 1 ? '' : 's'}${m.lastMade ? ' • Made ' + m.lastMade : ''}</span>
+              ${m.timesMade > 0 ? `<span class="audio-pill">🍳 ${m.timesMade}x</span>` : ''}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function pickRandomEatInMeal() {
+      const list = getFilteredEatInMeals();
+      if (!list.length) { showToast('No meals match your current filters'); return; }
+      const pick = list[Math.floor(Math.random() * Math.min(list.length, 10))];
+      showToast('🎲 Tonight\'s dinner: ' + pick.name + '!');
+      openEatInModal(pick);
+    }
+
+    function openEatInModal(meal) {
+      activeEatInMeal = meal;
+      renderEatInModal();
+      document.getElementById('eatInModal').classList.add('open');
+    }
+
+    function closeEatInModal() {
+      document.getElementById('eatInModal').classList.remove('open');
+      toggleEatInVersionForm(false);
+    }
+
+    function renderEatInModal() {
+      const m = activeEatInMeal;
+      if (!m) return;
+      document.getElementById('emTopTitle').textContent = m.name || 'Home Meal';
+      document.getElementById('emName').textContent = m.name || '';
+      const loeIcon = m.loe === 'Easy' ? '⚡ Easy' : (m.loe === 'Project' ? '🔥 Project' : '🍳 Medium');
+      document.getElementById('emMeta').textContent = `${m.category} • ${loeIcon}`;
+
+      const effRatings = getMealEffectiveRatings(m);
+      const avg = getRatingsAverage(effRatings);
+      const avgEl = document.getElementById('emAvgBadge');
+      if (avg !== null) {
+        avgEl.className = 'score-pill ' + (avg >= 8 ? 'score-high' : (avg >= 6 ? 'score-mid' : 'score-low'));
+        avgEl.textContent = `★ ${avg.toFixed(1)} / 10`;
+      } else {
+        avgEl.className = 'score-pill score-none';
+        avgEl.textContent = 'Unrated';
+      }
+
+      const heroPhoto = m.photoUrl || ((m.versions || []).find(v => v.photoUrl) || {}).photoUrl || '';
+      const thumbEl = document.getElementById('emThumb');
+      thumbEl.innerHTML = heroPhoto
+        ? `<img src="${heroPhoto}" style="cursor:pointer;" onclick="openPhotoLightbox('${heroPhoto}')" referrerpolicy="no-referrer">`
+        : `<div class="rest-emoji-cover">${getEatInIcon(m.category)}</div><div class="rest-cat-mini">${escapeHtml(m.category)}</div>`;
+
+      document.getElementById('emTagsWrap').innerHTML = `
+        <span class="rest-tag-pill ${m.stability === 'Pantry' ? 'rest-tag-family' : ''}">${m.stability === 'Pantry' ? '🥫 Pantry / Freezer' : '🥬 Needs Fresh'}</span>
+        ${m.timesMade > 0 ? `<span class="rest-tag-pill">🍳 Made ${m.timesMade}x</span>` : ''}
+      `;
+
+      document.getElementById('emMadeTitle').textContent = m.lastMade ? `Last made ${m.lastMade}` : 'Ready to cook this?';
+      document.getElementById('emMadeSub').textContent = m.timesMade > 0 ? `Cooked ${m.timesMade} time${m.timesMade === 1 ? '' : 's'} at home` : 'Log tonight to track your meal rotation';
+
+      // Derek & Kianna 1-10 strips
+      const rMap = m.ratings || {};
+      const dVal = Number(rMap.Derek) || 0;
+      const kVal = Number(rMap.Kianna) || 0;
+      document.getElementById('emDRateVal').textContent = dVal > 0 ? `★ ${dVal}/10` : 'Not rated';
+      document.getElementById('emKRateVal').textContent = kVal > 0 ? `★ ${kVal}/10` : 'Not rated';
+
+      const dStrip = document.getElementById('emDRateStrip');
+      const kStrip = document.getElementById('emKRateStrip');
+      dStrip.innerHTML = '';
+      kStrip.innerHTML = '';
+      for (let n = 1; n <= 10; n++) {
+        const db = document.createElement('button');
+        db.type = 'button';
+        db.className = 'rate-pill' + (dVal === n ? ' active-d' : '');
+        db.textContent = n;
+        db.onclick = () => saveEatInQuickRating('MEAL', m.id, 'Derek', dVal === n ? '' : n);
+        dStrip.appendChild(db);
+
+        const kb = document.createElement('button');
+        kb.type = 'button';
+        kb.className = 'rate-pill' + (kVal === n ? ' active-k' : '');
+        kb.textContent = n;
+        kb.onclick = () => saveEatInQuickRating('MEAL', m.id, 'Kianna', kVal === n ? '' : n);
+        kStrip.appendChild(kb);
+      }
+
+      // Other People Ratings (Finn, Grandma, etc.)
+      const otherWrap = document.getElementById('emOtherRatingsWrap');
+      const others = Object.entries(rMap).filter(([p, v]) => p !== 'Derek' && p !== 'Kianna' && Number(v) > 0);
+      otherWrap.innerHTML = others.length
+        ? others.map(([p, v]) => `<button type="button" class="active-chip" onclick="saveEatInQuickRating('MEAL', '${m.id}', '${escapeHtml(p).replace(/'/g, "\\'")}', '')">${escapeHtml(p)}: ★ ${v}/10 ✕</button>`).join('')
+        : '<span style="font-size:0.74rem; color:var(--text-muted);">Add Finn, Grandma, or any guest rating below!</span>';
+
+      const knownWrap = document.getElementById('emKnownPeopleChips');
+      const knownOthers = getEatInAllKnownPeople().filter(p => p !== 'Derek' && p !== 'Kianna');
+      knownWrap.innerHTML = knownOthers.map(p => `<button type="button" class="rest-tag-pill" style="cursor:pointer;" onclick="document.getElementById('emCustomPersonName').value='${escapeHtml(p).replace(/'/g, "\\'")}'; document.getElementById('emCustomPersonScore').focus();">${escapeHtml(p)}</button>`).join('');
+
+      // Source & Recipe
+      const srcWrap = document.getElementById('emSourceWrap');
+      if (m.source) {
+        srcWrap.style.display = 'block';
+        const isUrl = /^https?:\/\//i.test(m.source);
+        srcWrap.innerHTML = isUrl
+          ? `🔗 Source: <a href="${escapeHtml(m.source)}" target="_blank" style="color:var(--derek); font-weight:700;">Open Recipe Link ↗</a>`
+          : `📚 Source: <strong style="color:#e2e8f0;">${escapeHtml(m.source)}</strong>`;
+      } else {
+        srcWrap.style.display = 'none';
+      }
+
+      const recBox = document.getElementById('emRecipeBox');
+      if (m.recipe) {
+        recBox.style.display = 'block';
+        document.getElementById('emRecipeText').textContent = m.recipe;
+      } else {
+        recBox.style.display = 'none';
+      }
+
+      const notesEl = document.getElementById('emNotes');
+      if (m.notes) {
+        notesEl.style.display = 'block';
+        notesEl.textContent = '📝 ' + m.notes;
+      } else {
+        notesEl.style.display = 'none';
+      }
+
+      // Versions List
+      const vWrap = document.getElementById('emVersionsList');
+      const versions = m.versions || [];
+      if (!versions.length) {
+        vWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:8px 2px;">No variations logged yet — tap <strong>+ Add Version</strong> to compare different sauces, meats, or recipes!</div>';
+      } else {
+        vWrap.innerHTML = '';
+        versions.forEach(v => {
+          const card = document.createElement('div');
+          card.style.cssText = 'background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px; padding:12px;';
+          const vRatings = Object.entries(v.ratings || {}).filter(([, s]) => Number(s) > 0);
+          const vAvg = getRatingsAverage(v.ratings);
+          const vBadges = vRatings.map(([p, s]) => {
+            const cls = p === 'Derek' ? 'badge-derek' : (p === 'Kianna' ? 'badge-kianna' : '');
+            return `<span class="rating-badge ${cls}">${escapeHtml(p)}: ★ ${s}</span>`;
+          }).join('');
+          const vSrcHtml = v.source
+            ? (/^https?:\/\//i.test(v.source)
+                ? `<a href="${escapeHtml(v.source)}" target="_blank" style="color:var(--derek); font-size:0.72rem; font-weight:700;">🔗 Recipe Link ↗</a>`
+                : `<span style="font-size:0.72rem; color:var(--text-muted);">📚 ${escapeHtml(v.source)}</span>`)
+            : '';
+          const vImgHtml = v.photoUrl
+            ? `<img class="dish-thumb" src="${v.photoUrl}" referrerpolicy="no-referrer" onclick="openPhotoLightbox('${v.photoUrl}')" style="margin-right:10px;">`
+            : '';
+
+          card.innerHTML = `
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+              <div style="display:flex; align-items:flex-start; flex:1; min-width:0;">
+                ${vImgHtml}
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:0.88rem; font-weight:900; color:#fff;">${escapeHtml(v.name)}</div>
+                  <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
+                    ${v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium')} • ${v.stability === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh'}
+                    ${vAvg !== null ? ` • Avg ★ ${vAvg.toFixed(1)}` : ''}
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:4px; flex-shrink:0;">
+                <button type="button" class="dish-del-btn" style="color:var(--gold);" title="Rate version" onclick="promptRateEatInVersion('${v.id}')">⭐</button>
+                <button type="button" class="dish-del-btn" style="color:#94a3b8;" title="Edit version" onclick="editEatInVersion('${v.id}')">✏️</button>
+                <button type="button" class="dish-del-btn" title="Delete version" onclick="deleteEatInVersion('${v.id}')">✕</button>
+              </div>
+            </div>
+            ${vBadges ? `<div class="ratings-row" style="margin-top:8px;">${vBadges}</div>` : ''}
+            ${v.recipe ? `<div style="font-size:0.76rem; color:#cbd5e1; margin-top:6px; line-height:1.4; white-space:pre-wrap;">${escapeHtml(v.recipe)}</div>` : ''}
+            ${v.notes ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">📝 ${escapeHtml(v.notes)}</div>` : ''}
+            ${vSrcHtml ? `<div style="margin-top:6px;">${vSrcHtml}</div>` : ''}
+          `;
+          vWrap.appendChild(card);
+        });
+      }
+    }
+
+    function markActiveEatInMade() {
+      if (!activeEatInMeal) return;
+      const today = getLocalTodayIso();
+      activeEatInMeal.lastMade = today;
+      activeEatInMeal.timesMade = (activeEatInMeal.timesMade || 0) + 1;
+      saveEatInCache();
+      renderEatInModal();
+      renderEatIn();
+      postEatInApi({ action: 'markEatInMade', id: activeEatInMeal.id }, () => showToast(`🍳 Logged ${activeEatInMeal.name} for tonight!`));
+    }
+
+    function saveEatInQuickRating(targetType, id, person, rating) {
+      if (!activeEatInMeal) return;
+      const targetObj = targetType === 'VERSION'
+        ? (activeEatInMeal.versions || []).find(v => v.id === id)
+        : activeEatInMeal;
+      if (!targetObj) return;
+      if (!targetObj.ratings) targetObj.ratings = {};
+      if (rating === '' || rating === null || Number(rating) <= 0) {
+        delete targetObj.ratings[person];
+      } else {
+        targetObj.ratings[person] = Number(rating);
+      }
+      saveEatInCache();
+      populateEatInPeopleFilter();
+      renderEatInModal();
+      renderEatIn();
+      postEatInApi({ action: 'saveEatInRating', targetType, id, person, rating }, () => {
+        showToast(rating ? `⭐ Saved ${person}'s ${rating}/10` : `Removed ${person}'s rating`);
+      });
+    }
+
+    function addCustomEatInRating(targetType) {
+      if (!activeEatInMeal) return;
+      const nameEl = document.getElementById('emCustomPersonName');
+      const scoreEl = document.getElementById('emCustomPersonScore');
+      const person = (nameEl.value || '').trim();
+      const score = parseFloat(scoreEl.value);
+      if (!person) { showToast('Enter a name (e.g. Finn, Grandma)'); return; }
+      if (isNaN(score) || score < 1 || score > 10) { showToast('Enter a rating from 1 to 10'); return; }
+      nameEl.value = '';
+      scoreEl.value = '';
+      saveEatInQuickRating(targetType, activeEatInMeal.id, person, score);
+    }
+
+    function promptRateEatInVersion(verId) {
+      if (!activeEatInMeal) return;
+      const v = (activeEatInMeal.versions || []).find(x => x.id === verId);
+      if (!v) return;
+      const defaultWho = (deviceUser && deviceUser.toLowerCase().startsWith('k')) ? 'Kianna' : 'Derek';
+      const who = prompt(`Who is rating "${v.name}"? (e.g. Derek, Kianna, Finn, Grandma)`, defaultWho);
+      if (!who || !who.trim()) return;
+      const scoreStr = prompt(`${who.trim()}'s rating for "${v.name}" (1–10, or blank to clear):`, (v.ratings && v.ratings[who.trim()]) ? v.ratings[who.trim()] : '');
+      if (scoreStr === null) return;
+      const clean = scoreStr.trim();
+      if (clean !== '' && (isNaN(parseFloat(clean)) || parseFloat(clean) < 1 || parseFloat(clean) > 10)) {
+        showToast('Rating must be 1–10');
+        return;
+      }
+      saveEatInQuickRating('VERSION', verId, who.trim(), clean === '' ? '' : parseFloat(clean));
+    }
+
+    function toggleEatInVersionForm(forceState) {
+      const box = document.getElementById('eatInVersionFormBox');
+      if (!box) return;
+      const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
+      box.style.display = show ? 'block' : 'none';
+      if (show) {
+        document.getElementById('evEditId').value = '';
+        document.getElementById('evNameInput').value = '';
+        document.getElementById('evLoeInput').value = activeEatInMeal ? (activeEatInMeal.loe || 'Easy') : 'Easy';
+        document.getElementById('evStabInput').value = activeEatInMeal ? (activeEatInMeal.stability || 'Pantry') : 'Pantry';
+        document.getElementById('evSourceInput').value = '';
+        document.getElementById('evRecipeInput').value = '';
+        document.getElementById('evNotesInput').value = '';
+        document.getElementById('evPhotoInput').value = '';
+        document.getElementById('btnSaveEatInVer').textContent = 'Save Version';
+        document.getElementById('evNameInput').focus();
+      }
+    }
+
+    function editEatInVersion(verId) {
+      if (!activeEatInMeal) return;
+      const v = (activeEatInMeal.versions || []).find(x => x.id === verId);
+      if (!v) return;
+      const box = document.getElementById('eatInVersionFormBox');
+      if (!box) return;
+      box.style.display = 'block';
+      document.getElementById('evEditId').value = v.id;
+      document.getElementById('evNameInput').value = v.name || '';
+      document.getElementById('evLoeInput').value = v.loe || 'Easy';
+      document.getElementById('evStabInput').value = v.stability || 'Pantry';
+      document.getElementById('evSourceInput').value = v.source || '';
+      document.getElementById('evRecipeInput').value = v.recipe || '';
+      document.getElementById('evNotesInput').value = v.notes || '';
+      document.getElementById('evPhotoInput').value = '';
+      document.getElementById('btnSaveEatInVer').textContent = '💾 Update Version';
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function submitEatInVersion() {
+      if (!activeEatInMeal) return;
+      const editId = document.getElementById('evEditId').value.trim();
+      const name = document.getElementById('evNameInput').value.trim();
+      if (!name) { showToast('Enter a version name'); return; }
+
+      const btn = document.getElementById('btnSaveEatInVer');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const photoFile = document.getElementById('evPhotoInput').files[0];
+      const compressed = photoFile ? await compressImageToBase64(photoFile, 900, 0.78) : null;
+
+      const payload = {
+        action: 'saveEatInVersion',
+        id: editId,
+        mealId: activeEatInMeal.id,
+        name,
+        loe: document.getElementById('evLoeInput').value,
+        stability: document.getElementById('evStabInput').value,
+        source: document.getElementById('evSourceInput').value.trim(),
+        recipe: document.getElementById('evRecipeInput').value.trim(),
+        notes: document.getElementById('evNotesInput').value.trim(),
+        photoBase64: compressed ? compressed.base64 : '',
+        photoMimeType: compressed ? compressed.mimeType : ''
+      };
+
+      postEatInApi(payload, (res) => {
+        btn.disabled = false;
+        btn.textContent = 'Save Version';
+        if (res && res.success && res.version) {
+          if (!Array.isArray(activeEatInMeal.versions)) activeEatInMeal.versions = [];
+          const idx = activeEatInMeal.versions.findIndex(x => x.id === res.version.id);
+          if (idx !== -1) activeEatInMeal.versions[idx] = res.version;
+          else activeEatInMeal.versions.push(res.version);
+          if (res.version.photoUrl && !activeEatInMeal.photoUrl) activeEatInMeal.photoUrl = res.version.photoUrl;
+          saveEatInCache();
+          toggleEatInVersionForm(false);
+          renderEatInModal();
+          renderEatIn();
+          showToast(editId ? '✅ Version updated!' : '✅ Version added!');
+        } else {
+          showToast('❌ Could not save version');
+        }
+      });
+    }
+
+    function deleteEatInVersion(verId) {
+      if (!activeEatInMeal || !confirm('Remove this version?')) return;
+      activeEatInMeal.versions = (activeEatInMeal.versions || []).filter(v => v.id !== verId);
+      saveEatInCache();
+      renderEatInModal();
+      renderEatIn();
+      postEatInApi({ action: 'deleteEatInVersion', id: verId }, () => showToast('🗑️ Version removed'));
+    }
+
+    function openEatInFormModal(existing) {
+      const isEdit = !!existing;
+      document.getElementById('efModalTitle').textContent = isEdit ? '✏️ Edit Home Meal' : '🍳 Add Home Meal';
+      document.getElementById('efId').value = isEdit ? existing.id : '';
+      document.getElementById('efName').value = isEdit ? (existing.name || '') : '';
+      document.getElementById('efCategory').value = isEdit ? (existing.category || 'Other') : 'Pasta';
+      document.getElementById('efLoe').value = isEdit ? (existing.loe || 'Easy') : 'Easy';
+      document.getElementById('efStability').value = isEdit ? (existing.stability || 'Pantry') : 'Pantry';
+      document.getElementById('efSource').value = isEdit ? (existing.source || '') : '';
+      document.getElementById('efRecipe').value = isEdit ? (existing.recipe || '') : '';
+      document.getElementById('efNotes').value = isEdit ? (existing.notes || '') : '';
+      document.getElementById('efPhotoInput').value = '';
+      document.getElementById('btnDeleteEatInMeal').style.display = isEdit ? 'inline-block' : 'none';
+      document.getElementById('eatInFormModal').classList.add('open');
+      setTimeout(() => document.getElementById('efName').focus(), 100);
+    }
+
+    function closeEatInFormModal() {
+      document.getElementById('eatInFormModal').classList.remove('open');
+    }
+
+    function editActiveEatInMeal() {
+      if (!activeEatInMeal) return;
+      closeEatInModal();
+      openEatInFormModal(activeEatInMeal);
+    }
+
+    async function submitEatInMealForm() {
+      const name = document.getElementById('efName').value.trim();
+      if (!name) { showToast('Enter a meal name'); return; }
+      const btn = document.getElementById('btnSaveEatInMeal');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const photoFile = document.getElementById('efPhotoInput').files[0];
+      const compressed = photoFile ? await compressImageToBase64(photoFile, 900, 0.78) : null;
+
+      const payload = {
+        action: 'saveEatInMeal',
+        id: document.getElementById('efId').value.trim(),
+        name,
+        category: document.getElementById('efCategory').value,
+        loe: document.getElementById('efLoe').value,
+        stability: document.getElementById('efStability').value,
+        source: document.getElementById('efSource').value.trim(),
+        recipe: document.getElementById('efRecipe').value.trim(),
+        notes: document.getElementById('efNotes').value.trim(),
+        photoBase64: compressed ? compressed.base64 : '',
+        photoMimeType: compressed ? compressed.mimeType : ''
+      };
+
+      postEatInApi(payload, (res) => {
+        btn.disabled = false;
+        btn.textContent = '💾 Save Meal';
+        if (res && res.success && res.meal) {
+          const idx = eatInMeals.findIndex(x => x.id === res.meal.id);
+          const merged = idx !== -1
+            ? { ...eatInMeals[idx], ...res.meal }
+            : { ...res.meal, versions: [] };
+          if (idx !== -1) eatInMeals[idx] = merged;
+          else eatInMeals.unshift(merged);
+          saveEatInCache();
+          renderEatIn();
+          closeEatInFormModal();
+          showToast(`✅ Saved ${merged.name}!`);
+          openEatInModal(merged);
+        } else {
+          showToast('❌ Could not save meal');
+        }
+      });
+    }
+
+    function deleteEditingEatInMeal() {
+      const id = document.getElementById('efId').value.trim();
+      if (!id || !confirm('Delete this meal and all its versions?')) return;
+      eatInMeals = eatInMeals.filter(m => m.id !== id);
+      saveEatInCache();
+      renderEatIn();
+      closeEatInFormModal();
+      postEatInApi({ action: 'deleteEatInMeal', id }, () => showToast('🗑️ Meal deleted'));
+    }
+
     let lastBackSwipeAt = 0;
     function closeTopmostOverlayOnBack() {
       const checks = [
         ['photoLightbox', () => closePhotoLightbox()],
         ['flagModal', () => closeFlagModal()],
         ['restaurantFormModal', () => closeRestaurantFormModal()],
+        ['eatInFormModal', () => closeEatInFormModal()],
         ['movieUploadModal', () => closeMovieUploadModal()],
         ['seriesModal', () => closeSeriesModal()],
         ['searchSheetOverlay', () => closeSearchSheet()],
@@ -6597,7 +7653,8 @@
         ['healthDrawerOverlay', () => closeHealthDrawer()],
         ['bookModal', () => closeModal()],
         ['movieModal', () => closeMovieModal()],
-        ['restaurantModal', () => closeRestaurantModal()]
+        ['restaurantModal', () => closeRestaurantModal()],
+        ['eatInModal', () => closeEatInModal()]
       ];
       for (const [id, fn] of checks) {
         const el = document.getElementById(id);
