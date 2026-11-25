@@ -1920,6 +1920,23 @@
       </div>
 
       <div class="form-scroll">
+        <!-- 🔍 QUICK-ADD FROM GOOGLE PLACES (2-tap add!) -->
+        <div id="quickAddPlaceSection" style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.4); border-radius:12px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:0.84rem; font-weight:900; color:#fff; margin-bottom:6px;">🔍 Quick-Add from Google</div>
+          <div style="font-size:0.74rem; color:var(--text-muted); margin-bottom:10px;">Type a restaurant name — we'll auto-fill address, drive time, Google rating & estimated cost!</div>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="quickAddPlaceInput" class="form-input" placeholder="e.g. Cotton Patch Cafe" onkeydown="if(event.key==='Enter'){ event.preventDefault(); searchQuickAddPlaces(); }">
+            <button type="button" id="btnQuickAddSearch" class="dining-add-btn" style="flex-shrink:0;" onclick="searchQuickAddPlaces()">Search</button>
+          </div>
+          <div id="quickAddPlaceResults" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;"></div>
+        </div>
+
+        <button type="button" class="more-filters-toggle" id="manualRestFormToggle" style="margin-top:0; margin-bottom:12px;" onclick="toggleManualRestForm()">
+          <span>▸ Or Enter Details Manually</span>
+          <span id="manualRestFormArrow" style="font-size:0.75rem; color:var(--text-muted);">▼</span>
+        </button>
+
+        <div id="manualRestFormFields">
         <input type="hidden" id="rfId">
         <div class="form-group">
           <label class="form-label">Restaurant Name *</label>
@@ -2025,9 +2042,10 @@
           <label class="form-label">General Notes</label>
           <textarea id="rfNotes" class="form-input" rows="2" placeholder="Kids eat free Tuesdays, great patio, etc."></textarea>
         </div>
+        </div>
       </div>
 
-      <div class="modal-actions" style="flex-shrink:0;">
+      <div class="modal-actions" id="rfManualFooter" style="flex-shrink:0;">
         <button type="button" id="btnSaveRestaurant" class="btn-act" style="background:var(--accent); color:#fff; font-weight:800;" onclick="submitRestaurantForm()">💾 Save Spot</button>
         <button type="button" id="btnDeleteRestaurant" class="btn-act btn-flag" style="display:none; flex:none; padding:10px 14px;" onclick="deleteEditingRestaurant()">🗑️</button>
         <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="closeRestaurantFormModal()">Cancel</button>
@@ -6151,6 +6169,106 @@
       postRestaurantApi({ action: 'deleteDish', id: dishId }, () => showToast('🗑️ Dish removed'));
     }
 
+    let quickAddCandidates = [];
+
+    function toggleManualRestForm(forceOpen) {
+      const box = document.getElementById('manualRestFormFields');
+      const arrow = document.getElementById('manualRestFormArrow');
+      const footer = document.getElementById('rfManualFooter');
+      if (!box) return;
+      const shouldOpen = (typeof forceOpen === 'boolean') ? forceOpen : (box.style.display === 'none');
+      box.style.display = shouldOpen ? 'block' : 'none';
+      if (footer) footer.style.display = shouldOpen ? 'flex' : 'none';
+      if (arrow) arrow.textContent = shouldOpen ? '▲' : '▼';
+    }
+
+    function searchQuickAddPlaces() {
+      const input = document.getElementById('quickAddPlaceInput');
+      const q = (input ? input.value : '').trim();
+      if (!q) { showToast('Type a restaurant name first!'); return; }
+      const btn = document.getElementById('btnQuickAddSearch');
+      const wrap = document.getElementById('quickAddPlaceResults');
+      if (btn) { btn.disabled = true; btn.textContent = '...'; }
+      if (wrap) wrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:8px;">Searching Google Places...</div>';
+
+      const latParam = userGpsPos ? `&lat=${encodeURIComponent(userGpsPos.lat)}&lng=${encodeURIComponent(userGpsPos.lng)}` : '';
+      fetch(`${API_URL}?action=searchGooglePlaces&q=${encodeURIComponent(q)}${latParam}`)
+        .then(r => r.json())
+        .then(res => {
+          if (btn) { btn.disabled = false; btn.textContent = 'Search'; }
+          if (!res || !res.success || !Array.isArray(res.results) || !res.results.length) {
+            if (wrap) wrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:8px;">No matches found — try another name or enter manually below.</div>';
+            return;
+          }
+          quickAddCandidates = res.results;
+          wrap.innerHTML = '';
+          res.results.forEach((c, idx) => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px;';
+            const revFmt = c.googleReviews >= 1000 ? (c.googleReviews / 1000).toFixed(1) + 'k' : (c.googleReviews || '');
+            row.innerHTML = `
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:0.86rem; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${getDiningIcon(c.category)} ${escapeHtml(c.name)}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${escapeHtml(c.location)} • ${c.driveMins}m • ~$${c.totalAvg} • ★ ${c.googleRating || '--'}${revFmt ? ' (' + revFmt + ')' : ''}</div>
+                <div style="font-size:0.66rem; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;">${escapeHtml(c.address)}</div>
+              </div>
+              <button type="button" class="visit-cta-btn" style="padding:8px 12px; min-height:42px; font-size:0.8rem;" onclick="quickAddGooglePlace(${idx}, this)">+ Add</button>
+            `;
+            wrap.appendChild(row);
+          });
+        })
+        .catch(() => {
+          if (btn) { btn.disabled = false; btn.textContent = 'Search'; }
+          if (wrap) wrap.innerHTML = '<div style="font-size:0.78rem; color:#fb7185; padding:8px;">Search failed — check connection.</div>';
+        });
+    }
+
+    function quickAddGooglePlace(idx, btnEl) {
+      const c = quickAddCandidates[idx];
+      if (!c) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Adding...'; }
+
+      const payload = {
+        action: 'saveRestaurant',
+        name: c.name,
+        category: c.category,
+        location: c.location,
+        address: c.address,
+        driveMins: c.driveMins,
+        googleMapsUrl: c.googleMapsUrl,
+        adultAvg: c.adultAvg,
+        kidAvg: c.kidAvg,
+        totalAvg: c.totalAvg,
+        manualTotal: false,
+        familyFriendly: true,
+        dateNight: true,
+        isChain: c.isChain,
+        region: c.region,
+        googleRating: c.googleRating,
+        googleReviews: c.googleReviews,
+        visited: false,
+        notes: c.notes || ''
+      };
+
+      postRestaurantApi(payload, (res) => {
+        if (res && res.success && res.restaurant) {
+          const saved = { ...res.restaurant, dishes: res.restaurant.dishes || [], visits: res.restaurant.visits || [] };
+          const existIdx = restaurants.findIndex(r => r.id === saved.id);
+          if (existIdx !== -1) restaurants[existIdx] = saved;
+          else restaurants.unshift(saved);
+          saveRestaurantsCache();
+          populateDiningRegions();
+          renderDining();
+          closeRestaurantFormModal();
+          showToast(`✅ Added ${saved.name} — tap Mark Visited to rate!`);
+          openRestaurantModal(saved);
+        } else {
+          if (btnEl) { btnEl.disabled = false; btnEl.textContent = '+ Add'; }
+          showToast('Could not add spot — try again');
+        }
+      });
+    }
+
     function openRestaurantFormModal(existing) {
       const isEdit = !!existing;
       document.getElementById('rfModalTitle').textContent = isEdit ? '✏️ Edit Restaurant' : '🍽️ Add Restaurant';
@@ -6174,8 +6292,21 @@
       document.getElementById('rfPhotoInput').value = '';
       document.getElementById('btnDeleteRestaurant').style.display = isEdit ? 'inline-block' : 'none';
 
+      const qaSec = document.getElementById('quickAddPlaceSection');
+      const manToggle = document.getElementById('manualRestFormToggle');
+      const qaInput = document.getElementById('quickAddPlaceInput');
+      const qaResults = document.getElementById('quickAddPlaceResults');
+      if (qaSec) qaSec.style.display = isEdit ? 'none' : 'block';
+      if (manToggle) manToggle.style.display = isEdit ? 'none' : 'flex';
+      if (qaInput) qaInput.value = '';
+      if (qaResults) qaResults.innerHTML = '';
+      toggleManualRestForm(isEdit);
+
       document.getElementById('restaurantFormModal').classList.add('open');
-      setTimeout(() => document.getElementById('rfName').focus(), 100);
+      setTimeout(() => {
+        if (isEdit) document.getElementById('rfName').focus();
+        else if (qaInput) qaInput.focus();
+      }, 100);
     }
 
     function closeRestaurantFormModal() {
