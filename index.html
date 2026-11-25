@@ -1872,8 +1872,8 @@
               <input type="text" id="dishNameInput" class="form-input" placeholder="e.g. Brisket Tacos">
             </div>
             <div class="form-group" style="margin-bottom:8px;">
-              <label class="form-label">Dish Rating (1–10) *</label>
-              <input type="number" id="dishRatingInput" class="form-input" min="1" max="10" step="0.5" placeholder="8.5">
+              <label class="form-label">Dish Rating (1–10, Optional)</label>
+              <input type="number" id="dishRatingInput" class="form-input" min="1" max="10" step="0.5" placeholder="Optional">
             </div>
           </div>
           <div class="form-row-2">
@@ -5927,16 +5927,19 @@
             ? `<img class="dish-thumb" src="${d.photoUrl}" referrerpolicy="no-referrer" onclick="openPhotoLightbox('${d.photoUrl}')" alt="${escapeHtml(d.name)}">`
             : '';
           const ratingNum = Number(d.rating) || 0;
-          const verdictHtml = ratingNum >= 8
-            ? '<span class="dish-verdict verdict-must">🔥 Must Order</span>'
-            : (ratingNum >= 6 ? '<span class="dish-verdict verdict-solid">👍 Solid</span>' : '<span class="dish-verdict verdict-skip">⚠️ Skip</span>');
+          const verdictHtml = ratingNum > 0
+            ? (ratingNum >= 8
+                ? '<span class="dish-verdict verdict-must">🔥 Must Order</span>'
+                : (ratingNum >= 6 ? '<span class="dish-verdict verdict-solid">👍 Solid</span>' : '<span class="dish-verdict verdict-skip">⚠️ Skip</span>'))
+            : '';
+          const ratingBadgeHtml = ratingNum > 0 ? `<span class="dish-rating-badge">★ ${d.rating}/10</span>` : '';
           item.innerHTML = `
             ${imgHtml}
             <div class="dish-info">
               <div class="dish-name">${escapeHtml(d.name)}${verdictHtml}</div>
               <div class="dish-meta">${escapeHtml(d.orderedBy || 'Shared')}${d.dateLogged ? ' • ' + d.dateLogged : ''}${d.notes ? ' • ' + escapeHtml(d.notes) : ''}</div>
             </div>
-            <span class="dish-rating-badge">★ ${d.rating}/10</span>
+            ${ratingBadgeHtml}
             <button type="button" class="dish-del-btn" title="Delete dish" onclick="deleteDishItem('${d.id}')">✕</button>
           `;
           dishWrap.appendChild(item);
@@ -6128,13 +6131,14 @@
     async function submitNewDish() {
       if (!activeRestaurant) return;
       const name = document.getElementById('dishNameInput').value.trim();
-      const rating = parseFloat(document.getElementById('dishRatingInput').value);
+      const rawRating = document.getElementById('dishRatingInput').value.trim();
+      const rating = rawRating !== '' ? parseFloat(rawRating) : '';
       const orderedBy = document.getElementById('dishOrderedByInput').value;
       const notes = document.getElementById('dishNotesInput').value.trim();
       const photoFile = document.getElementById('dishPhotoInput').files[0];
 
       if (!name) { showToast('⚠️ Enter a dish name'); return; }
-      if (isNaN(rating) || rating < 1 || rating > 10) { showToast('⚠️ Rating must be 1–10'); return; }
+      if (rawRating !== '' && (isNaN(rating) || rating < 1 || rating > 10)) { showToast('⚠️ Rating must be 1–10'); return; }
 
       const btn = document.getElementById('btnSaveDish');
       btn.disabled = true;
