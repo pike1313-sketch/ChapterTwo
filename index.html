@@ -771,6 +771,89 @@
       background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px;
     }
     .more-filters-box.open { display: block; }
+
+    /* Kitchen-Ready Recipe View */
+    .recipe-time-bar {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-bottom: 10px;
+    }
+    .recipe-time-cell {
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 8px; text-align: center;
+    }
+    .recipe-time-cell.total-cell {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .recipe-time-lbl {
+      font-size: 0.64rem; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 3px;
+    }
+    .recipe-time-val {
+      font-size: 0.96rem; font-weight: 900; color: #fff;
+    }
+    .recipe-time-cell.total-cell .recipe-time-val { color: #34d399; }
+    .recipe-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .cook-wake-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      color: #cbd5e1; border-radius: 999px; padding: 7px 12px;
+      font-size: 0.74rem; font-weight: 800; cursor: pointer; min-height: 38px;
+    }
+    .cook-wake-btn.awake {
+      background: rgba(251, 191, 36, 0.18); border-color: rgba(251, 191, 36, 0.6); color: #fde68a;
+    }
+    .recipe-section-card {
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px; margin-bottom: 14px;
+    }
+    .recipe-section-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; gap: 8px;
+    }
+    .recipe-section-title {
+      font-size: 0.84rem; font-weight: 900; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .recipe-ing-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer; border-radius: 8px; transition: background 0.12s;
+    }
+    .recipe-ing-row:last-child { border-bottom: none; }
+    .recipe-ing-row:active { background: rgba(255, 255, 255, 0.05); }
+    .recipe-ing-row.checked { opacity: 0.45; }
+    .recipe-ing-row.checked .recipe-ing-text { text-decoration: line-through; }
+    .recipe-ing-text {
+      font-size: 0.92rem; color: #f1f5f9; line-height: 1.4; flex: 1;
+    }
+    .recipe-ing-amt {
+      color: #34d399; font-weight: 900; margin-right: 4px;
+    }
+    .recipe-step-card {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(15, 23, 42, 0.55); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px; margin-bottom: 10px; cursor: pointer;
+      transition: opacity 0.15s, border-color 0.15s;
+    }
+    .recipe-step-card:last-child { margin-bottom: 0; }
+    .recipe-step-card.done { opacity: 0.42; border-color: rgba(16, 185, 129, 0.3); }
+    .recipe-step-num {
+      width: 30px; min-width: 30px; height: 30px; border-radius: 50%;
+      background: var(--accent); color: #fff; font-size: 0.82rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+    .recipe-step-card.done .recipe-step-num { background: var(--emerald); color: #000; }
+    .recipe-step-text {
+      font-size: 0.94rem; color: #f1f5f9; line-height: 1.55; flex: 1;
+    }
+    .recipe-step-card.done .recipe-step-text { text-decoration: line-through; }
+    .form-row-3 {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
   </style>
 </head>
 <body>
@@ -2183,12 +2266,27 @@
 
         <!-- Inline Add / Edit Option Form -->
         <div id="eatInVersionFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:12px; padding:14px; margin-top:14px;">
-          <div style="font-size:0.88rem; font-weight:900; color:#fff; margin-bottom:10px;" id="evFormHeading">➕ Add New Option</div>
+          <div style="font-size:0.88rem; font-weight:900; color:#fff; margin-bottom:10px;" id="evFormHeading">➕ Add New Recipe Option</div>
           <input type="hidden" id="evEditId">
           <div class="form-group">
-            <label class="form-label">Option Name *</label>
+            <label class="form-label">Recipe / Option Name *</label>
             <input type="text" id="evNameInput" class="form-input" placeholder="e.g. Manwich, Homemade Sauce, Baked Ziti">
           </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">Prep (min)</label>
+              <input type="number" id="evPrepInput" class="form-input" min="0" placeholder="10" oninput="updateEvTotalPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cook (min)</label>
+              <input type="number" id="evCookInput" class="form-input" min="0" placeholder="20" oninput="updateEvTotalPreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Servings</label>
+              <input type="text" id="evServingsInput" class="form-input" placeholder="6">
+            </div>
+          </div>
+          <div id="evTotalPreview" style="font-size:0.74rem; color:#34d399; font-weight:800; margin:-6px 0 10px 2px; display:none;"></div>
           <div class="form-row-2">
             <div class="form-group">
               <label class="form-label">Effort (LOE)</label>
@@ -2206,6 +2304,14 @@
               </select>
             </div>
           </div>
+          <div class="form-group">
+            <label class="form-label">🥣 Ingredients &amp; Amounts (one per line)</label>
+            <textarea id="evIngredientsInput" class="form-input" rows="5" placeholder="1 lb ground beef&#10;1 jar marinara sauce&#10;1 lb spaghetti&#10;1 cup shredded mozzarella"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">👨‍🍳 Directions (one step per line)</label>
+            <textarea id="evDirectionsInput" class="form-input" rows="5" placeholder="Bring salted water to a boil and cook pasta al dente.&#10;Brown ground beef in a large skillet and drain grease.&#10;Stir in marinara sauce, simmer 8 min, and serve over pasta."></textarea>
+          </div>
           <div class="form-row-2">
             <div class="form-group">
               <label class="form-label">Source (Book or URL)</label>
@@ -2217,38 +2323,34 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Recipe / Ingredients</label>
-            <textarea id="evRecipeInput" class="form-input" rows="4" placeholder="Ingredients or quick steps..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Notes (Optional)</label>
-            <input type="text" id="evNotesInput" class="form-input" placeholder="e.g. Kids love this version!">
+            <label class="form-label">📝 Cook's Notes (Optional)</label>
+            <input type="text" id="evNotesInput" class="form-input" placeholder="e.g. Kids love this version! Serve with garlic bread.">
           </div>
           <div style="display:flex; gap:8px;">
-            <button type="button" id="btnSaveEatInVer" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="submitEatInVersion()">💾 Save Option</button>
+            <button type="button" id="btnSaveEatInVer" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="submitEatInVersion()">💾 Save Recipe</button>
             <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="toggleEatInVersionForm(false)">Cancel</button>
           </div>
         </div>
       </div>
 
       <div class="fp-footer">
-        <button type="button" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="toggleEatInVersionForm(true)">+ Add New Option</button>
+        <button type="button" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="toggleEatInVersionForm(true)">+ Add New Recipe Option</button>
       </div>
     </div>
   </div>
 
-  <!-- Eat In Step 2: Specific Option Detail Modal (Full Page: Ratings, Photo, Recipe, Source, Made Tonight) -->
+  <!-- Eat In Step 2: Kitchen-Ready Recipe Page (Full Page: Times, Ingredients, Directions, Ratings) -->
   <div class="modal-overlay fullscreen-modal" id="eatInVersionModal" onclick="if(event.target===this) closeEatInVersionModal()">
     <div class="modal-sheet">
       <div class="fp-topbar">
         <button type="button" class="fp-back-btn" onclick="closeEatInVersionModal()">← Options</button>
-        <div class="fp-top-title" id="evmTopTitle">Meal Option</div>
+        <div class="fp-top-title" id="evmTopTitle">Recipe</div>
         <button type="button" class="fp-back-btn" onclick="editActiveEatInVersion()">✏️ Edit</button>
       </div>
 
       <div class="fp-body">
-        <div class="modal-header">
-          <div id="evmThumb" class="rest-card-thumb" style="width:94px; min-width:94px; height:114px; border-radius:10px; border:1px solid var(--border);"></div>
+        <div class="modal-header" style="margin-bottom:12px;">
+          <div id="evmThumb" class="rest-card-thumb" style="width:86px; min-width:86px; height:102px; border-radius:10px; border:1px solid var(--border);"></div>
           <div style="flex:1; min-width:0;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
               <h2 class="modal-title" id="evmName" style="margin-bottom:2px;"></h2>
@@ -2259,8 +2361,56 @@
           </div>
         </div>
 
+        <!-- ⏱️ Prep Time | Cook Time | Total Time Bar -->
+        <div class="recipe-time-bar">
+          <div class="recipe-time-cell">
+            <div class="recipe-time-lbl">Prep Time</div>
+            <div class="recipe-time-val" id="evmPrepVal">--</div>
+          </div>
+          <div class="recipe-time-cell">
+            <div class="recipe-time-lbl">Cook Time</div>
+            <div class="recipe-time-val" id="evmCookVal">--</div>
+          </div>
+          <div class="recipe-time-cell total-cell">
+            <div class="recipe-time-lbl">Total Time</div>
+            <div class="recipe-time-val" id="evmTotalVal">--</div>
+          </div>
+        </div>
+
+        <!-- Kitchen Toolbar: Servings, Keep Screen On, Source, Jump to Rate -->
+        <div class="recipe-toolbar">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span id="evmServingsPill" class="rest-tag-pill" style="display:none;"></span>
+            <button type="button" class="cook-wake-btn" id="btnCookWakeLock" onclick="toggleCookWakeLock()">🔆 Keep Screen On</button>
+          </div>
+          <button type="button" class="cook-wake-btn" onclick="document.getElementById('evmRatingsSection').scrollIntoView({behavior:'smooth', block:'start'})">⭐ Rate</button>
+        </div>
+
+        <div id="evmSourceWrap" style="display:none; margin-bottom:12px; font-size:0.8rem;"></div>
+
+        <!-- 🥣 INGREDIENTS (With Amounts + Tap to Check Off) -->
+        <div class="recipe-section-card">
+          <div class="recipe-section-head">
+            <div class="recipe-section-title">🥣 Ingredients <span id="evmIngCount" style="color:var(--text-muted); font-weight:700;"></span></div>
+            <button type="button" class="active-chip reset-chip" id="btnResetCookChecks" style="display:none;" onclick="resetActiveCookChecks()">Reset ✓</button>
+          </div>
+          <div id="evmIngredientsList"></div>
+        </div>
+
+        <!-- 👨‍🍳 DIRECTIONS (Numbered Step Cards + Tap to Check Off) -->
+        <div class="recipe-section-card">
+          <div class="recipe-section-head">
+            <div class="recipe-section-title">👨‍🍳 Directions</div>
+            <span style="font-size:0.68rem; color:var(--text-muted);">Tap step when done</span>
+          </div>
+          <div id="evmDirectionsList"></div>
+        </div>
+
+        <!-- 📝 Cook's Notes -->
+        <div id="evmNotesBox" style="display:none; background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.3); border-radius:12px; padding:12px; margin-bottom:14px; font-size:0.84rem; color:#fde68a; line-height:1.45;"></div>
+
         <!-- Made Tonight CTA -->
-        <div class="visit-cta-card">
+        <div class="visit-cta-card" id="evmRatingsSection">
           <div>
             <div style="font-size:0.84rem; font-weight:900; color:#fff;" id="evmMadeTitle">Making this tonight?</div>
             <div style="font-size:0.72rem; color:var(--text-muted);" id="evmMadeSub">Log tonight to track your rotation</div>
@@ -2270,7 +2420,7 @@
 
         <!-- Full 1-10 Ratings for THIS Specific Option (Derek, Kianna, Finn, Grandma, Anyone!) -->
         <div class="dk-rating-card">
-          <div style="font-size:0.8rem; font-weight:900; color:#fff; margin-bottom:10px;">⭐ Ratings for This Option (1–10)</div>
+          <div style="font-size:0.8rem; font-weight:900; color:#fff; margin-bottom:10px;">⭐ Ratings for This Recipe (1–10)</div>
 
           <div class="rate-row-head">
             <span style="color:var(--derek);">Derek</span>
@@ -2296,19 +2446,11 @@
             </div>
           </div>
         </div>
-
-        <!-- Source, Recipe & Notes -->
-        <div id="evmSourceWrap" style="display:none; margin-bottom:10px; font-size:0.8rem;"></div>
-        <div id="evmRecipeBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px;">
-          <div style="font-size:0.72rem; font-weight:900; color:var(--accent); text-transform:uppercase; margin-bottom:5px;">📖 Recipe / Ingredients</div>
-          <div id="evmRecipeText" style="font-size:0.82rem; color:#e2e8f0; line-height:1.5; white-space:pre-wrap;"></div>
-        </div>
-        <p id="evmNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
       </div>
 
       <div class="fp-footer">
         <button type="button" id="btnAddVerToPlan" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="addActiveVersionToMealPlan()">📅 + This Week</button>
-        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInVersion()">✏️ Edit</button>
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInVersion()">✏️ Edit Recipe</button>
         <button type="button" class="btn-act btn-flag" style="flex:none; padding:12px 16px;" onclick="deleteActiveEatInVersion()">🗑️</button>
       </div>
     </div>
@@ -7400,6 +7542,205 @@
       toggleEatInVersionForm(false);
     }
 
+    // =========================================================================
+    // STRUCTURED RECIPE PARSER, FORMATTER & KITCHEN COOKING MODE
+    // =========================================================================
+    const cookCheckedIngs = {}; // verId -> Set of indices
+    const cookDoneSteps = {};   // verId -> Set of indices
+    let cookWakeLockSentinel = null;
+
+    function formatMins(mins) {
+      const m = Math.round(Number(mins) || 0);
+      if (m <= 0) return '0m';
+      if (m < 60) return `${m}m`;
+      const h = Math.floor(m / 60);
+      const rem = m % 60;
+      return rem ? `${h}h ${rem}m` : `${h}h`;
+    }
+
+    function parseTimeToMins(str) {
+      if (str === null || str === undefined) return 0;
+      const s = String(str).trim().toLowerCase();
+      if (!s) return 0;
+      if (/^\d+$/.test(s)) return parseInt(s, 10);
+      let total = 0;
+      const hMatch = s.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)/);
+      const mMatch = s.match(/(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes)/);
+      if (hMatch) total += Math.round(parseFloat(hMatch[1]) * 60);
+      if (mMatch) total += Math.round(parseFloat(mMatch[1]));
+      if (!hMatch && !mMatch) {
+        const num = parseFloat(s);
+        if (!isNaN(num)) total = Math.round(num);
+      }
+      return total;
+    }
+
+    function parseStructuredRecipe(raw, loe) {
+      const text = String(raw || '').trim();
+      const res = {
+        prepMin: 0,
+        cookMin: 0,
+        totalMin: 0,
+        servings: '',
+        ingredients: [],
+        directions: [],
+        isStructured: false,
+        isEstimated: false
+      };
+
+      if (text && (/---INGREDIENTS---|---DIRECTIONS---/i.test(text) || /^PREP\s*:/im.test(text) || /^COOK\s*:/im.test(text))) {
+        res.isStructured = true;
+        const lines = text.split(/\r?\n/);
+        let section = 'META';
+        lines.forEach(rawLine => {
+          const line = rawLine.trim();
+          if (!line) return;
+          if (/^---INGREDIENTS---$/i.test(line)) { section = 'ING'; return; }
+          if (/^---DIRECTIONS---$/i.test(line)) { section = 'DIR'; return; }
+          if (section === 'META') {
+            const pM = line.match(/^PREP\s*:\s*(.+)$/i);
+            const cM = line.match(/^COOK\s*:\s*(.+)$/i);
+            const sM = line.match(/^SERVINGS?\s*:\s*(.+)$/i);
+            if (pM) res.prepMin = parseTimeToMins(pM[1]);
+            else if (cM) res.cookMin = parseTimeToMins(cM[1]);
+            else if (sM) res.servings = sM[1].trim();
+          } else if (section === 'ING') {
+            const clean = line.replace(/^[-•*]\s*/, '').trim();
+            if (clean) res.ingredients.push(clean);
+          } else if (section === 'DIR') {
+            const clean = line.replace(/^\d+[.)]\s*/, '').trim();
+            if (clean) res.directions.push(clean);
+          }
+        });
+      } else if (text) {
+        // Legacy recipe text: split into clean ingredients (or directions if long sentences)
+        const parts = text.split(/[\n,;+]+/).map(s => s.replace(/^[-•*\d.)\s]+/, '').trim()).filter(Boolean);
+        parts.forEach(p => {
+          if (p.length > 70 || /\b(bake|boil|simmer|cook|roast|grill|preheat|stir|serve|fry|brown|mix|heat)\b/i.test(p)) {
+            res.directions.push(p);
+          } else {
+            res.ingredients.push(p);
+          }
+        });
+        if (!res.ingredients.length && res.directions.length) {
+          // Keep as directions only
+        }
+      }
+
+      if (res.prepMin > 0 || res.cookMin > 0) {
+        res.totalMin = res.prepMin + res.cookMin;
+      } else {
+        res.isEstimated = true;
+        if (loe === 'Easy') { res.prepMin = 10; res.cookMin = 15; }
+        else if (loe === 'Project') { res.prepMin = 25; res.cookMin = 45; }
+        else { res.prepMin = 15; res.cookMin = 25; }
+        res.totalMin = res.prepMin + res.cookMin;
+      }
+      return res;
+    }
+
+    function formatStructuredRecipe({ prepMin, cookMin, servings, ingredientsText, directionsText }) {
+      const p = parseTimeToMins(prepMin);
+      const c = parseTimeToMins(cookMin);
+      const sv = String(servings || '').trim();
+      const ings = String(ingredientsText || '').split(/\r?\n/).map(s => s.replace(/^[-•*]\s*/, '').trim()).filter(Boolean);
+      const dirs = String(directionsText || '').split(/\r?\n/).map(s => s.replace(/^\d+[.)]\s*/, '').trim()).filter(Boolean);
+      if (!p && !c && !sv && !ings.length && !dirs.length) return '';
+
+      const out = [];
+      if (p > 0) out.push(`PREP: ${p} min`);
+      if (c > 0) out.push(`COOK: ${c} min`);
+      if (sv) out.push(`SERVINGS: ${sv}`);
+      if (ings.length) {
+        out.push('---INGREDIENTS---');
+        ings.forEach(i => out.push(i));
+      }
+      if (dirs.length) {
+        out.push('---DIRECTIONS---');
+        dirs.forEach((d, idx) => out.push(`${idx + 1}. ${d}`));
+      }
+      return out.join('\n');
+    }
+
+    function formatIngredientWithAmountHtml(line) {
+      const safe = escapeHtml(line);
+      // Highlight leading quantity + unit (e.g. "1 lb", "2 1/2 cups", "1 (15 oz) can", "3 cloves")
+      const m = safe.match(/^((?:\d+(?:[./-]\d+)?(?:\s+\d+\/\d+)?|[½¼¾⅓⅔⅛]+)(?:\s*\([^)]+\))?(?:\s*(?:lbs?|oz|ounces?|cups?|tbsp|tsp|tablespoons?|teaspoons?|cans?|jars?|pkgs?|packages?|boxes?|bags?|cloves?|slices?|pieces?|sticks?|pinch(?:es)?|dash(?:es)?|bunches?|heads?|stalks?|strips?|fillets?|breasts?|thighs?|lbs?\.?))?)\s+(.+)$/i);
+      if (m) {
+        return `<span class="recipe-ing-amt">${m[1]}</span>${m[2]}`;
+      }
+      return safe;
+    }
+
+    function updateEvTotalPreview() {
+      const p = parseTimeToMins(document.getElementById('evPrepInput').value);
+      const c = parseTimeToMins(document.getElementById('evCookInput').value);
+      const el = document.getElementById('evTotalPreview');
+      if (!el) return;
+      if (p > 0 || c > 0) {
+        el.style.display = 'block';
+        el.textContent = `⏱️ Total Time: ${formatMins(p + c)}`;
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    async function toggleCookWakeLock() {
+      const btn = document.getElementById('btnCookWakeLock');
+      if (cookWakeLockSentinel) {
+        try { await cookWakeLockSentinel.release(); } catch (e) {}
+        cookWakeLockSentinel = null;
+        if (btn) { btn.classList.remove('awake'); btn.textContent = '🔆 Keep Screen On'; }
+        return;
+      }
+      if (!('wakeLock' in navigator)) {
+        showToast('Screen stay-awake not supported on this browser');
+        return;
+      }
+      try {
+        cookWakeLockSentinel = await navigator.wakeLock.request('screen');
+        if (btn) { btn.classList.add('awake'); btn.textContent = '🔆 Screen Awake'; }
+        showToast('🔆 Screen will stay awake while you cook!');
+        cookWakeLockSentinel.addEventListener('release', () => {
+          cookWakeLockSentinel = null;
+          const b = document.getElementById('btnCookWakeLock');
+          if (b) { b.classList.remove('awake'); b.textContent = '🔆 Keep Screen On'; }
+        });
+      } catch (e) {
+        showToast('Could not enable screen awake');
+      }
+    }
+
+    function releaseCookWakeLock() {
+      if (cookWakeLockSentinel) {
+        try { cookWakeLockSentinel.release(); } catch (e) {}
+        cookWakeLockSentinel = null;
+      }
+      const btn = document.getElementById('btnCookWakeLock');
+      if (btn) { btn.classList.remove('awake'); btn.textContent = '🔆 Keep Screen On'; }
+    }
+
+    function toggleCookIngredient(verId, idx) {
+      if (!cookCheckedIngs[verId]) cookCheckedIngs[verId] = new Set();
+      if (cookCheckedIngs[verId].has(idx)) cookCheckedIngs[verId].delete(idx);
+      else cookCheckedIngs[verId].add(idx);
+      renderEatInVersionModal();
+    }
+
+    function toggleCookStep(verId, idx) {
+      if (!cookDoneSteps[verId]) cookDoneSteps[verId] = new Set();
+      if (cookDoneSteps[verId].has(idx)) cookDoneSteps[verId].delete(idx);
+      else cookDoneSteps[verId].add(idx);
+      renderEatInVersionModal();
+    }
+
+    function resetActiveCookChecks() {
+      if (!activeEatInVersion) return;
+      delete cookCheckedIngs[activeEatInVersion.id];
+      delete cookDoneSteps[activeEatInVersion.id];
+      renderEatInVersionModal();
+    }
+
     function renderEatInModal() {
       const m = activeEatInMeal;
       if (!m) return;
@@ -7430,11 +7771,11 @@
         ${m.timesMade > 0 ? `<span class="rest-tag-pill">🍳 Made ${m.timesMade}x</span>` : ''}
       `;
 
-      // Tappable Option Cards
+      // Tappable Recipe Option Tiles
       const vWrap = document.getElementById('emVersionsList');
       const versions = m.versions || [];
       if (!versions.length) {
-        vWrap.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); padding:16px 8px; text-align:center; background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px;">No options yet — tap <strong>+ Add New Option</strong> below to add your first recipe!</div>';
+        vWrap.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); padding:16px 8px; text-align:center; background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px;">No recipe options yet — tap <strong>+ Add New Recipe Option</strong> below!</div>';
       } else {
         vWrap.innerHTML = '';
         versions.forEach(v => {
@@ -7442,6 +7783,11 @@
           card.className = 'book-card';
           card.style.cursor = 'pointer';
           card.onclick = () => openEatInVersionModal(v.id);
+
+          const parsed = parseStructuredRecipe(v.recipe || m.recipe || '', v.loe || m.loe);
+          const timeBadge = `⏱️ ${parsed.isEstimated ? '~' : ''}${formatMins(parsed.totalMin)}`;
+          const ingBadge = parsed.ingredients.length ? `🥣 ${parsed.ingredients.length} ing` : '';
+          const dirBadge = parsed.directions.length ? `👨‍🍳 ${parsed.directions.length} steps` : '';
 
           const vRatings = Object.entries(v.ratings || {}).filter(([, s]) => Number(s) > 0);
           const vAvg = getRatingsAverage(v.ratings);
@@ -7460,15 +7806,19 @@
             : `<div class="rest-emoji-cover" style="font-size:1.6rem;">${getEatInIcon(m.category)}</div>`;
 
           card.innerHTML = `
-            <div class="rest-card-thumb" style="width:76px; min-width:76px; height:96px;">${vThumb}</div>
+            <div class="rest-card-thumb" style="width:76px; min-width:76px; height:98px;">${vThumb}</div>
             <div class="card-body">
               <div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
                   <div class="card-title">${escapeHtml(v.name)}</div>
                   ${vAvgBadge}
                 </div>
-                <div class="card-author">${v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium')} • ${v.stability === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh'}</div>
-                ${vBadges ? `<div class="ratings-row">${vBadges}</div>` : '<div style="font-size:0.72rem; color:var(--text-muted);">Tap to rate, view recipe &amp; add photo</div>'}
+                <div class="card-author">${timeBadge} • ${v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium')} • ${v.stability === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh'}</div>
+                <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:4px;">
+                  ${ingBadge ? `<span class="rest-tag-pill">${ingBadge}</span>` : ''}
+                  ${dirBadge ? `<span class="rest-tag-pill rest-tag-family">${dirBadge}</span>` : ''}
+                </div>
+                ${vBadges ? `<div class="ratings-row" style="margin-top:5px;">${vBadges}</div>` : ''}
               </div>
             </div>
           `;
@@ -7484,9 +7834,12 @@
       activeEatInVersion = v;
       renderEatInVersionModal();
       document.getElementById('eatInVersionModal').classList.add('open');
+      const body = document.querySelector('#eatInVersionModal .fp-body');
+      if (body) body.scrollTop = 0;
     }
 
     function closeEatInVersionModal() {
+      releaseCookWakeLock();
       document.getElementById('eatInVersionModal').classList.remove('open');
       activeEatInVersion = null;
       renderEatInModal();
@@ -7497,7 +7850,7 @@
       const v = activeEatInVersion;
       if (!m || !v) return;
 
-      document.getElementById('evmTopTitle').textContent = v.name || 'Meal Option';
+      document.getElementById('evmTopTitle').textContent = v.name || 'Recipe';
       document.getElementById('evmName').textContent = v.name || '';
       const loeIcon = v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium');
       document.getElementById('evmMeta').textContent = `${m.name} • ${loeIcon}`;
@@ -7522,6 +7875,88 @@
         <span class="rest-tag-pill ${v.stability === 'Pantry' ? 'rest-tag-family' : ''}">${v.stability === 'Pantry' ? '🥫 Pantry / Freezer' : '🥬 Needs Fresh'}</span>
         ${m.lastMade ? `<span class="rest-tag-pill">🍳 Last: ${m.lastMade}</span>` : ''}
       `;
+
+      // Parse structured recipe (Prep, Cook, Total, Servings, Ingredients, Directions)
+      const parsed = parseStructuredRecipe(v.recipe || m.recipe || '', v.loe || m.loe);
+      const estPrefix = parsed.isEstimated ? '~' : '';
+      document.getElementById('evmPrepVal').textContent = estPrefix + formatMins(parsed.prepMin);
+      document.getElementById('evmCookVal').textContent = estPrefix + formatMins(parsed.cookMin);
+      document.getElementById('evmTotalVal').textContent = estPrefix + formatMins(parsed.totalMin);
+
+      const servEl = document.getElementById('evmServingsPill');
+      if (parsed.servings) {
+        servEl.style.display = 'inline-flex';
+        servEl.textContent = `🍽️ Serves ${parsed.servings}`;
+      } else {
+        servEl.style.display = 'none';
+      }
+
+      // Source
+      const srcWrap = document.getElementById('evmSourceWrap');
+      if (v.source) {
+        srcWrap.style.display = 'block';
+        const isUrl = /^https?:\/\//i.test(v.source);
+        srcWrap.innerHTML = isUrl
+          ? `🔗 Source: <a href="${escapeHtml(v.source)}" target="_blank" style="color:var(--derek); font-weight:700;">Open Recipe Link ↗</a>`
+          : `📚 Source: <strong style="color:#e2e8f0;">${escapeHtml(v.source)}</strong>`;
+      } else {
+        srcWrap.style.display = 'none';
+      }
+
+      // Ingredients List (Interactive Checkboxes + Highlighted Amounts)
+      const ingChecked = cookCheckedIngs[v.id] || new Set();
+      const stepDone = cookDoneSteps[v.id] || new Set();
+      const resetBtn = document.getElementById('btnResetCookChecks');
+      if (resetBtn) resetBtn.style.display = (ingChecked.size > 0 || stepDone.size > 0) ? 'inline-flex' : 'none';
+
+      const ingCountEl = document.getElementById('evmIngCount');
+      if (ingCountEl) ingCountEl.textContent = parsed.ingredients.length ? `(${parsed.ingredients.length})` : '';
+
+      const ingWrap = document.getElementById('evmIngredientsList');
+      if (!parsed.ingredients.length) {
+        ingWrap.innerHTML = `
+          <div style="font-size:0.82rem; color:var(--text-muted); padding:8px 2px;">
+            No ingredients listed yet.
+            <button type="button" class="active-chip" style="margin-left:6px;" onclick="editActiveEatInVersion()">+ Add Ingredients</button>
+          </div>`;
+      } else {
+        ingWrap.innerHTML = parsed.ingredients.map((ing, idx) => {
+          const isChk = ingChecked.has(idx);
+          return `
+            <div class="recipe-ing-row ${isChk ? 'checked' : ''}" onclick="toggleCookIngredient('${v.id}', ${idx})">
+              <span style="font-size:1.05rem; line-height:1.25;">${isChk ? '☑️' : '⬜'}</span>
+              <div class="recipe-ing-text">${formatIngredientWithAmountHtml(ing)}</div>
+            </div>`;
+        }).join('');
+      }
+
+      // Directions List (Numbered Step Cards)
+      const dirWrap = document.getElementById('evmDirectionsList');
+      if (!parsed.directions.length) {
+        dirWrap.innerHTML = `
+          <div style="text-align:center; padding:12px 6px;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Add step-by-step directions &amp; exact prep/cook times so you can cook right from your phone!</div>
+            <button type="button" class="dining-add-btn" style="padding:10px 16px;" onclick="editActiveEatInVersion()">✏️ Add Directions &amp; Times</button>
+          </div>`;
+      } else {
+        dirWrap.innerHTML = parsed.directions.map((step, idx) => {
+          const isDone = stepDone.has(idx);
+          return `
+            <div class="recipe-step-card ${isDone ? 'done' : ''}" onclick="toggleCookStep('${v.id}', ${idx})">
+              <div class="recipe-step-num">${isDone ? '✓' : (idx + 1)}</div>
+              <div class="recipe-step-text">${escapeHtml(step)}</div>
+            </div>`;
+        }).join('');
+      }
+
+      // Cook's Notes
+      const notesBox = document.getElementById('evmNotesBox');
+      if (v.notes) {
+        notesBox.style.display = 'block';
+        notesBox.textContent = '📝 Cook\'s Note: ' + v.notes;
+      } else {
+        notesBox.style.display = 'none';
+      }
 
       document.getElementById('evmMadeTitle').textContent = m.lastMade ? `Last made ${m.lastMade}` : 'Making this tonight?';
       document.getElementById('evmMadeSub').textContent = m.timesMade > 0 ? `Cooked ${m.timesMade} time${m.timesMade === 1 ? '' : 's'} at home` : 'Log tonight to track your meal rotation';
@@ -7563,34 +7998,6 @@
       const knownWrap = document.getElementById('evmKnownPeopleChips');
       const knownOthers = getEatInAllKnownPeople().filter(p => p !== 'Derek' && p !== 'Kianna');
       knownWrap.innerHTML = knownOthers.map(p => `<button type="button" class="rest-tag-pill" style="cursor:pointer;" onclick="document.getElementById('evmCustomPersonName').value='${escapeHtml(p).replace(/'/g, "\\'")}'; document.getElementById('evmCustomPersonScore').focus();">${escapeHtml(p)}</button>`).join('');
-
-      // Source, Recipe, Notes
-      const srcWrap = document.getElementById('evmSourceWrap');
-      if (v.source) {
-        srcWrap.style.display = 'block';
-        const isUrl = /^https?:\/\//i.test(v.source);
-        srcWrap.innerHTML = isUrl
-          ? `🔗 Source: <a href="${escapeHtml(v.source)}" target="_blank" style="color:var(--derek); font-weight:700;">Open Recipe Link ↗</a>`
-          : `📚 Source: <strong style="color:#e2e8f0;">${escapeHtml(v.source)}</strong>`;
-      } else {
-        srcWrap.style.display = 'none';
-      }
-
-      const recBox = document.getElementById('evmRecipeBox');
-      if (v.recipe) {
-        recBox.style.display = 'block';
-        document.getElementById('evmRecipeText').textContent = v.recipe;
-      } else {
-        recBox.style.display = 'none';
-      }
-
-      const notesEl = document.getElementById('evmNotes');
-      if (v.notes) {
-        notesEl.style.display = 'block';
-        notesEl.textContent = '📝 ' + v.notes;
-      } else {
-        notesEl.style.display = 'none';
-      }
     }
 
     function editActiveEatInVersion() {
@@ -7685,16 +8092,21 @@
       box.style.display = show ? 'block' : 'none';
       if (show) {
         const heading = document.getElementById('evFormHeading');
-        if (heading) heading.textContent = '➕ Add New Option';
+        if (heading) heading.textContent = '➕ Add New Recipe Option';
         document.getElementById('evEditId').value = '';
         document.getElementById('evNameInput').value = '';
+        document.getElementById('evPrepInput').value = '';
+        document.getElementById('evCookInput').value = '';
+        document.getElementById('evServingsInput').value = '';
+        updateEvTotalPreview();
         document.getElementById('evLoeInput').value = activeEatInMeal ? (activeEatInMeal.loe || 'Easy') : 'Easy';
         document.getElementById('evStabInput').value = activeEatInMeal ? (activeEatInMeal.stability || 'Pantry') : 'Pantry';
         document.getElementById('evSourceInput').value = '';
-        document.getElementById('evRecipeInput').value = '';
+        document.getElementById('evIngredientsInput').value = '';
+        document.getElementById('evDirectionsInput').value = '';
         document.getElementById('evNotesInput').value = '';
         document.getElementById('evPhotoInput').value = '';
-        document.getElementById('btnSaveEatInVer').textContent = '💾 Save Option';
+        document.getElementById('btnSaveEatInVer').textContent = '💾 Save Recipe';
         box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.getElementById('evNameInput').focus();
       }
@@ -7708,16 +8120,22 @@
       if (!box) return;
       box.style.display = 'block';
       const heading = document.getElementById('evFormHeading');
-      if (heading) heading.textContent = '✏️ Edit Option';
+      if (heading) heading.textContent = '✏️ Edit Recipe';
+      const parsed = parseStructuredRecipe(v.recipe || '', v.loe || activeEatInMeal.loe);
       document.getElementById('evEditId').value = v.id;
       document.getElementById('evNameInput').value = v.name || '';
+      document.getElementById('evPrepInput').value = parsed.isEstimated ? '' : (parsed.prepMin || '');
+      document.getElementById('evCookInput').value = parsed.isEstimated ? '' : (parsed.cookMin || '');
+      document.getElementById('evServingsInput').value = parsed.servings || '';
+      updateEvTotalPreview();
       document.getElementById('evLoeInput').value = v.loe || 'Easy';
       document.getElementById('evStabInput').value = v.stability || 'Pantry';
       document.getElementById('evSourceInput').value = v.source || '';
-      document.getElementById('evRecipeInput').value = v.recipe || '';
+      document.getElementById('evIngredientsInput').value = (parsed.ingredients || []).join('\n');
+      document.getElementById('evDirectionsInput').value = (parsed.directions || []).join('\n');
       document.getElementById('evNotesInput').value = v.notes || '';
       document.getElementById('evPhotoInput').value = '';
-      document.getElementById('btnSaveEatInVer').textContent = '💾 Update Option';
+      document.getElementById('btnSaveEatInVer').textContent = '💾 Update Recipe';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -7725,7 +8143,7 @@
       if (!activeEatInMeal) return;
       const editId = document.getElementById('evEditId').value.trim();
       const name = document.getElementById('evNameInput').value.trim();
-      if (!name) { showToast('Enter a version name'); return; }
+      if (!name) { showToast('Enter a recipe name'); return; }
 
       const btn = document.getElementById('btnSaveEatInVer');
       btn.disabled = true;
@@ -7733,6 +8151,14 @@
 
       const photoFile = document.getElementById('evPhotoInput').files[0];
       const compressed = photoFile ? await compressImageToBase64(photoFile, 900, 0.78) : null;
+
+      const structuredRecipe = formatStructuredRecipe({
+        prepMin: document.getElementById('evPrepInput').value,
+        cookMin: document.getElementById('evCookInput').value,
+        servings: document.getElementById('evServingsInput').value,
+        ingredientsText: document.getElementById('evIngredientsInput').value,
+        directionsText: document.getElementById('evDirectionsInput').value
+      });
 
       const payload = {
         action: 'saveEatInVersion',
@@ -7742,7 +8168,7 @@
         loe: document.getElementById('evLoeInput').value,
         stability: document.getElementById('evStabInput').value,
         source: document.getElementById('evSourceInput').value.trim(),
-        recipe: document.getElementById('evRecipeInput').value.trim(),
+        recipe: structuredRecipe,
         notes: document.getElementById('evNotesInput').value.trim(),
         photoBase64: compressed ? compressed.base64 : '',
         photoMimeType: compressed ? compressed.mimeType : ''
@@ -7750,7 +8176,7 @@
 
       postEatInApi(payload, (res) => {
         btn.disabled = false;
-        btn.textContent = 'Save Version';
+        btn.textContent = '💾 Save Recipe';
         if (res && res.success && res.version) {
           if (!Array.isArray(activeEatInMeal.versions)) activeEatInMeal.versions = [];
           const idx = activeEatInMeal.versions.findIndex(x => x.id === res.version.id);
@@ -7761,10 +8187,10 @@
           toggleEatInVersionForm(false);
           renderEatInModal();
           renderEatIn();
-          showToast(editId ? '✅ Option updated!' : '✅ Option added!');
+          showToast(editId ? '✅ Recipe updated!' : '✅ Recipe added!');
           openEatInVersionModal(res.version.id);
         } else {
-          showToast('❌ Could not save version');
+          showToast('❌ Could not save recipe');
         }
       });
     }
@@ -8044,8 +8470,9 @@
       const seen = new Set();
 
       source.forEach(plan => {
-        const raw = String(plan.recipe || '').trim();
-        if (!raw) {
+        const parsed = parseStructuredRecipe(plan.recipe || '', plan.loe);
+        const ingList = (parsed.ingredients || []).filter(s => s.length >= 2 && s.length <= 80);
+        if (!ingList.length) {
           const fallback = `${plan.title} ingredients`;
           if (!seen.has(fallback.toLowerCase())) {
             seen.add(fallback.toLowerCase());
@@ -8053,8 +8480,7 @@
           }
           return;
         }
-        // Split recipe string into clean ingredient phrases by newline, comma, semicolon, or '+'
-        raw.split(/[\n,;+]+/).map(s => s.replace(/^[-•*\d.)\s]+/, '').trim()).filter(s => s.length >= 2 && s.length <= 65).forEach(part => {
+        ingList.forEach(part => {
           const key = part.toLowerCase();
           if (!seen.has(key)) {
             seen.add(key);
