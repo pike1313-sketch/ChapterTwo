@@ -6147,7 +6147,7 @@
       box.style.display = 'block';
       document.getElementById('dishEditId').value = d.id;
       document.getElementById('dishNameInput').value = d.name || '';
-      document.getElementById('dishRatingInput').value = (d.rating !== undefined && d.rating !== null && d.rating !== '') ? d.rating : '';
+      document.getElementById('dishRatingInput').value = (Number(d.rating) > 0) ? d.rating : '';
       document.getElementById('dishOrderedByInput').value = d.orderedBy || 'Family / Shared';
       document.getElementById('dishNotesInput').value = d.notes || '';
       document.getElementById('dishPhotoInput').value = '';
@@ -6186,13 +6186,13 @@
       const isEdit = Boolean(editId);
       const name = document.getElementById('dishNameInput').value.trim();
       const rawRating = document.getElementById('dishRatingInput').value.trim();
-      const rating = rawRating !== '' ? parseFloat(rawRating) : '';
+      const rating = (rawRating !== '' && rawRating !== '0') ? parseFloat(rawRating) : '';
       const orderedBy = document.getElementById('dishOrderedByInput').value;
       const notes = document.getElementById('dishNotesInput').value.trim();
       const photoFile = document.getElementById('dishPhotoInput').files[0];
 
       if (!name) { showToast('⚠️ Enter a dish name'); return; }
-      if (rawRating !== '' && (isNaN(rating) || rating < 1 || rating > 10)) { showToast('⚠️ Rating must be 1–10'); return; }
+      if (rating !== '' && (isNaN(rating) || rating < 1 || rating > 10)) { showToast('⚠️ Rating must be 1–10'); return; }
 
       const btn = document.getElementById('btnSaveDish');
       btn.disabled = true;
