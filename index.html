@@ -641,6 +641,51 @@
       display: flex; align-items: center; justify-content: center;
     }
 
+    /* Book Review & Reading Journal Card */
+    .book-rev-card {
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px; margin-top: 14px;
+    }
+    .book-rev-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 4px; margin-bottom: 12px;
+    }
+    .book-rev-tab {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 9px 6px; border-radius: 7px; font-size: 0.82rem; font-weight: 800;
+      cursor: pointer; min-height: 42px; transition: 0.15s;
+    }
+    .book-rev-tab.active-d { background: var(--derek); color: #000; }
+    .book-rev-tab.active-k { background: var(--kianna); color: #000; }
+    .star-tap-row {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px;
+    }
+    .star-tap-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 10px; padding: 10px 0; min-height: 46px; font-size: 0.92rem; font-weight: 900;
+      cursor: pointer; transition: 0.12s;
+    }
+    .star-tap-btn.active { background: rgba(251, 191, 36, 0.24); border-color: var(--gold); color: var(--gold); }
+    .rev-choice-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .rev-choice-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .rev-choice-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 10px; padding: 10px 6px; min-height: 46px; font-size: 0.82rem; font-weight: 800;
+      cursor: pointer; transition: 0.12s; text-align: center;
+    }
+    .rev-choice-btn.active { background: rgba(99, 102, 241, 0.28); border-color: var(--accent); color: #fff; }
+    .rev-choice-btn.active-yes { background: rgba(16, 185, 129, 0.24); border-color: var(--emerald); color: #34d399; }
+    .rev-choice-btn.active-no { background: rgba(244, 63, 94, 0.22); border-color: #fb7185; color: #fb7185; }
+    .rev-choice-btn.active-mid { background: rgba(251, 191, 36, 0.22); border-color: var(--gold); color: var(--gold); }
+    .opinion-chips-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+    .opinion-chip {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 999px; padding: 8px 13px; min-height: 40px; font-size: 0.78rem; font-weight: 800;
+      cursor: pointer; transition: 0.12s;
+    }
+    .opinion-chip.active { background: rgba(99, 102, 241, 0.28); border-color: var(--accent); color: #fff; }
+
     /* Frozen Top Bar: 4 Quick Pills + KPI Ribbon (Identical across Books, Movies & Dining) */
     .sticky-tab-top {
       position: sticky;
@@ -1268,6 +1313,99 @@
             <div style="display:flex; gap:6px;">
               <button id="btnKReadToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'STATUS')">📖 Read</button>
               <button id="btnKWishToggle" class="btn-act" style="flex:1; padding:8px 6px; font-size:0.74rem; background:transparent; border:1px solid var(--border); color:#fff;" onclick="toggleClientStatus('BOOK', 'Kianna', 'WISH')">📌 Wish</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Review & Reading Journal (Derek & Kianna) -->
+        <div class="book-rev-card" id="bookReviewCard">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="font-size:0.88rem; font-weight:900; color:#fff;">✍️ Reading Journal & Rating</div>
+            <button type="button" id="btnToggleBookRevForm" class="fp-back-btn" style="padding:6px 12px; min-height:38px; font-size:0.76rem;" onclick="toggleBookReviewForm()">⭐ Rate & Review</button>
+          </div>
+
+          <div class="book-rev-tabs">
+            <button type="button" class="book-rev-tab active-d" id="bookRevTabDerek" onclick="switchBookReviewUser('Derek')">Derek</button>
+            <button type="button" class="book-rev-tab" id="bookRevTabKianna" onclick="switchBookReviewUser('Kianna')">Kianna</button>
+          </div>
+
+          <!-- Saved Review Summary View -->
+          <div id="bookRevSummaryBox" style="display:none;"></div>
+
+          <!-- Interactive Review Form (All Fields Optional!) -->
+          <div id="bookRevFormBox" style="display:none;">
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label class="form-label" style="margin:0;">⭐ Your Rating (1–5★)</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="fp-back-btn" style="padding:4px 10px; min-height:34px; font-size:0.76rem;" onclick="nudgeBookRevStar(-0.25)">−0.25</button>
+                  <span id="bookRevStarReadout" style="font-size:0.88rem; font-weight:900; color:var(--gold); min-width:52px; text-align:center;">None</span>
+                  <button type="button" class="fp-back-btn" style="padding:4px 10px; min-height:34px; font-size:0.76rem;" onclick="nudgeBookRevStar(0.25)">+0.25</button>
+                </div>
+              </div>
+              <div class="star-tap-row" id="bookRevStarRow">
+                <button type="button" class="star-tap-btn" data-star="1" onclick="setBookRevStar(1)">1 ★</button>
+                <button type="button" class="star-tap-btn" data-star="2" onclick="setBookRevStar(2)">2 ★</button>
+                <button type="button" class="star-tap-btn" data-star="3" onclick="setBookRevStar(3)">3 ★</button>
+                <button type="button" class="star-tap-btn" data-star="4" onclick="setBookRevStar(4)">4 ★</button>
+                <button type="button" class="star-tap-btn" data-star="5" onclick="setBookRevStar(5)">5 ★</button>
+              </div>
+            </div>
+
+            <div class="form-row-2" style="margin-bottom:10px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">📅 Start Date</label>
+                <input type="date" id="bookRevStartDate" class="form-input">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">🏁 End Date</label>
+                <input type="date" id="bookRevEndDate" class="form-input">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">👍 Would Recommend?</label>
+              <div class="rev-choice-row-2" id="bookRevRecommendRow">
+                <button type="button" class="rev-choice-btn" data-rec="Yes" onclick="toggleBookRevRecommend('Yes')">👍 Yes</button>
+                <button type="button" class="rev-choice-btn" data-rec="No" onclick="toggleBookRevRecommend('No')">👎 No</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">🎬 Liked the Ending?</label>
+              <div class="rev-choice-row-3" id="bookRevEndingRow">
+                <button type="button" class="rev-choice-btn" data-end="Yes" onclick="toggleBookRevEnding('Yes')">😍 Yes</button>
+                <button type="button" class="rev-choice-btn" data-end="Sort of" onclick="toggleBookRevEnding('Sort of')">🤷 Sort of</button>
+                <button type="button" class="rev-choice-btn" data-end="No" onclick="toggleBookRevEnding('No')">😬 No</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">💬 Quick Opinions (Tap all that fit)</label>
+              <div class="opinion-chips-wrap" id="bookRevOpinionsWrap">
+                <button type="button" class="opinion-chip" data-op="One of my favs" onclick="toggleBookRevOpinion(this)">🏆 One of my favs</button>
+                <button type="button" class="opinion-chip" data-op="Guilty pleasure" onclick="toggleBookRevOpinion(this)">😈 Guilty pleasure</button>
+                <button type="button" class="opinion-chip" data-op="Not what I expected" onclick="toggleBookRevOpinion(this)">🤯 Not what I expected</button>
+                <button type="button" class="opinion-chip" data-op="Couldn't put it down" onclick="toggleBookRevOpinion(this)">🔥 Couldn't put it down</button>
+                <button type="button" class="opinion-chip" data-op="Made me cry" onclick="toggleBookRevOpinion(this)">😭 Made me cry</button>
+                <button type="button" class="opinion-chip" data-op="Just okay" onclick="toggleBookRevOpinion(this)">😐 Just okay</button>
+                <button type="button" class="opinion-chip" data-op="Snooze fest" onclick="toggleBookRevOpinion(this)">😴 Snooze fest</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">🧑‍🤝‍🧑 Favorite Characters</label>
+              <input type="text" id="bookRevFavChars" class="form-input" placeholder="e.g. Celaena, Rowan, Dorian...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">📝 Notes / Plot Summary</label>
+              <textarea id="bookRevNotes" class="form-input" rows="3" placeholder="Quick plot recap, favorite quotes, or thoughts to remember..."></textarea>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:12px;">
+              <button type="button" id="btnSaveBookRev" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="saveBookReviewForm()">💾 Save Review</button>
+              <button type="button" class="btn-act btn-close" style="flex:none; padding:12px 16px;" onclick="toggleBookReviewForm(false)">Cancel</button>
             </div>
           </div>
         </div>
@@ -3879,7 +4017,314 @@
 
       document.getElementById('mLibbyBtn').href = b.libbyUrl || '#';
       document.getElementById('mGrBtn').href = b.url || '#';
+      initBookReviewPanel();
       document.getElementById('bookModal').classList.add('open');
+    }
+
+    // =========================================================================
+    // BOOK REVIEW & READING JOURNAL (DEREK & KIANNA)
+    // =========================================================================
+    let activeBookRevUser = 'Derek';
+    let bookRevFormRating = 0;
+    let bookRevFormRecommend = '';
+    let bookRevFormEnding = '';
+    let bookRevFormOpinions = new Set();
+
+    function getLocalTodayIso() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function addDaysIso(isoStr, days) {
+      if (!isoStr || !/^\d{4}-\d{2}-\d{2}$/.test(isoStr)) return '';
+      const parts = isoStr.split('-').map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + days);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getDefaultBookStartDate(user) {
+      const isK = String(user || '').toLowerCase().startsWith('k');
+      let latestEnd = '';
+      (books || []).forEach(b => {
+        if (activeBook && b.title === activeBook.title) return;
+        const rev = isK ? b.kiannaReview : b.derekReview;
+        const d1 = (rev && rev.endDate) ? String(rev.endDate).trim() : '';
+        const d2 = isK ? String(b.kiannaReadDate || '').trim() : String(b.derekReadDate || '').trim();
+        [d1, d2].forEach(dt => {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dt) && dt > latestEnd) {
+            latestEnd = dt;
+          }
+        });
+      });
+      if (latestEnd) {
+        const nextDay = addDaysIso(latestEnd, 1);
+        const today = getLocalTodayIso();
+        return nextDay <= today ? nextDay : today;
+      }
+      return getLocalTodayIso();
+    }
+
+    function initBookReviewPanel() {
+      activeBookRevUser = (deviceUser && deviceUser.toLowerCase().startsWith('k')) ? 'Kianna' : 'Derek';
+      switchBookReviewUser(activeBookRevUser, false);
+    }
+
+    function switchBookReviewUser(user, keepFormOpen) {
+      activeBookRevUser = user === 'Kianna' ? 'Kianna' : 'Derek';
+      const tabD = document.getElementById('bookRevTabDerek');
+      const tabK = document.getElementById('bookRevTabKianna');
+      if (tabD) tabD.className = 'book-rev-tab' + (activeBookRevUser === 'Derek' ? ' active-d' : '');
+      if (tabK) tabK.className = 'book-rev-tab' + (activeBookRevUser === 'Kianna' ? ' active-k' : '');
+
+      renderBookReviewSummary();
+      if (keepFormOpen) {
+        populateBookReviewForm();
+      } else {
+        const formBox = document.getElementById('bookRevFormBox');
+        if (formBox) formBox.style.display = 'none';
+      }
+    }
+
+    function getActiveBookReviewObj() {
+      if (!activeBook) return null;
+      return activeBookRevUser === 'Kianna' ? (activeBook.kiannaReview || null) : (activeBook.derekReview || null);
+    }
+
+    function renderBookReviewSummary() {
+      const box = document.getElementById('bookRevSummaryBox');
+      const toggleBtn = document.getElementById('btnToggleBookRevForm');
+      if (!box || !activeBook) return;
+
+      const isK = activeBookRevUser === 'Kianna';
+      const rev = getActiveBookReviewObj();
+      const rate = (rev && rev.rating > 0) ? rev.rating : (isK ? activeBook.kiannaRating : activeBook.derekRating);
+      const endDate = (rev && rev.endDate) ? rev.endDate : (isK ? activeBook.kiannaReadDate : activeBook.derekReadDate);
+      const hasAny = (rate > 0) || (rev && (rev.startDate || rev.endDate || rev.recommend || rev.likedEnding || (rev.opinions && rev.opinions.length) || rev.favCharacters || rev.notes));
+
+      if (toggleBtn) {
+        toggleBtn.textContent = hasAny ? '✏️ Edit Review' : '⭐ Rate & Review';
+      }
+
+      if (!hasAny) {
+        box.style.display = 'block';
+        box.innerHTML = `<div style="font-size:0.78rem; color:var(--text-muted); padding:6px 2px;">No journal entry for ${activeBookRevUser} yet — tap <strong>⭐ Rate & Review</strong> to add a rating, dates, opinions, or notes.</div>`;
+        return;
+      }
+
+      const badges = [];
+      if (rate > 0) badges.push(`<span class="rating-badge" style="color:var(--gold); border:1px solid rgba(251,191,36,0.4);">★ ${rate} / 5</span>`);
+      if (rev && rev.recommend) {
+        const recColor = rev.recommend === 'Yes' ? '#34d399' : '#fb7185';
+        badges.push(`<span class="rating-badge" style="color:${recColor};">${rev.recommend === 'Yes' ? '👍' : '👎'} Recommend: ${escapeHtml(rev.recommend)}</span>`);
+      }
+      if (rev && rev.likedEnding) {
+        const endEmoji = rev.likedEnding === 'Yes' ? '😍' : (rev.likedEnding === 'Sort of' ? '🤷' : '😬');
+        badges.push(`<span class="rating-badge">${endEmoji} Ending: ${escapeHtml(rev.likedEnding)}</span>`);
+      }
+
+      const dateText = (rev && rev.startDate && endDate)
+        ? `📅 ${rev.startDate} → ${endDate}`
+        : (endDate ? `🏁 Finished ${endDate}` : (rev && rev.startDate ? `📅 Started ${rev.startDate}` : ''));
+
+      const opsHtml = (rev && rev.opinions && rev.opinions.length)
+        ? `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px;">${rev.opinions.map(o => `<span style="font-size:0.72rem; font-weight:800; padding:3px 9px; border-radius:999px; background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); color:#c7d2fe;">${escapeHtml(o)}</span>`).join('')}</div>`
+        : '';
+
+      const charsHtml = (rev && rev.favCharacters)
+        ? `<div style="font-size:0.78rem; color:#e2e8f0; margin-top:8px;"><strong style="color:var(--text-muted);">🧑‍🤝‍🧑 Fav Characters:</strong> ${escapeHtml(rev.favCharacters)}</div>`
+        : '';
+
+      const notesHtml = (rev && rev.notes)
+        ? `<div style="font-size:0.8rem; color:#cbd5e1; margin-top:8px; line-height:1.45; white-space:pre-wrap; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 11px;">${escapeHtml(rev.notes)}</div>`
+        : '';
+
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">${badges.join('')}</div>
+        ${dateText ? `<div style="font-size:0.74rem; color:var(--text-muted); font-weight:700; margin-top:6px;">${dateText}</div>` : ''}
+        ${opsHtml}
+        ${charsHtml}
+        ${notesHtml}
+      `;
+    }
+
+    function populateBookReviewForm() {
+      if (!activeBook) return;
+      const isK = activeBookRevUser === 'Kianna';
+      const rev = getActiveBookReviewObj();
+
+      bookRevFormRating = (rev && rev.rating > 0) ? Number(rev.rating) : (isK ? Number(activeBook.kiannaRating) || 0 : Number(activeBook.derekRating) || 0);
+      bookRevFormRecommend = (rev && rev.recommend) ? rev.recommend : '';
+      bookRevFormEnding = (rev && rev.likedEnding) ? rev.likedEnding : '';
+      bookRevFormOpinions = new Set((rev && Array.isArray(rev.opinions)) ? rev.opinions : []);
+
+      const savedStart = (rev && rev.startDate) ? rev.startDate : '';
+      const savedEnd = (rev && rev.endDate) ? rev.endDate : (isK ? (activeBook.kiannaReadDate || '') : (activeBook.derekReadDate || ''));
+
+      document.getElementById('bookRevStartDate').value = savedStart || getDefaultBookStartDate(activeBookRevUser);
+      document.getElementById('bookRevEndDate').value = savedEnd || getLocalTodayIso();
+      document.getElementById('bookRevFavChars').value = (rev && rev.favCharacters) ? rev.favCharacters : '';
+      document.getElementById('bookRevNotes').value = (rev && rev.notes) ? rev.notes : '';
+
+      syncBookRevFormUI();
+    }
+
+    function syncBookRevFormUI() {
+      const readout = document.getElementById('bookRevStarReadout');
+      if (readout) readout.textContent = bookRevFormRating > 0 ? (bookRevFormRating + ' ★') : 'None';
+
+      document.querySelectorAll('#bookRevStarRow button').forEach(btn => {
+        const s = Number(btn.dataset.star);
+        btn.classList.toggle('active', bookRevFormRating > 0 && s <= Math.ceil(bookRevFormRating));
+      });
+
+      document.querySelectorAll('#bookRevRecommendRow button').forEach(btn => {
+        const v = btn.dataset.rec;
+        btn.classList.remove('active-yes', 'active-no');
+        if (bookRevFormRecommend === v) {
+          btn.classList.add(v === 'Yes' ? 'active-yes' : 'active-no');
+        }
+      });
+
+      document.querySelectorAll('#bookRevEndingRow button').forEach(btn => {
+        const v = btn.dataset.end;
+        btn.classList.remove('active-yes', 'active-mid', 'active-no');
+        if (bookRevFormEnding === v) {
+          btn.classList.add(v === 'Yes' ? 'active-yes' : (v === 'Sort of' ? 'active-mid' : 'active-no'));
+        }
+      });
+
+      document.querySelectorAll('#bookRevOpinionsWrap button').forEach(btn => {
+        btn.classList.toggle('active', bookRevFormOpinions.has(btn.dataset.op));
+      });
+    }
+
+    function toggleBookReviewForm(forceState) {
+      const formBox = document.getElementById('bookRevFormBox');
+      const sumBox = document.getElementById('bookRevSummaryBox');
+      if (!formBox) return;
+      const shouldOpen = (typeof forceState === 'boolean') ? forceState : (formBox.style.display === 'none');
+      if (shouldOpen) {
+        populateBookReviewForm();
+        formBox.style.display = 'block';
+        if (sumBox) sumBox.style.display = 'none';
+      } else {
+        formBox.style.display = 'none';
+        renderBookReviewSummary();
+      }
+    }
+
+    function setBookRevStar(val) {
+      bookRevFormRating = (bookRevFormRating === val) ? 0 : val;
+      syncBookRevFormUI();
+    }
+
+    function nudgeBookRevStar(delta) {
+      const base = bookRevFormRating > 0 ? bookRevFormRating : 4;
+      const next = Math.round(Math.max(0, Math.min(5, base + delta)) * 100) / 100;
+      bookRevFormRating = next;
+      syncBookRevFormUI();
+    }
+
+    function toggleBookRevRecommend(val) {
+      bookRevFormRecommend = (bookRevFormRecommend === val) ? '' : val;
+      syncBookRevFormUI();
+    }
+
+    function toggleBookRevEnding(val) {
+      bookRevFormEnding = (bookRevFormEnding === val) ? '' : val;
+      syncBookRevFormUI();
+    }
+
+    function toggleBookRevOpinion(btn) {
+      const op = btn.dataset.op;
+      if (!op) return;
+      if (bookRevFormOpinions.has(op)) bookRevFormOpinions.delete(op);
+      else bookRevFormOpinions.add(op);
+      syncBookRevFormUI();
+    }
+
+    function saveBookReviewForm() {
+      if (!activeBook) return;
+      const btn = document.getElementById('btnSaveBookRev');
+      const startDate = document.getElementById('bookRevStartDate').value.trim();
+      const endDate = document.getElementById('bookRevEndDate').value.trim();
+      const favCharacters = document.getElementById('bookRevFavChars').value.trim();
+      const notes = document.getElementById('bookRevNotes').value.trim();
+      const opinions = [...bookRevFormOpinions];
+
+      const isK = activeBookRevUser === 'Kianna';
+      const reviewObj = {
+        rating: bookRevFormRating,
+        startDate,
+        endDate,
+        recommend: bookRevFormRecommend,
+        likedEnding: bookRevFormEnding,
+        opinions,
+        favCharacters,
+        notes
+      };
+
+      // Optimistic local update
+      if (isK) {
+        activeBook.kiannaReview = reviewObj;
+        if (bookRevFormRating > 0) activeBook.kiannaRating = bookRevFormRating;
+        if (endDate) activeBook.kiannaReadDate = endDate;
+        if (bookRevFormRating > 0 || endDate) activeBook.kiannaRead = true;
+      } else {
+        activeBook.derekReview = reviewObj;
+        if (bookRevFormRating > 0) activeBook.derekRating = bookRevFormRating;
+        if (endDate) activeBook.derekReadDate = endDate;
+        if (bookRevFormRating > 0 || endDate) activeBook.derekRead = true;
+      }
+
+      try { localStorage.setItem('chaptertwo_books_cache', JSON.stringify(books)); } catch (e) {}
+      renderBookModalState();
+      toggleBookReviewForm(false);
+      renderBooks();
+      renderShelf();
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+      const payload = {
+        action: 'saveBookReview',
+        title: activeBook.title,
+        user: activeBookRevUser,
+        rating: bookRevFormRating,
+        startDate,
+        endDate,
+        recommend: bookRevFormRecommend,
+        likedEnding: bookRevFormEnding,
+        opinions,
+        favCharacters,
+        notes
+      };
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (btn) { btn.disabled = false; btn.textContent = '💾 Save Review'; }
+          if (res && res.success) {
+            showToast(`✅ Saved ${activeBookRevUser}'s book review!`);
+          } else {
+            showToast('Saved locally — sheet sync issue: ' + (res && res.error ? res.error : 'unknown'));
+          }
+        })
+        .catch(() => {
+          if (btn) { btn.disabled = false; btn.textContent = '💾 Save Review'; }
+          showToast('Saved locally — check connection to sync');
+        });
     }
 
     function renderBookModalState() {
