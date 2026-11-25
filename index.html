@@ -854,6 +854,40 @@
     .form-row-3 {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
     }
+
+    /* 3-Way Store Triage Shopping List */
+    .shop-aisle-head {
+      font-size: 0.72rem; font-weight: 900; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 12px 0 6px 2px;
+    }
+    .shop-aisle-head:first-child { margin-top: 2px; }
+    .shop-item-card {
+      background: var(--surface-elevated); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .shop-item-card.is-have { opacity: 0.42; }
+    .shop-item-card.is-bought { opacity: 0.45; }
+    .shop-triage-bar {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    }
+    .shop-pill {
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-muted); border-radius: 8px; padding: 7px 6px;
+      font-size: 0.72rem; font-weight: 800; cursor: pointer;
+      text-align: center; min-height: 36px; transition: all 0.12s;
+    }
+    .shop-pill.active-wmt {
+      background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.7); color: #7dd3fc;
+    }
+    .shop-pill.active-gobuy {
+      background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.7); color: #6ee7b7;
+    }
+    .shop-pill.active-have {
+      background: rgba(148, 163, 184, 0.22); border-color: rgba(148, 163, 184, 0.65); color: #e2e8f0;
+    }
   </style>
 </head>
 <body>
@@ -2486,27 +2520,35 @@
           <div id="mpPantryList" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <!-- TAB B: AUTO SHOPPING LIST (WALMART READY) -->
+        <!-- TAB B: SMART 3-WAY SHOPPING LIST (WMT / GO BUY / HAVE IT) -->
         <div id="mpShopPane" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
             <div class="segmented-3" style="grid-template-columns:1fr 1fr; flex:1;">
               <button type="button" class="seg-btn active" id="shopScopeFresh" onclick="setShopListScope('FRESH')">🥬 Fresh Only</button>
               <button type="button" class="seg-btn" id="shopScopeAll" onclick="setShopListScope('ALL')">✨ Fresh + Pantry</button>
             </div>
           </div>
 
+          <!-- Store View Switcher: All Triage | Walmart | Go Buy -->
+          <div class="segmented-3" style="margin-bottom:12px;">
+            <button type="button" class="seg-btn active" id="shopViewAll" onclick="setShopStoreView('ALL')">📋 Triage</button>
+            <button type="button" class="seg-btn" id="shopViewWmt" onclick="setShopStoreView('WMT')">🔵 WMT (0)</button>
+            <button type="button" class="seg-btn" id="shopViewGoBuy" onclick="setShopStoreView('GOBUY')">🟢 Go Buy (0)</button>
+          </div>
+
           <div style="display:flex; gap:8px; margin-bottom:12px;">
-            <input type="text" id="shopExtraItemInput" class="form-input" placeholder="+ Add extra (milk, snacks, fruit...)" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addExtraShopItem(); }">
+            <input type="text" id="shopExtraItemInput" class="form-input" placeholder="+ Add extra (milk, steaks, strawberries...)" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addExtraShopItem(); }">
             <button type="button" class="dining-add-btn" style="flex-shrink:0;" onclick="addExtraShopItem()">+ Add</button>
           </div>
 
-          <div id="mpShopList" style="display:flex; flex-direction:column; gap:8px;"></div>
+          <div id="mpShopList"></div>
         </div>
       </div>
 
-      <div class="fp-footer" id="mpFooterShop" style="display:none;">
-        <button type="button" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="copyRemainingShopList()">📋 Copy Remaining for Walmart</button>
-        <button type="button" class="btn-act btn-close" style="flex:none; padding:12px 14px;" onclick="clearCheckedShopItems()">Clear ✓</button>
+      <div class="fp-footer" id="mpFooterShop" style="display:none; gap:8px;">
+        <button type="button" id="btnShopPrimaryAction" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="runShopPrimaryAction()">✨ Copy for Walmart Sparky</button>
+        <button type="button" id="btnShopSecondaryAction" class="btn-act btn-goodreads" style="flex:none; padding:12px 14px;" onclick="runShopSecondaryAction()">📤 Share</button>
+        <button type="button" class="btn-act btn-close" style="flex:none; padding:12px 12px;" title="Reset Have It &amp; Checked items" onclick="clearCheckedShopItems()">Reset</button>
       </div>
     </div>
   </div>
@@ -8499,35 +8541,206 @@
       return items;
     }
 
+    let shopStoreView = 'ALL'; // 'ALL' | 'WMT' | 'GOBUY'
+
+    function getShopStorePrefs() {
+      try { return JSON.parse(localStorage.getItem('chaptertwo_shop_store_prefs') || '{}'); }
+      catch (e) { return {}; }
+    }
+    function saveShopStorePrefs(obj) {
+      try { localStorage.setItem('chaptertwo_shop_store_prefs', JSON.stringify(obj)); } catch (e) {}
+    }
+    function getShopHaveSet() {
+      try { return new Set(JSON.parse(localStorage.getItem('chaptertwo_shop_have') || '[]')); }
+      catch (e) { return new Set(); }
+    }
+    function saveShopHaveSet(s) {
+      try { localStorage.setItem('chaptertwo_shop_have', JSON.stringify([...s])); } catch (e) {}
+    }
+
+    function normalizeIngredientPrefKey(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/^((?:\d+(?:[./-]\d+)?(?:\s+\d+\/\d+)?|[½¼¾⅓⅔⅛]+)(?:\s*\([^)]+\))?(?:\s*(?:lbs?|oz|ounces?|cups?|tbsp|tsp|tablespoons?|teaspoons?|cans?|jars?|pkgs?|packages?|boxes?|bags?|cloves?|slices?|pieces?|sticks?))?)\s+/i, '')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function classifyGroceryAisle(text) {
+      const t = String(text || '').toLowerCase();
+      if (/\b(frozen|ice cream|tater tots|frozen peas|frozen corn|frozen broccoli|frozen veggies|frozen shrimp|frozen fries|potstickers|rhodes)\b/.test(t)) {
+        return { id: 'FROZEN', label: '❄️ Frozen', order: 5 };
+      }
+      if (/\b(steak|ribeye|sirloin|flank|skirt|cube steak|chuck roast|pork roast|pork shoulder|ground beef|beef|chicken|bacon|sausage|ham|turkey|brats|bratwurst|hot dog|meatball|salmon|shrimp|tuna|deli)\b/.test(t)) {
+        return { id: 'MEAT', label: '🥩 Meat & Seafood', order: 2 };
+      }
+      if (/\b(lettuce|romaine|iceberg|spinach|spring mix|greens|strawberr|berr|avocado|tomato|onion|shallot|bell pepper|jalapeno|broccoli|carrot|celery|mushroom|lemon|lime|cilantro|garlic|potato|russet|chives|cucumber|apple|orange|grape|snap peas|cabbage|artichoke|corn on the cob|green onion|pineapple|produce|fruit|veggie)\b/.test(t)) {
+        return { id: 'PRODUCE', label: '🥬 Produce', order: 1 };
+      }
+      if (/\b(milk|cream|half-and-half|butter|cheese|cheddar|mozzarella|parmesan|ricotta|monterey|colby|provolone|gruy|feta|sour cream|cream cheese|egg|eggs|yogurt)\b/.test(t)) {
+        return { id: 'DAIRY', label: '🧀 Dairy & Eggs', order: 3 };
+      }
+      if (/\b(bread|bun|buns|hoagie|roll|rolls|tortilla|naan|croissant|bagel|sourdough|pie crust|puff pastry|crescent|pretzel dough|frybread)\b/.test(t)) {
+        return { id: 'BAKERY', label: '🍞 Bakery & Bread', order: 4 };
+      }
+      return { id: 'PANTRY', label: '🥫 Pantry & Staples', order: 6 };
+    }
+
+    function getDefaultStoreForItem(text) {
+      const t = String(text || '').toLowerCase();
+      const aisle = classifyGroceryAisle(t);
+      // Fresh Produce & Steaks / Fresh Cuts auto-default to Go Buy (Kroger / WinCo)
+      if (aisle.id === 'PRODUCE') return 'GOBUY';
+      if (/\b(steak|ribeye|sirloin|flank|skirt|cube steak|chuck roast|pork roast|pork shoulder|salmon)\b/.test(t)) return 'GOBUY';
+      return 'WMT';
+    }
+
+    function getEffectiveItemBucket(itemText) {
+      const key = itemText.toLowerCase();
+      const haveSet = getShopHaveSet();
+      if (haveSet.has(key)) return 'HAVE';
+      const prefs = getShopStorePrefs();
+      const prefKey = normalizeIngredientPrefKey(itemText) || key;
+      if (prefs[prefKey]) return prefs[prefKey];
+      return getDefaultStoreForItem(itemText);
+    }
+
+    function setShopItemBucket(itemText, bucket) {
+      const key = itemText.toLowerCase();
+      const haveSet = getShopHaveSet();
+      if (bucket === 'HAVE') {
+        haveSet.add(key);
+        saveShopHaveSet(haveSet);
+      } else {
+        haveSet.delete(key);
+        saveShopHaveSet(haveSet);
+        const prefs = getShopStorePrefs();
+        const prefKey = normalizeIngredientPrefKey(itemText) || key;
+        prefs[prefKey] = bucket; // 'WMT' or 'GOBUY' — remembered for next week!
+        saveShopStorePrefs(prefs);
+      }
+      renderShoppingList();
+    }
+
+    function setShopStoreView(view) {
+      shopStoreView = view;
+      document.getElementById('shopViewAll').classList.toggle('active', shopStoreView === 'ALL');
+      document.getElementById('shopViewWmt').classList.toggle('active', shopStoreView === 'WMT');
+      document.getElementById('shopViewGoBuy').classList.toggle('active', shopStoreView === 'GOBUY');
+      renderShoppingList();
+    }
+
     function renderShoppingList() {
       const wrap = document.getElementById('mpShopList');
       if (!wrap) return;
-      const items = getParsedShoppingItems();
-      const checked = getCheckedShopSet();
+      const rawItems = getParsedShoppingItems();
+      const boughtSet = getCheckedShopSet();
 
-      if (!items.length) {
-        wrap.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted); padding:16px; text-align:center;">No grocery items yet — add meals to <strong>This Week</strong> or type an extra item above!</div>';
+      let wmtCount = 0;
+      let goBuyCount = 0;
+      const enriched = rawItems.map(it => {
+        const bucket = getEffectiveItemBucket(it.text);
+        if (bucket === 'WMT' && !boughtSet.has(it.text.toLowerCase())) wmtCount++;
+        if (bucket === 'GOBUY' && !boughtSet.has(it.text.toLowerCase())) goBuyCount++;
+        return { ...it, bucket, aisle: classifyGroceryAisle(it.text) };
+      });
+
+      const wBtn = document.getElementById('shopViewWmt');
+      const gBtn = document.getElementById('shopViewGoBuy');
+      if (wBtn) wBtn.textContent = `🔵 WMT (${wmtCount})`;
+      if (gBtn) gBtn.textContent = `🟢 Go Buy (${goBuyCount})`;
+
+      // Update footer primary/secondary buttons based on active store view
+      const primBtn = document.getElementById('btnShopPrimaryAction');
+      const secBtn = document.getElementById('btnShopSecondaryAction');
+      if (primBtn && secBtn) {
+        if (shopStoreView === 'GOBUY') {
+          primBtn.textContent = `📤 Share Go Buy (${goBuyCount})`;
+          primBtn.style.background = 'var(--emerald)';
+          primBtn.style.color = '#000';
+          secBtn.textContent = '📋 Copy';
+        } else {
+          primBtn.textContent = `✨ Copy ${wmtCount} for Walmart Sparky`;
+          primBtn.style.background = 'var(--accent)';
+          primBtn.style.color = '#fff';
+          secBtn.textContent = '🛒 Walmart ↗';
+        }
+      }
+
+      const visible = shopStoreView === 'ALL'
+        ? enriched
+        : enriched.filter(it => it.bucket === shopStoreView);
+
+      if (!visible.length) {
+        const emptyMsg = shopStoreView === 'WMT'
+          ? 'No Walmart items left! Switch to <strong>📋 Triage</strong> to assign items or add an extra above.'
+          : (shopStoreView === 'GOBUY'
+            ? 'No <strong>Go Buy</strong> items right now! Fresh produce &amp; steaks auto-route here, or tap <strong>🟢 Go Buy</strong> on any item in Triage.'
+            : 'No grocery items yet — add meals to <strong>This Week</strong> or type an extra item above!');
+        wrap.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:18px 10px; text-align:center;">${emptyMsg}</div>`;
         return;
       }
 
+      // Group by Grocery Aisle
+      const groups = new Map();
+      visible.forEach(it => {
+        if (!groups.has(it.aisle.id)) groups.set(it.aisle.id, { aisle: it.aisle, items: [] });
+        groups.get(it.aisle.id).items.push(it);
+      });
+      const sortedGroups = [...groups.values()].sort((a, b) => a.aisle.order - b.aisle.order);
+
       wrap.innerHTML = '';
-      items.forEach(it => {
-        const key = it.text.toLowerCase();
-        const isDone = checked.has(key);
-        const row = document.createElement('div');
-        row.style.cssText = `display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:10px 12px; opacity:${isDone ? '0.48' : '1'};`;
-        const wmUrl = `https://www.walmart.com/search?q=${encodeURIComponent(it.text)}`;
-        row.innerHTML = `
-          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer;" onclick="toggleShopItemChecked('${escapeHtml(key).replace(/'/g, "\\'")}')">
-            <span style="font-size:1.1rem;">${isDone ? '☑️' : '⬜'}</span>
-            <div style="min-width:0;">
-              <div style="font-size:0.86rem; font-weight:800; color:#fff; ${isDone ? 'text-decoration:line-through;' : ''}">${escapeHtml(it.text)}</div>
-              <div style="font-size:0.68rem; color:var(--text-muted);">${escapeHtml(it.from)}</div>
-            </div>
-          </div>
-          <a href="${wmUrl}" target="_blank" onclick="event.stopPropagation();" class="audio-pill" style="text-decoration:none; padding:6px 9px; font-weight:800; white-space:nowrap;">🛒 Walmart ↗</a>
-        `;
-        wrap.appendChild(row);
+      sortedGroups.forEach(g => {
+        const head = document.createElement('div');
+        head.className = 'shop-aisle-head';
+        head.textContent = `${g.aisle.label} (${g.items.length})`;
+        wrap.appendChild(head);
+
+        g.items.forEach(it => {
+          const key = it.text.toLowerCase();
+          const safeTextJs = escapeHtml(it.text).replace(/'/g, "\\'");
+          const safeKeyJs = escapeHtml(key).replace(/'/g, "\\'");
+          const isBought = boughtSet.has(key);
+          const isHave = it.bucket === 'HAVE';
+
+          const card = document.createElement('div');
+          card.className = 'shop-item-card' + (isHave ? ' is-have' : (isBought ? ' is-bought' : ''));
+
+          if (shopStoreView === 'ALL') {
+            // Triage View: Item + 3-Way Store Pills (WMT | Go Buy | Have It)
+            card.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div style="min-width:0; flex:1;">
+                  <div style="font-size:0.9rem; font-weight:800; color:#fff; ${isHave ? 'text-decoration:line-through;' : ''}">${formatIngredientWithAmountHtml(it.text)}</div>
+                  <div style="font-size:0.68rem; color:var(--text-muted); margin-top:2px;">${escapeHtml(it.from)}</div>
+                </div>
+              </div>
+              <div class="shop-triage-bar">
+                <button type="button" class="shop-pill ${it.bucket === 'WMT' ? 'active-wmt' : ''}" onclick="setShopItemBucket('${safeTextJs}', 'WMT')">🔵 WMT</button>
+                <button type="button" class="shop-pill ${it.bucket === 'GOBUY' ? 'active-gobuy' : ''}" onclick="setShopItemBucket('${safeTextJs}', 'GOBUY')">🟢 Go Buy</button>
+                <button type="button" class="shop-pill ${it.bucket === 'HAVE' ? 'active-have' : ''}" onclick="setShopItemBucket('${safeTextJs}', 'HAVE')">✅ Have It</button>
+              </div>
+            `;
+          } else {
+            // Focused Store View (WMT or Go Buy): Tap anywhere to check off as in-cart / bought + quick swap pill
+            const swapTarget = shopStoreView === 'WMT' ? 'GOBUY' : 'WMT';
+            const swapLabel = shopStoreView === 'WMT' ? '→ Go Buy' : '→ WMT';
+            card.innerHTML = `
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer;" onclick="toggleShopItemChecked('${safeKeyJs}')">
+                  <span style="font-size:1.15rem;">${isBought ? '☑️' : '⬜'}</span>
+                  <div style="min-width:0;">
+                    <div style="font-size:0.9rem; font-weight:800; color:#fff; ${isBought ? 'text-decoration:line-through;' : ''}">${formatIngredientWithAmountHtml(it.text)}</div>
+                    <div style="font-size:0.68rem; color:var(--text-muted);">${escapeHtml(it.from)}</div>
+                  </div>
+                </div>
+                <button type="button" class="shop-pill" style="padding:5px 8px; min-height:32px; font-size:0.68rem; flex-shrink:0;" onclick="setShopItemBucket('${safeTextJs}', '${swapTarget}')">${swapLabel}</button>
+              </div>
+            `;
+          }
+          wrap.appendChild(card);
+        });
       });
     }
 
@@ -8552,24 +8765,54 @@
 
     function clearCheckedShopItems() {
       const checked = getCheckedShopSet();
-      const extras = getExtraShopItems().filter(x => !checked.has(x.toLowerCase()));
+      const haveSet = getShopHaveSet();
+      const extras = getExtraShopItems().filter(x => !checked.has(x.toLowerCase()) && !haveSet.has(x.toLowerCase()));
       saveExtraShopItems(extras);
       saveCheckedShopSet(new Set());
+      saveShopHaveSet(new Set());
       renderShoppingList();
-      showToast('Cleared checked items');
+      showToast('Reset checked & Have It items');
     }
 
-    function copyRemainingShopList() {
-      const items = getParsedShoppingItems();
-      const checked = getCheckedShopSet();
-      const remaining = items.filter(it => !checked.has(it.text.toLowerCase())).map(it => it.text);
-      if (!remaining.length) { showToast('Nothing left to buy!'); return; }
-      const text = remaining.join('\n');
+    function getItemsForBucket(bucket) {
+      const boughtSet = getCheckedShopSet();
+      return getParsedShoppingItems()
+        .filter(it => getEffectiveItemBucket(it.text) === bucket && !boughtSet.has(it.text.toLowerCase()))
+        .map(it => it.text);
+    }
+
+    function copyWalmartSparkyPrompt() {
+      const list = getItemsForBucket('WMT');
+      if (!list.length) { showToast('No Walmart items left to copy!'); return; }
+      const promptText = `Add these groceries to my cart (use my usual brands if I've bought them before):\n` + list.map(x => `- ${x}`).join('\n');
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => showToast(`📋 Copied ${remaining.length} items for Walmart!`));
+        navigator.clipboard.writeText(promptText).then(() => showToast(`✨ Copied ${list.length} items! Open Walmart → Ask Sparky → Paste`));
       } else {
-        prompt('Copy your Walmart grocery list:', text);
+        prompt('Copy for Walmart Ask Sparky:', promptText);
       }
+    }
+
+    function shareOrCopyGoBuyList(forceCopy) {
+      const list = getItemsForBucket('GOBUY');
+      if (!list.length) { showToast('No Go Buy items left!'); return; }
+      const text = `🛒 Go Buy (Kroger / WinCo):\n` + list.map(x => `☐ ${x}`).join('\n');
+      if (!forceCopy && navigator.share) {
+        navigator.share({ title: 'Go Buy Grocery List', text }).catch(() => {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(`📋 Copied ${list.length} Go Buy items!`));
+      } else {
+        prompt('Copy your Go Buy list:', text);
+      }
+    }
+
+    function runShopPrimaryAction() {
+      if (shopStoreView === 'GOBUY') shareOrCopyGoBuyList(false);
+      else copyWalmartSparkyPrompt();
+    }
+
+    function runShopSecondaryAction() {
+      if (shopStoreView === 'GOBUY') shareOrCopyGoBuyList(true);
+      else window.open('https://www.walmart.com', '_blank');
     }
 
     let lastBackSwipeAt = 0;
