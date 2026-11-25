@@ -1379,10 +1379,10 @@
   <main id="tabEatIn" class="tab-content">
     <div class="sticky-tab-top">
       <div class="quick-pill-row" id="eatInQuickRow">
-        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-equick="FAVS" onclick="setEatInQuickPreset('FAVS')">🏆 Family Favs</button>
+        <button type="button" class="header-filter-btn has-active" style="white-space:nowrap;" data-equick="CATEGORIES" onclick="setEatInQuickPreset('CATEGORIES')">📂 Categories</button>
+        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="FAVS" onclick="setEatInQuickPreset('FAVS')">🏆 Family Favs</button>
         <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="EASY" onclick="setEatInQuickPreset('EASY')">⚡ Easy</button>
         <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="PANTRY" onclick="setEatInQuickPreset('PANTRY')">🥫 Pantry</button>
-        <button type="button" class="header-filter-btn" style="white-space:nowrap;" data-equick="NOT_LATELY" onclick="setEatInQuickPreset('NOT_LATELY')">🕰️ Not Lately</button>
       </div>
 
       <div class="mini-kpi-ribbon">
@@ -1406,8 +1406,9 @@
 
     <div class="active-chips-row" id="eatInActiveChips"></div>
 
-    <div style="display:flex; gap:8px; margin:10px 14px 0 14px;">
-      <button type="button" class="btn-spin" style="flex:1; min-height:44px;" onclick="pickRandomEatInMeal()">🎲 Pick Tonight's Meal</button>
+    <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:8px; margin:10px 14px 0 14px;">
+      <button type="button" class="btn-spin" id="btnOpenMealPlan" style="background:rgba(16,185,129,0.18); color:#34d399; border-color:rgba(16,185,129,0.45); min-height:46px;" onclick="openMealPlanModal()">📅 This Week (<span id="mealPlanBtnCount">0</span>)</button>
+      <button type="button" class="btn-spin" style="min-height:46px;" onclick="pickRandomEatInMeal()">🎲 Pick</button>
     </div>
 
     <div class="grid-container" id="eatInGrid">
@@ -2305,8 +2306,64 @@
       </div>
 
       <div class="fp-footer">
-        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInVersion()">✏️ Edit Recipe / Photo</button>
+        <button type="button" id="btnAddVerToPlan" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="addActiveVersionToMealPlan()">📅 + This Week</button>
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInVersion()">✏️ Edit</button>
         <button type="button" class="btn-act btn-flag" style="flex:none; padding:12px 16px;" onclick="deleteActiveEatInVersion()">🗑️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- This Week's Meal Plan & Walmart Shopping List Modal (Full Page) -->
+  <div class="modal-overlay fullscreen-modal" id="mealPlanModal" onclick="if(event.target===this) closeMealPlanModal()">
+    <div class="modal-sheet">
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeMealPlanModal()">← Back</button>
+        <div class="fp-top-title">📅 This Week's Meals</div>
+        <div style="width:64px;"></div>
+      </div>
+
+      <div class="fp-body">
+        <div class="book-rev-tabs" style="margin-bottom:14px;">
+          <button type="button" class="book-rev-tab active-d" id="mpTabQueue" onclick="switchMealPlanTab('QUEUE')">📅 This Week</button>
+          <button type="button" class="book-rev-tab" id="mpTabShop" onclick="switchMealPlanTab('SHOP')">🛒 Shopping List</button>
+        </div>
+
+        <!-- TAB A: THIS WEEK'S QUEUE (Fresh Up Top, Pantry Reserve Below) -->
+        <div id="mpQueuePane">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-size:0.84rem; font-weight:900; color:#fbbf24;">🥬 Eat First (Fresh)</div>
+            <span style="font-size:0.72rem; color:var(--text-muted);" id="mpFreshCount">0 meals</span>
+          </div>
+          <div id="mpFreshList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-size:0.84rem; font-weight:900; color:#34d399;">🥫 Pantry &amp; Freezer Reserve</div>
+            <span style="font-size:0.72rem; color:var(--text-muted);" id="mpPantryCount">0 meals</span>
+          </div>
+          <div id="mpPantryList" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
+        <!-- TAB B: AUTO SHOPPING LIST (WALMART READY) -->
+        <div id="mpShopPane" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+            <div class="segmented-3" style="grid-template-columns:1fr 1fr; flex:1;">
+              <button type="button" class="seg-btn active" id="shopScopeFresh" onclick="setShopListScope('FRESH')">🥬 Fresh Only</button>
+              <button type="button" class="seg-btn" id="shopScopeAll" onclick="setShopListScope('ALL')">✨ Fresh + Pantry</button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <input type="text" id="shopExtraItemInput" class="form-input" placeholder="+ Add extra (milk, snacks, fruit...)" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addExtraShopItem(); }">
+            <button type="button" class="dining-add-btn" style="flex-shrink:0;" onclick="addExtraShopItem()">+ Add</button>
+          </div>
+
+          <div id="mpShopList" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </div>
+
+      <div class="fp-footer" id="mpFooterShop" style="display:none;">
+        <button type="button" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="copyRemainingShopList()">📋 Copy Remaining for Walmart</button>
+        <button type="button" class="btn-act btn-close" style="flex:none; padding:12px 14px;" onclick="clearCheckedShopItems()">Clear ✓</button>
       </div>
     </div>
   </div>
@@ -6955,8 +7012,10 @@
     // EAT IN (HOME MEALS, VERSIONS & FLEXIBLE FAMILY/GUEST RATINGS)
     // =========================================================================
     let eatInMeals = [];
+    let mealPlanItems = [];
     let eatInLoaded = false;
     let activeEatInMeal = null;
+    let eatInBrowseMode = 'CATEGORIES'; // 'CATEGORIES' | 'LIST'
     let eatInStabilityFilter = 'ALL'; // 'ALL' | 'Pantry' | 'Fresh'
     let eatInLoeFilter = 'ALL';       // 'ALL' | 'Easy' | 'Medium' | 'Project'
 
@@ -6972,7 +7031,10 @@
     }
 
     function saveEatInCache() {
-      try { localStorage.setItem('chaptertwo_eatin_cache', JSON.stringify(eatInMeals)); } catch (e) {}
+      try {
+        localStorage.setItem('chaptertwo_eatin_cache', JSON.stringify(eatInMeals));
+        localStorage.setItem('chaptertwo_mealplan_cache', JSON.stringify(mealPlanItems));
+      } catch (e) {}
     }
 
     function postEatInApi(payload, callback) {
@@ -6988,20 +7050,21 @@
 
     function loadEatInData(forceRefresh) {
       if (!forceRefresh && !eatInLoaded) {
-        const cached = localStorage.getItem('chaptertwo_eatin_cache');
-        if (cached) {
-          try {
-            eatInMeals = JSON.parse(cached);
-            populateEatInPeopleFilter();
-            renderEatIn();
-          } catch (e) {}
-        }
+        try {
+          const cached = localStorage.getItem('chaptertwo_eatin_cache');
+          if (cached) eatInMeals = JSON.parse(cached);
+          const mpCached = localStorage.getItem('chaptertwo_mealplan_cache');
+          if (mpCached) mealPlanItems = JSON.parse(mpCached);
+          populateEatInPeopleFilter();
+          renderEatIn();
+        } catch (e) {}
       }
       fetch(`${API_URL}?action=getEatInData`)
         .then(r => r.json())
         .then(res => {
           if (res && res.success && Array.isArray(res.meals)) {
             eatInMeals = res.meals;
+            mealPlanItems = Array.isArray(res.mealPlan) ? res.mealPlan : [];
             eatInLoaded = true;
             saveEatInCache();
             populateEatInPeopleFilter();
@@ -7083,31 +7146,49 @@
 
     function setEatInQuickPreset(preset) {
       const sortEl = document.getElementById('eatInSortPicker');
+      const catEl = document.getElementById('eatInCategoryPicker');
       eatInStabilityFilter = 'ALL';
       eatInLoeFilter = 'ALL';
-      if (preset === 'FAVS') {
+      if (catEl) catEl.value = 'ALL';
+
+      if (preset === 'CATEGORIES') {
+        eatInBrowseMode = 'CATEGORIES';
         if (sortEl) sortEl.value = 'FAVS';
-      } else if (preset === 'EASY') {
-        eatInLoeFilter = 'Easy';
-        if (sortEl) sortEl.value = 'FAVS';
-      } else if (preset === 'PANTRY') {
-        eatInStabilityFilter = 'Pantry';
-        if (sortEl) sortEl.value = 'FAVS';
-      } else if (preset === 'NOT_LATELY') {
-        if (sortEl) sortEl.value = 'NOT_LATELY';
+      } else {
+        eatInBrowseMode = 'LIST';
+        if (preset === 'FAVS') {
+          if (sortEl) sortEl.value = 'FAVS';
+        } else if (preset === 'EASY') {
+          eatInLoeFilter = 'Easy';
+          if (sortEl) sortEl.value = 'FAVS';
+        } else if (preset === 'PANTRY') {
+          eatInStabilityFilter = 'Pantry';
+          if (sortEl) sortEl.value = 'FAVS';
+        }
       }
       syncEatInFilterButtonsUI();
       renderEatIn();
     }
 
+    function selectEatInCategoryCard(cat) {
+      eatInBrowseMode = 'LIST';
+      const catEl = document.getElementById('eatInCategoryPicker');
+      if (catEl) catEl.value = cat;
+      renderEatIn();
+    }
+
     function syncEatInQuickUI() {
-      const sortVal = (document.getElementById('eatInSortPicker') || {}).value || 'FAVS';
+      const catVal = (document.getElementById('eatInCategoryPicker') || {}).value || 'ALL';
+      const perVal = (document.getElementById('eatInPersonPicker') || {}).value || 'ALL';
       let active = '';
-      if (eatInStabilityFilter === 'Pantry' && eatInLoeFilter === 'ALL') active = 'PANTRY';
-      else if (eatInLoeFilter === 'Easy' && eatInStabilityFilter === 'ALL') active = 'EASY';
-      else if (eatInStabilityFilter === 'ALL' && eatInLoeFilter === 'ALL') {
-        if (sortVal === 'NOT_LATELY') active = 'NOT_LATELY';
-        else if (sortVal === 'FAVS') active = 'FAVS';
+      if (eatInBrowseMode === 'CATEGORIES' && !searchQuery && catVal === 'ALL' && perVal === 'ALL' && eatInStabilityFilter === 'ALL' && eatInLoeFilter === 'ALL') {
+        active = 'CATEGORIES';
+      } else if (eatInStabilityFilter === 'Pantry' && eatInLoeFilter === 'ALL') {
+        active = 'PANTRY';
+      } else if (eatInLoeFilter === 'Easy' && eatInStabilityFilter === 'ALL') {
+        active = 'EASY';
+      } else if (eatInBrowseMode === 'LIST' && eatInStabilityFilter === 'ALL' && eatInLoeFilter === 'ALL' && catVal === 'ALL') {
+        active = 'FAVS';
       }
       document.querySelectorAll('#eatInQuickRow button').forEach(btn => {
         btn.classList.toggle('has-active', btn.dataset.equick === active);
@@ -7186,6 +7267,11 @@
       if (document.getElementById('eRbVersions')) document.getElementById('eRbVersions').textContent = `${totalVersions} versions`;
       if (document.getElementById('eRbPantry')) document.getElementById('eRbPantry').textContent = pantryCount;
       if (document.getElementById('eRbEasy')) document.getElementById('eRbEasy').textContent = easyCount;
+      if (document.getElementById('mealPlanBtnCount')) document.getElementById('mealPlanBtnCount').textContent = (mealPlanItems || []).length;
+
+      const catF = (document.getElementById('eatInCategoryPicker') || {}).value || 'ALL';
+      const personF = (document.getElementById('eatInPersonPicker') || {}).value || 'ALL';
+      const showCategoryLanding = (eatInBrowseMode === 'CATEGORIES' && !searchQuery && catF === 'ALL' && personF === 'ALL' && eatInStabilityFilter === 'ALL' && eatInLoeFilter === 'ALL');
 
       const list = getFilteredEatInMeals();
       renderActiveFilterChips('eatin');
@@ -7195,6 +7281,36 @@
       }
 
       grid.innerHTML = '';
+      if (showCategoryLanding && all.length > 0) {
+        const catCounts = new Map();
+        const catOrder = ['Pasta', 'Mexican', 'Burgers & Sandwiches', 'Chicken', 'Beef / Pork', 'Pizza & Flatbread', 'Soup & Chili', 'Salads & Bowls', 'Breakfast', 'Slow Cooker', 'Sides', 'Treats', 'Other'];
+        all.forEach(m => {
+          const c = m.category || 'Other';
+          catCounts.set(c, (catCounts.get(c) || 0) + 1);
+        });
+        const sortedCats = [...catCounts.keys()].sort((a, b) => {
+          const ia = catOrder.indexOf(a), ib = catOrder.indexOf(b);
+          return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+        });
+
+        const catGrid = document.createElement('div');
+        catGrid.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:10px;';
+        sortedCats.forEach(cat => {
+          const cnt = catCounts.get(cat) || 0;
+          const tile = document.createElement('div');
+          tile.style.cssText = 'background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; transition:transform 0.1s;';
+          tile.onclick = () => selectEatInCategoryCard(cat);
+          tile.innerHTML = `
+            <div style="font-size:2rem; line-height:1;">${getEatInIcon(cat)}</div>
+            <div style="font-size:0.88rem; font-weight:900; color:#fff; line-height:1.2;">${escapeHtml(cat)}</div>
+            <div style="font-size:0.74rem; font-weight:700; color:var(--text-muted);">${cnt} meal${cnt === 1 ? '' : 's'}</div>
+          `;
+          catGrid.appendChild(tile);
+        });
+        grid.appendChild(catGrid);
+        return;
+      }
+
       if (!list.length) {
         grid.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
           <div style="font-size:2rem; margin-bottom:8px;">🍳</div>
@@ -7742,6 +7858,292 @@
       postEatInApi({ action: 'deleteEatInMeal', id }, () => showToast('🗑️ Meal deleted'));
     }
 
+    // =========================================================================
+    // WEEKLY MEAL PLAN (FRESH UP TOP + PANTRY RESERVE) & WALMART SHOPPING LIST
+    // =========================================================================
+    let activeMealPlanTab = 'QUEUE'; // 'QUEUE' | 'SHOP'
+    let shopListScope = 'FRESH';     // 'FRESH' | 'ALL'
+
+    function getCheckedShopSet() {
+      try { return new Set(JSON.parse(localStorage.getItem('chaptertwo_shop_checked') || '[]')); }
+      catch (e) { return new Set(); }
+    }
+    function saveCheckedShopSet(s) {
+      try { localStorage.setItem('chaptertwo_shop_checked', JSON.stringify([...s])); } catch (e) {}
+    }
+    function getExtraShopItems() {
+      try { return JSON.parse(localStorage.getItem('chaptertwo_shop_extras') || '[]'); }
+      catch (e) { return []; }
+    }
+    function saveExtraShopItems(arr) {
+      try { localStorage.setItem('chaptertwo_shop_extras', JSON.stringify(arr)); } catch (e) {}
+    }
+
+    function addActiveVersionToMealPlan() {
+      if (!activeEatInMeal || !activeEatInVersion) return;
+      const m = activeEatInMeal;
+      const v = activeEatInVersion;
+      const btn = document.getElementById('btnAddVerToPlan');
+      if (btn) { btn.disabled = true; btn.textContent = 'Adding...'; }
+
+      const payload = {
+        action: 'addToMealPlan',
+        mealId: m.id,
+        versionId: v.id,
+        title: v.name,
+        mealName: m.name,
+        category: m.category,
+        loe: v.loe || m.loe || 'Easy',
+        stability: v.stability || m.stability || 'Pantry',
+        recipe: v.recipe || m.recipe || ''
+      };
+
+      postEatInApi(payload, (res) => {
+        if (btn) { btn.disabled = false; btn.textContent = '📅 + This Week'; }
+        if (res && res.success && res.item) {
+          if (!mealPlanItems.some(x => x.id === res.item.id)) {
+            mealPlanItems.push(res.item);
+            saveEatInCache();
+          }
+          renderEatIn();
+          showToast(res.alreadyExists
+            ? `Already in This Week's list!`
+            : `📅 Added "${v.name}" to ${res.item.stability === 'Fresh' ? 'Fresh (Eat First)' : 'Pantry Reserve'}!`);
+        } else {
+          showToast('❌ Could not add to Meal Plan');
+        }
+      });
+    }
+
+    function openMealPlanModal(tab) {
+      switchMealPlanTab(tab || 'QUEUE');
+      document.getElementById('mealPlanModal').classList.add('open');
+    }
+
+    function closeMealPlanModal() {
+      document.getElementById('mealPlanModal').classList.remove('open');
+    }
+
+    function switchMealPlanTab(tab) {
+      activeMealPlanTab = tab === 'SHOP' ? 'SHOP' : 'QUEUE';
+      const tQ = document.getElementById('mpTabQueue');
+      const tS = document.getElementById('mpTabShop');
+      if (tQ) tQ.className = 'book-rev-tab' + (activeMealPlanTab === 'QUEUE' ? ' active-d' : '');
+      if (tS) tS.className = 'book-rev-tab' + (activeMealPlanTab === 'SHOP' ? ' active-k' : '');
+      document.getElementById('mpQueuePane').style.display = activeMealPlanTab === 'QUEUE' ? 'block' : 'none';
+      document.getElementById('mpShopPane').style.display = activeMealPlanTab === 'SHOP' ? 'block' : 'none';
+      document.getElementById('mpFooterShop').style.display = activeMealPlanTab === 'SHOP' ? 'flex' : 'none';
+      if (activeMealPlanTab === 'QUEUE') renderMealPlanQueue();
+      else renderShoppingList();
+    }
+
+    function renderMealPlanQueue() {
+      const freshWrap = document.getElementById('mpFreshList');
+      const pantryWrap = document.getElementById('mpPantryList');
+      if (!freshWrap || !pantryWrap) return;
+
+      const loeOrder = { 'Easy': 1, 'Medium': 2, 'Project': 3 };
+      const freshItems = (mealPlanItems || []).filter(x => x.stability === 'Fresh').sort((a, b) => (loeOrder[a.loe] || 2) - (loeOrder[b.loe] || 2));
+      const pantryItems = (mealPlanItems || []).filter(x => x.stability !== 'Fresh').sort((a, b) => (loeOrder[a.loe] || 2) - (loeOrder[b.loe] || 2));
+
+      document.getElementById('mpFreshCount').textContent = `${freshItems.length} meal${freshItems.length === 1 ? '' : 's'}`;
+      document.getElementById('mpPantryCount').textContent = `${pantryItems.length} in reserve`;
+
+      function buildPlanCard(item) {
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;';
+        const loeColor = item.loe === 'Easy' ? 'background:rgba(16,185,129,0.2); color:#34d399; border:1px solid rgba(16,185,129,0.45);'
+          : (item.loe === 'Project' ? 'background:rgba(244,63,94,0.2); color:#fb7185; border:1px solid rgba(244,63,94,0.4);' : 'background:rgba(251,191,36,0.2); color:#fbbf24; border:1px solid rgba(251,191,36,0.4);');
+        const loeText = item.loe === 'Easy' ? '⚡ EASY' : (item.loe === 'Project' ? '🔥 PROJECT' : '🍳 MEDIUM');
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; cursor:pointer;" onclick="openMealFromPlan('${item.mealId}', '${item.versionId}')">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:0.92rem; font-weight:900; color:#fff;">${getEatInIcon(item.category)} ${escapeHtml(item.title)}</div>
+              <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">${escapeHtml(item.mealName)} • ${escapeHtml(item.category)}</div>
+            </div>
+            <span style="font-size:0.7rem; font-weight:900; padding:4px 8px; border-radius:6px; white-space:nowrap; ${loeColor}">${loeText}</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="visit-cta-btn" style="flex:1; padding:8px 10px; min-height:42px; font-size:0.8rem;" onclick="completeMealPlanItem('${item.id}')">✅ Made It &amp; Rate</button>
+            <button type="button" class="btn-act btn-close" style="flex:none; padding:8px 12px; min-height:42px;" title="Remove from list" onclick="removeMealPlanItem('${item.id}')">✕</button>
+          </div>
+        `;
+        return card;
+      }
+
+      freshWrap.innerHTML = '';
+      if (!freshItems.length) {
+        freshWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:10px; background:var(--surface); border:1px dashed var(--border); border-radius:10px;">No fresh meals queued — open any Fresh recipe and tap <strong>📅 + This Week</strong>!</div>';
+      } else {
+        freshItems.forEach(item => freshWrap.appendChild(buildPlanCard(item)));
+      }
+
+      pantryWrap.innerHTML = '';
+      if (!pantryItems.length) {
+        pantryWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:10px; background:var(--surface); border:1px dashed var(--border); border-radius:10px;">Add your go-to pantry/freezer staples (like Spaghetti or Manwich) so they stay ready in reserve!</div>';
+      } else {
+        pantryItems.forEach(item => pantryWrap.appendChild(buildPlanCard(item)));
+      }
+    }
+
+    function openMealFromPlan(mealId, versionId) {
+      const m = (eatInMeals || []).find(x => x.id === mealId);
+      if (!m) return;
+      closeMealPlanModal();
+      openEatInModal(m);
+      if (versionId && (m.versions || []).some(v => v.id === versionId)) {
+        openEatInVersionModal(versionId);
+      }
+    }
+
+    function completeMealPlanItem(planId) {
+      const item = (mealPlanItems || []).find(x => x.id === planId);
+      if (!item) return;
+      const isPantry = item.stability === 'Pantry';
+      if (!isPantry) {
+        mealPlanItems = mealPlanItems.filter(x => x.id !== planId);
+      }
+      const m = (eatInMeals || []).find(x => x.id === item.mealId);
+      if (m) {
+        m.lastMade = getLocalTodayIso();
+        m.timesMade = (m.timesMade || 0) + 1;
+      }
+      saveEatInCache();
+      renderEatIn();
+      renderMealPlanQueue();
+      postEatInApi({ action: 'completeMealPlanItem', id: planId }, () => {
+        showToast(isPantry ? `🍳 Logged ${item.title} (kept in Pantry Reserve)!` : `✅ Checked off ${item.title} — drop a rating!`);
+      });
+      if (m) {
+        openMealFromPlan(item.mealId, item.versionId);
+      }
+    }
+
+    function removeMealPlanItem(planId) {
+      mealPlanItems = (mealPlanItems || []).filter(x => x.id !== planId);
+      saveEatInCache();
+      renderEatIn();
+      renderMealPlanQueue();
+      postEatInApi({ action: 'removeMealPlanItem', id: planId }, () => showToast('Removed from Meal Plan'));
+    }
+
+    function setShopListScope(scope) {
+      shopListScope = scope === 'ALL' ? 'ALL' : 'FRESH';
+      document.getElementById('shopScopeFresh').classList.toggle('active', shopListScope === 'FRESH');
+      document.getElementById('shopScopeAll').classList.toggle('active', shopListScope === 'ALL');
+      renderShoppingList();
+    }
+
+    function getParsedShoppingItems() {
+      const source = shopListScope === 'FRESH'
+        ? (mealPlanItems || []).filter(x => x.stability === 'Fresh')
+        : (mealPlanItems || []);
+      const items = [];
+      const seen = new Set();
+
+      source.forEach(plan => {
+        const raw = String(plan.recipe || '').trim();
+        if (!raw) {
+          const fallback = `${plan.title} ingredients`;
+          if (!seen.has(fallback.toLowerCase())) {
+            seen.add(fallback.toLowerCase());
+            items.push({ text: fallback, from: plan.title, isExtra: false });
+          }
+          return;
+        }
+        // Split recipe string into clean ingredient phrases by newline, comma, semicolon, or '+'
+        raw.split(/[\n,;+]+/).map(s => s.replace(/^[-•*\d.)\s]+/, '').trim()).filter(s => s.length >= 2 && s.length <= 65).forEach(part => {
+          const key = part.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            items.push({ text: part, from: plan.title, isExtra: false });
+          }
+        });
+      });
+
+      getExtraShopItems().forEach(ext => {
+        const key = ext.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          items.push({ text: ext, from: 'Extra', isExtra: true });
+        }
+      });
+      return items;
+    }
+
+    function renderShoppingList() {
+      const wrap = document.getElementById('mpShopList');
+      if (!wrap) return;
+      const items = getParsedShoppingItems();
+      const checked = getCheckedShopSet();
+
+      if (!items.length) {
+        wrap.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted); padding:16px; text-align:center;">No grocery items yet — add meals to <strong>This Week</strong> or type an extra item above!</div>';
+        return;
+      }
+
+      wrap.innerHTML = '';
+      items.forEach(it => {
+        const key = it.text.toLowerCase();
+        const isDone = checked.has(key);
+        const row = document.createElement('div');
+        row.style.cssText = `display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:10px 12px; opacity:${isDone ? '0.48' : '1'};`;
+        const wmUrl = `https://www.walmart.com/search?q=${encodeURIComponent(it.text)}`;
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer;" onclick="toggleShopItemChecked('${escapeHtml(key).replace(/'/g, "\\'")}')">
+            <span style="font-size:1.1rem;">${isDone ? '☑️' : '⬜'}</span>
+            <div style="min-width:0;">
+              <div style="font-size:0.86rem; font-weight:800; color:#fff; ${isDone ? 'text-decoration:line-through;' : ''}">${escapeHtml(it.text)}</div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">${escapeHtml(it.from)}</div>
+            </div>
+          </div>
+          <a href="${wmUrl}" target="_blank" onclick="event.stopPropagation();" class="audio-pill" style="text-decoration:none; padding:6px 9px; font-weight:800; white-space:nowrap;">🛒 Walmart ↗</a>
+        `;
+        wrap.appendChild(row);
+      });
+    }
+
+    function toggleShopItemChecked(key) {
+      const s = getCheckedShopSet();
+      if (s.has(key)) s.delete(key);
+      else s.add(key);
+      saveCheckedShopSet(s);
+      renderShoppingList();
+    }
+
+    function addExtraShopItem() {
+      const inp = document.getElementById('shopExtraItemInput');
+      const val = (inp.value || '').trim();
+      if (!val) return;
+      const arr = getExtraShopItems();
+      arr.unshift(val);
+      saveExtraShopItems(arr);
+      inp.value = '';
+      renderShoppingList();
+    }
+
+    function clearCheckedShopItems() {
+      const checked = getCheckedShopSet();
+      const extras = getExtraShopItems().filter(x => !checked.has(x.toLowerCase()));
+      saveExtraShopItems(extras);
+      saveCheckedShopSet(new Set());
+      renderShoppingList();
+      showToast('Cleared checked items');
+    }
+
+    function copyRemainingShopList() {
+      const items = getParsedShoppingItems();
+      const checked = getCheckedShopSet();
+      const remaining = items.filter(it => !checked.has(it.text.toLowerCase())).map(it => it.text);
+      if (!remaining.length) { showToast('Nothing left to buy!'); return; }
+      const text = remaining.join('\n');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(`📋 Copied ${remaining.length} items for Walmart!`));
+      } else {
+        prompt('Copy your Walmart grocery list:', text);
+      }
+    }
+
     let lastBackSwipeAt = 0;
     function closeTopmostOverlayOnBack() {
       const checks = [
@@ -7749,6 +8151,7 @@
         ['flagModal', () => closeFlagModal()],
         ['restaurantFormModal', () => closeRestaurantFormModal()],
         ['eatInFormModal', () => closeEatInFormModal()],
+        ['mealPlanModal', () => closeMealPlanModal()],
         ['movieUploadModal', () => closeMovieUploadModal()],
         ['seriesModal', () => closeSeriesModal()],
         ['searchSheetOverlay', () => closeSearchSheet()],
