@@ -1307,17 +1307,11 @@
       <button type="button" onclick="clearLiveScanResults()" style="background:var(--surface); border:1px solid var(--border); color:#fff; font-size:0.74rem; font-weight:800; padding:6px 10px; border-radius:8px; cursor:pointer; white-space:nowrap;">✕ Back to DFW</button>
     </div>
 
-    <!-- Dynamic Suggestions Banner (Top 3 in 1 row + Live GPS & Scan Nearby) -->
-    <div class="suggestions-banner" id="diningSuggestionsWrap" style="display:none;">
-      <div class="suggestions-header">
-        <div class="suggestions-title" id="diningSuggestionsTitle">⭐ Top 3 Spots</div>
-        <div style="display:flex; gap:5px; align-items:center; flex-shrink:0;">
-          <button type="button" class="btn-spin" id="diningGpsBtn" style="background:var(--surface-elevated); color:#cbd5e1; border-color:var(--border);" onclick="toggleDiningGps()">📡 GPS</button>
-          <button type="button" class="btn-spin" id="diningScanBtn" style="background:rgba(56,189,248,0.16); color:#38bdf8; border-color:rgba(56,189,248,0.4);" onclick="triggerScanNearbyAnywhere()">🌍 Scan</button>
-          <button type="button" class="btn-spin" onclick="pickRandomRestaurant()">🎲 Pick</button>
-        </div>
-      </div>
-      <div class="suggestions-row" id="diningSuggestionsRow"></div>
+    <!-- Compact Dining Action Bar (Live GPS + Scan Anywhere + Pick) -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 14px 0 14px;">
+      <button type="button" class="btn-spin" id="diningGpsBtn" style="background:var(--surface); color:#cbd5e1; border-color:var(--border); min-height:44px;" onclick="toggleDiningGps()">📡 GPS</button>
+      <button type="button" class="btn-spin" id="diningScanBtn" style="background:rgba(56,189,248,0.16); color:#38bdf8; border-color:rgba(56,189,248,0.4); min-height:44px;" onclick="triggerScanNearbyAnywhere()">🌍 Scan Nearby</button>
+      <button type="button" class="btn-spin" style="min-height:44px;" onclick="pickRandomRestaurant()">🎲 Pick</button>
     </div>
 
     <div class="grid-container" id="diningGrid">
@@ -5172,32 +5166,24 @@
     function autoInitDiningGps() {
       if (gpsAutoChecked || userGpsPos || !navigator.geolocation) return;
       gpsAutoChecked = true;
-      const remembered = localStorage.getItem('chaptertwo_gps_enabled') === '1';
-      const tryGrab = () => {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            try { localStorage.setItem('chaptertwo_gps_enabled', '1'); } catch (e) {}
-            syncDiningGpsBtnUI();
-            const milesFromHaslet = distanceMilesBetween(32.9765, -97.3478, userGpsPos.lat, userGpsPos.lng);
-            if (milesFromHaslet > 45) {
-              // Outside DFW (e.g. Houston / road trip!) -> auto-scan live nearby!
-              scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
-            } else {
-              renderDining();
-            }
-          },
-          () => {},
-          { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
-        );
-      };
-      if (remembered) {
-        tryGrab();
-      } else if (navigator.permissions && navigator.permissions.query) {
-        navigator.permissions.query({ name: 'geolocation' }).then(st => {
-          if (st.state === 'granted') tryGrab();
-        }).catch(() => {});
-      }
+      // Default to live current location unless user explicitly switched back to Home
+      const explicitlyOff = localStorage.getItem('chaptertwo_gps_enabled') === '0';
+      if (explicitlyOff) return;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userGpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          try { localStorage.setItem('chaptertwo_gps_enabled', '1'); } catch (e) {}
+          syncDiningGpsBtnUI();
+          const milesFromHaslet = distanceMilesBetween(32.9765, -97.3478, userGpsPos.lat, userGpsPos.lng);
+          if (milesFromHaslet > 45) {
+            scanNearbyLiveGps(userGpsPos.lat, userGpsPos.lng);
+          } else {
+            renderDining();
+          }
+        },
+        () => {},
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+      );
     }
 
     function toggleDiningGps() {
@@ -5635,9 +5621,6 @@
 
     function renderDining() {
       const grid = document.getElementById('diningGrid');
-      const sugWrap = document.getElementById('diningSuggestionsWrap');
-      const sugRow = document.getElementById('diningSuggestionsRow');
-      const sugTitle = document.getElementById('diningSuggestionsTitle');
       if (!grid) return;
 
       const fullList = getFilteredRestaurants();
@@ -5675,43 +5658,6 @@
       document.getElementById('dRbDCount').textContent = `${dRated.length} rated`;
       document.getElementById('dRbKAvg').textContent = `★ ${kAvg}`;
       document.getElementById('dRbKCount').textContent = `${kRated.length} rated`;
-
-      // Suggestions Banner (Top 3 in 1 clean row with clear #1 - #3 badges)
-      if (list.length > 0) {
-        sugWrap.style.display = 'block';
-        sugTitle.textContent = diningMode === 'FAMILY'
-          ? '👨‍👩‍👧‍👦 Top 3 Family'
-          : (diningMode === 'DATE' ? '🥂 Top 3 Date Night' : '⭐ Top 3 Spots');
-
-        const topPicks = [...list]
-          .sort((a, b) => (b._score.nearbyScore ?? -1) - (a._score.nearbyScore ?? -1))
-          .slice(0, 3);
-
-        sugRow.innerHTML = '';
-        topPicks.forEach((p, idx) => {
-          const rankNum = idx + 1;
-          const chip = document.createElement('div');
-          chip.className = 'suggestion-chip';
-          chip.onclick = () => openRestaurantModal(p);
-          const sc = p._score;
-          const metaParts = [];
-          if (sc.mins !== null) metaParts.push(sc.mins + 'm');
-          if (sc.totalCost !== null) metaParts.push((p.visited ? '$' : '~$') + Math.round(sc.totalCost));
-          else if (p.googleRating) metaParts.push('★' + Number(p.googleRating).toFixed(1));
-          const displayScore = sc.nearbyScore !== null && sc.nearbyScore !== undefined ? sc.nearbyScore : sc.total;
-          chip.innerHTML = `
-            <div class="suggestion-chip-top">
-              <span class="suggestion-rank r${rankNum}">#${rankNum}</span>
-              <span class="score-pill ${getScoreBadgeClass(displayScore)}" style="font-size:0.68rem; padding:2px 6px;">${displayScore !== null ? displayScore : '--'}</span>
-            </div>
-            <div class="suggestion-name">${escapeHtml(p.name)}</div>
-            <div class="suggestion-meta">${metaParts.join(' • ') || getDiningIcon(p.category)}</div>
-          `;
-          sugRow.appendChild(chip);
-        });
-      } else {
-        sugWrap.style.display = 'none';
-      }
 
       // Main Grid
       grid.innerHTML = '';
