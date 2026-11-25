@@ -2151,7 +2151,7 @@
     </div>
   </div>
 
-  <!-- Eat In Detail Modal (Full Page: Meal -> Versions + Flexible Person Ratings) -->
+  <!-- Eat In Step 1: Meal Options Picker (Full Page: Shows all versions as tappable cards) -->
   <div class="modal-overlay fullscreen-modal" id="eatInModal" onclick="if(event.target===this) closeEatInModal()">
     <div class="modal-sheet">
       <div class="fp-topbar">
@@ -2161,8 +2161,8 @@
       </div>
 
       <div class="fp-body">
-        <div class="modal-header">
-          <div id="emThumb" class="rest-card-thumb" style="width:90px; min-width:90px; height:110px; border-radius:10px; border:1px solid var(--border);"></div>
+        <div class="modal-header" style="margin-bottom:14px;">
+          <div id="emThumb" class="rest-card-thumb" style="width:76px; min-width:76px; height:92px; border-radius:10px; border:1px solid var(--border);"></div>
           <div style="flex:1; min-width:0;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
               <h2 class="modal-title" id="emName" style="margin-bottom:2px;"></h2>
@@ -2173,63 +2173,18 @@
           </div>
         </div>
 
-        <!-- Made Tonight CTA -->
-        <div class="visit-cta-card">
-          <div>
-            <div style="font-size:0.84rem; font-weight:900; color:#fff;" id="emMadeTitle">Ready to cook this?</div>
-            <div style="font-size:0.72rem; color:var(--text-muted);" id="emMadeSub">Log tonight to track when you last made it</div>
-          </div>
-          <button type="button" class="visit-cta-btn" onclick="markActiveEatInMade()">🍳 Made Tonight</button>
+        <div style="font-size:0.78rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:10px;">
+          Pick an Option (Tap to View, Rate &amp; Add Photo)
         </div>
 
-        <!-- Flexible Family & Guest Ratings (Derek, Kianna, Finn, Grandma, Anyone!) -->
-        <div class="dk-rating-card">
-          <div style="font-size:0.8rem; font-weight:900; color:#fff; margin-bottom:10px;">⭐ Family & Guest Ratings (1–10)</div>
+        <div id="emVersionsList" style="display:flex; flex-direction:column; gap:10px;"></div>
 
-          <div class="rate-row-head">
-            <span style="color:var(--derek);">Derek</span>
-            <span id="emDRateVal" style="color:var(--derek);">Not rated</span>
-          </div>
-          <div class="rate-strip" id="emDRateStrip"></div>
-
-          <div class="rate-row-head">
-            <span style="color:var(--kianna);">Kianna</span>
-            <span id="emKRateVal" style="color:var(--kianna);">Not rated</span>
-          </div>
-          <div class="rate-strip" id="emKRateStrip"></div>
-
-          <!-- Other People (Finn, Grandma, etc.) -->
-          <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:10px;">
-            <div style="font-size:0.72rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">👥 Kids & Guests</div>
-            <div id="emOtherRatingsWrap" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;"></div>
-            <div id="emKnownPeopleChips" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;"></div>
-            <div style="display:flex; gap:6px; align-items:center;">
-              <input type="text" id="emCustomPersonName" class="form-input" placeholder="Name (e.g. Finn, Grandma)" style="flex:1.4; min-height:42px; padding:8px 10px;">
-              <input type="number" id="emCustomPersonScore" class="form-input" min="1" max="10" step="0.5" placeholder="1–10" style="flex:0.7; min-height:42px; padding:8px 10px;">
-              <button type="button" class="dining-add-btn" style="min-height:42px; padding:8px 12px;" onclick="addCustomEatInRating('MEAL')">+ Rate</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recipe & Notes -->
-        <div id="emSourceWrap" style="display:none; margin-bottom:10px; font-size:0.78rem;"></div>
-        <div id="emRecipeBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:10px;">
-          <div style="font-size:0.7rem; font-weight:900; color:var(--accent); text-transform:uppercase; margin-bottom:4px;">📖 Base Recipe / Ingredients</div>
-          <div id="emRecipeText" style="font-size:0.8rem; color:#e2e8f0; line-height:1.45; white-space:pre-wrap;"></div>
-        </div>
-        <p id="emNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
-
-        <!-- Versions / Variations -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
-          <div style="font-size:0.86rem; font-weight:900; color:#fff;">🍽️ Versions & Variations</div>
-          <button type="button" class="dining-add-btn" style="padding:7px 12px; min-height:40px; font-size:0.76rem;" onclick="toggleEatInVersionForm()">+ Add Version</button>
-        </div>
-
-        <!-- Inline Add / Edit Version Form -->
-        <div id="eatInVersionFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-top:10px;">
+        <!-- Inline Add / Edit Option Form -->
+        <div id="eatInVersionFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:12px; padding:14px; margin-top:14px;">
+          <div style="font-size:0.88rem; font-weight:900; color:#fff; margin-bottom:10px;" id="evFormHeading">➕ Add New Option</div>
           <input type="hidden" id="evEditId">
           <div class="form-group">
-            <label class="form-label">Version Name *</label>
+            <label class="form-label">Option Name *</label>
             <input type="text" id="evNameInput" class="form-input" placeholder="e.g. Manwich, Homemade Sauce, Baked Ziti">
           </div>
           <div class="form-row-2">
@@ -2261,23 +2216,97 @@
           </div>
           <div class="form-group">
             <label class="form-label">Recipe / Ingredients</label>
-            <textarea id="evRecipeInput" class="form-input" rows="3" placeholder="Ingredients or quick steps..."></textarea>
+            <textarea id="evRecipeInput" class="form-input" rows="4" placeholder="Ingredients or quick steps..."></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">Notes (Optional)</label>
             <input type="text" id="evNotesInput" class="form-input" placeholder="e.g. Kids love this version!">
           </div>
           <div style="display:flex; gap:8px;">
-            <button type="button" id="btnSaveEatInVer" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="submitEatInVersion()">Save Version</button>
+            <button type="button" id="btnSaveEatInVer" class="btn-act" style="background:var(--emerald); color:#000; font-weight:900;" onclick="submitEatInVersion()">💾 Save Option</button>
             <button type="button" class="btn-act btn-close" style="flex:none; padding:10px 16px;" onclick="toggleEatInVersionForm(false)">Cancel</button>
           </div>
         </div>
-
-        <div id="emVersionsList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
       </div>
 
       <div class="fp-footer">
-        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInMeal()">✏️ Edit Meal</button>
+        <button type="button" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900;" onclick="toggleEatInVersionForm(true)">+ Add New Option</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eat In Step 2: Specific Option Detail Modal (Full Page: Ratings, Photo, Recipe, Source, Made Tonight) -->
+  <div class="modal-overlay fullscreen-modal" id="eatInVersionModal" onclick="if(event.target===this) closeEatInVersionModal()">
+    <div class="modal-sheet">
+      <div class="fp-topbar">
+        <button type="button" class="fp-back-btn" onclick="closeEatInVersionModal()">← Options</button>
+        <div class="fp-top-title" id="evmTopTitle">Meal Option</div>
+        <button type="button" class="fp-back-btn" onclick="editActiveEatInVersion()">✏️ Edit</button>
+      </div>
+
+      <div class="fp-body">
+        <div class="modal-header">
+          <div id="evmThumb" class="rest-card-thumb" style="width:94px; min-width:94px; height:114px; border-radius:10px; border:1px solid var(--border);"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <h2 class="modal-title" id="evmName" style="margin-bottom:2px;"></h2>
+              <span id="evmAvgBadge" class="score-pill score-high"></span>
+            </div>
+            <div class="modal-author" id="evmMeta" style="margin-bottom:6px;"></div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="evmTagsWrap"></div>
+          </div>
+        </div>
+
+        <!-- Made Tonight CTA -->
+        <div class="visit-cta-card">
+          <div>
+            <div style="font-size:0.84rem; font-weight:900; color:#fff;" id="evmMadeTitle">Making this tonight?</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);" id="evmMadeSub">Log tonight to track your rotation</div>
+          </div>
+          <button type="button" class="visit-cta-btn" onclick="markActiveEatInMade()">🍳 Made Tonight</button>
+        </div>
+
+        <!-- Full 1-10 Ratings for THIS Specific Option (Derek, Kianna, Finn, Grandma, Anyone!) -->
+        <div class="dk-rating-card">
+          <div style="font-size:0.8rem; font-weight:900; color:#fff; margin-bottom:10px;">⭐ Ratings for This Option (1–10)</div>
+
+          <div class="rate-row-head">
+            <span style="color:var(--derek);">Derek</span>
+            <span id="evmDRateVal" style="color:var(--derek);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="evmDRateStrip"></div>
+
+          <div class="rate-row-head">
+            <span style="color:var(--kianna);">Kianna</span>
+            <span id="evmKRateVal" style="color:var(--kianna);">Not rated</span>
+          </div>
+          <div class="rate-strip" id="evmKRateStrip"></div>
+
+          <!-- Custom People (Finn, Grandma, etc.) -->
+          <div style="border-top:1px solid var(--border); margin-top:12px; padding-top:10px;">
+            <div style="font-size:0.72rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">👥 Kids &amp; Guests</div>
+            <div id="evmOtherRatingsWrap" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;"></div>
+            <div id="evmKnownPeopleChips" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;"></div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input type="text" id="evmCustomPersonName" class="form-input" placeholder="Name (e.g. Finn, Grandma)" style="flex:1.4; min-height:42px; padding:8px 10px;">
+              <input type="number" id="evmCustomPersonScore" class="form-input" min="1" max="10" step="0.5" placeholder="1–10" style="flex:0.7; min-height:42px; padding:8px 10px;">
+              <button type="button" class="dining-add-btn" style="min-height:42px; padding:8px 12px;" onclick="addCustomEatInRating('VERSION')">+ Rate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Source, Recipe & Notes -->
+        <div id="evmSourceWrap" style="display:none; margin-bottom:10px; font-size:0.8rem;"></div>
+        <div id="evmRecipeBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px;">
+          <div style="font-size:0.72rem; font-weight:900; color:var(--accent); text-transform:uppercase; margin-bottom:5px;">📖 Recipe / Ingredients</div>
+          <div id="evmRecipeText" style="font-size:0.82rem; color:#e2e8f0; line-height:1.5; white-space:pre-wrap;"></div>
+        </div>
+        <p id="evmNotes" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; display:none;"></p>
+      </div>
+
+      <div class="fp-footer">
+        <button type="button" class="btn-act btn-goodreads" onclick="editActiveEatInVersion()">✏️ Edit Recipe / Photo</button>
+        <button type="button" class="btn-act btn-flag" style="flex:none; padding:12px 16px;" onclick="deleteActiveEatInVersion()">🗑️</button>
       </div>
     </div>
   </div>
@@ -7238,8 +7267,12 @@
       openEatInModal(pick);
     }
 
+    let activeEatInVersion = null;
+
     function openEatInModal(meal) {
       activeEatInMeal = meal;
+      activeEatInVersion = null;
+      toggleEatInVersionForm(false);
       renderEatInModal();
       document.getElementById('eatInModal').classList.add('open');
     }
@@ -7255,14 +7288,14 @@
       document.getElementById('emTopTitle').textContent = m.name || 'Home Meal';
       document.getElementById('emName').textContent = m.name || '';
       const loeIcon = m.loe === 'Easy' ? '⚡ Easy' : (m.loe === 'Project' ? '🔥 Project' : '🍳 Medium');
-      document.getElementById('emMeta').textContent = `${m.category} • ${loeIcon}`;
+      document.getElementById('emMeta').textContent = `${m.category} • ${loeIcon}${m.lastMade ? ' • Last: ' + m.lastMade : ''}`;
 
       const effRatings = getMealEffectiveRatings(m);
       const avg = getRatingsAverage(effRatings);
       const avgEl = document.getElementById('emAvgBadge');
       if (avg !== null) {
         avgEl.className = 'score-pill ' + (avg >= 8 ? 'score-high' : (avg >= 6 ? 'score-mid' : 'score-low'));
-        avgEl.textContent = `★ ${avg.toFixed(1)} / 10`;
+        avgEl.textContent = `★ ${avg.toFixed(1)}`;
       } else {
         avgEl.className = 'score-pill score-none';
         avgEl.textContent = 'Unrated';
@@ -7279,18 +7312,111 @@
         ${m.timesMade > 0 ? `<span class="rest-tag-pill">🍳 Made ${m.timesMade}x</span>` : ''}
       `;
 
-      document.getElementById('emMadeTitle').textContent = m.lastMade ? `Last made ${m.lastMade}` : 'Ready to cook this?';
-      document.getElementById('emMadeSub').textContent = m.timesMade > 0 ? `Cooked ${m.timesMade} time${m.timesMade === 1 ? '' : 's'} at home` : 'Log tonight to track your meal rotation';
+      // Tappable Option Cards
+      const vWrap = document.getElementById('emVersionsList');
+      const versions = m.versions || [];
+      if (!versions.length) {
+        vWrap.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); padding:16px 8px; text-align:center; background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px;">No options yet — tap <strong>+ Add New Option</strong> below to add your first recipe!</div>';
+      } else {
+        vWrap.innerHTML = '';
+        versions.forEach(v => {
+          const card = document.createElement('div');
+          card.className = 'book-card';
+          card.style.cursor = 'pointer';
+          card.onclick = () => openEatInVersionModal(v.id);
 
-      // Derek & Kianna 1-10 strips
-      const rMap = m.ratings || {};
+          const vRatings = Object.entries(v.ratings || {}).filter(([, s]) => Number(s) > 0);
+          const vAvg = getRatingsAverage(v.ratings);
+          const vAvgBadge = vAvg !== null
+            ? `<span class="score-pill ${vAvg >= 8 ? 'score-high' : (vAvg >= 6 ? 'score-mid' : 'score-low')}">★ ${vAvg.toFixed(1)}</span>`
+            : '<span style="font-size:0.85rem; color:var(--text-muted); font-weight:800;">›</span>';
+
+          const vBadges = vRatings.slice(0, 4).map(([p, s]) => {
+            const cls = p === 'Derek' ? 'badge-derek' : (p === 'Kianna' ? 'badge-kianna' : '');
+            const lbl = p === 'Derek' ? 'D' : (p === 'Kianna' ? 'K' : p);
+            return `<span class="rating-badge ${cls}">${escapeHtml(lbl)}: ★ ${s}</span>`;
+          }).join('');
+
+          const vThumb = v.photoUrl
+            ? `<img src="${v.photoUrl}" referrerpolicy="no-referrer">`
+            : `<div class="rest-emoji-cover" style="font-size:1.6rem;">${getEatInIcon(m.category)}</div>`;
+
+          card.innerHTML = `
+            <div class="rest-card-thumb" style="width:76px; min-width:76px; height:96px;">${vThumb}</div>
+            <div class="card-body">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
+                  <div class="card-title">${escapeHtml(v.name)}</div>
+                  ${vAvgBadge}
+                </div>
+                <div class="card-author">${v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium')} • ${v.stability === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh'}</div>
+                ${vBadges ? `<div class="ratings-row">${vBadges}</div>` : '<div style="font-size:0.72rem; color:var(--text-muted);">Tap to rate, view recipe &amp; add photo</div>'}
+              </div>
+            </div>
+          `;
+          vWrap.appendChild(card);
+        });
+      }
+    }
+
+    function openEatInVersionModal(verId) {
+      if (!activeEatInMeal) return;
+      const v = (activeEatInMeal.versions || []).find(x => x.id === verId);
+      if (!v) return;
+      activeEatInVersion = v;
+      renderEatInVersionModal();
+      document.getElementById('eatInVersionModal').classList.add('open');
+    }
+
+    function closeEatInVersionModal() {
+      document.getElementById('eatInVersionModal').classList.remove('open');
+      activeEatInVersion = null;
+      renderEatInModal();
+    }
+
+    function renderEatInVersionModal() {
+      const m = activeEatInMeal;
+      const v = activeEatInVersion;
+      if (!m || !v) return;
+
+      document.getElementById('evmTopTitle').textContent = v.name || 'Meal Option';
+      document.getElementById('evmName').textContent = v.name || '';
+      const loeIcon = v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium');
+      document.getElementById('evmMeta').textContent = `${m.name} • ${loeIcon}`;
+
+      const avg = getRatingsAverage(v.ratings);
+      const avgEl = document.getElementById('evmAvgBadge');
+      if (avg !== null) {
+        avgEl.className = 'score-pill ' + (avg >= 8 ? 'score-high' : (avg >= 6 ? 'score-mid' : 'score-low'));
+        avgEl.textContent = `★ ${avg.toFixed(1)} / 10`;
+      } else {
+        avgEl.className = 'score-pill score-none';
+        avgEl.textContent = 'Unrated';
+      }
+
+      const photo = v.photoUrl || m.photoUrl || '';
+      const thumbEl = document.getElementById('evmThumb');
+      thumbEl.innerHTML = photo
+        ? `<img src="${photo}" style="cursor:pointer;" onclick="openPhotoLightbox('${photo}')" referrerpolicy="no-referrer">`
+        : `<div class="rest-emoji-cover">${getEatInIcon(m.category)}</div><div class="rest-cat-mini">${escapeHtml(m.category)}</div>`;
+
+      document.getElementById('evmTagsWrap').innerHTML = `
+        <span class="rest-tag-pill ${v.stability === 'Pantry' ? 'rest-tag-family' : ''}">${v.stability === 'Pantry' ? '🥫 Pantry / Freezer' : '🥬 Needs Fresh'}</span>
+        ${m.lastMade ? `<span class="rest-tag-pill">🍳 Last: ${m.lastMade}</span>` : ''}
+      `;
+
+      document.getElementById('evmMadeTitle').textContent = m.lastMade ? `Last made ${m.lastMade}` : 'Making this tonight?';
+      document.getElementById('evmMadeSub').textContent = m.timesMade > 0 ? `Cooked ${m.timesMade} time${m.timesMade === 1 ? '' : 's'} at home` : 'Log tonight to track your meal rotation';
+
+      // Derek & Kianna 1-10 strips for THIS Option
+      const rMap = v.ratings || {};
       const dVal = Number(rMap.Derek) || 0;
       const kVal = Number(rMap.Kianna) || 0;
-      document.getElementById('emDRateVal').textContent = dVal > 0 ? `★ ${dVal}/10` : 'Not rated';
-      document.getElementById('emKRateVal').textContent = kVal > 0 ? `★ ${kVal}/10` : 'Not rated';
+      document.getElementById('evmDRateVal').textContent = dVal > 0 ? `★ ${dVal}/10` : 'Not rated';
+      document.getElementById('evmKRateVal').textContent = kVal > 0 ? `★ ${kVal}/10` : 'Not rated';
 
-      const dStrip = document.getElementById('emDRateStrip');
-      const kStrip = document.getElementById('emKRateStrip');
+      const dStrip = document.getElementById('evmDRateStrip');
+      const kStrip = document.getElementById('evmKRateStrip');
       dStrip.innerHTML = '';
       kStrip.innerHTML = '';
       for (let n = 1; n <= 10; n++) {
@@ -7298,107 +7424,74 @@
         db.type = 'button';
         db.className = 'rate-pill' + (dVal === n ? ' active-d' : '');
         db.textContent = n;
-        db.onclick = () => saveEatInQuickRating('MEAL', m.id, 'Derek', dVal === n ? '' : n);
+        db.onclick = () => saveEatInQuickRating('VERSION', v.id, 'Derek', dVal === n ? '' : n);
         dStrip.appendChild(db);
 
         const kb = document.createElement('button');
         kb.type = 'button';
         kb.className = 'rate-pill' + (kVal === n ? ' active-k' : '');
         kb.textContent = n;
-        kb.onclick = () => saveEatInQuickRating('MEAL', m.id, 'Kianna', kVal === n ? '' : n);
+        kb.onclick = () => saveEatInQuickRating('VERSION', v.id, 'Kianna', kVal === n ? '' : n);
         kStrip.appendChild(kb);
       }
 
-      // Other People Ratings (Finn, Grandma, etc.)
-      const otherWrap = document.getElementById('emOtherRatingsWrap');
-      const others = Object.entries(rMap).filter(([p, v]) => p !== 'Derek' && p !== 'Kianna' && Number(v) > 0);
+      // Custom People Ratings (Finn, Grandma, etc.)
+      const otherWrap = document.getElementById('evmOtherRatingsWrap');
+      const others = Object.entries(rMap).filter(([p, s]) => p !== 'Derek' && p !== 'Kianna' && Number(s) > 0);
       otherWrap.innerHTML = others.length
-        ? others.map(([p, v]) => `<button type="button" class="active-chip" onclick="saveEatInQuickRating('MEAL', '${m.id}', '${escapeHtml(p).replace(/'/g, "\\'")}', '')">${escapeHtml(p)}: ★ ${v}/10 ✕</button>`).join('')
+        ? others.map(([p, s]) => `<button type="button" class="active-chip" onclick="saveEatInQuickRating('VERSION', '${v.id}', '${escapeHtml(p).replace(/'/g, "\\'")}', '')">${escapeHtml(p)}: ★ ${s}/10 ✕</button>`).join('')
         : '<span style="font-size:0.74rem; color:var(--text-muted);">Add Finn, Grandma, or any guest rating below!</span>';
 
-      const knownWrap = document.getElementById('emKnownPeopleChips');
+      const knownWrap = document.getElementById('evmKnownPeopleChips');
       const knownOthers = getEatInAllKnownPeople().filter(p => p !== 'Derek' && p !== 'Kianna');
-      knownWrap.innerHTML = knownOthers.map(p => `<button type="button" class="rest-tag-pill" style="cursor:pointer;" onclick="document.getElementById('emCustomPersonName').value='${escapeHtml(p).replace(/'/g, "\\'")}'; document.getElementById('emCustomPersonScore').focus();">${escapeHtml(p)}</button>`).join('');
+      knownWrap.innerHTML = knownOthers.map(p => `<button type="button" class="rest-tag-pill" style="cursor:pointer;" onclick="document.getElementById('evmCustomPersonName').value='${escapeHtml(p).replace(/'/g, "\\'")}'; document.getElementById('evmCustomPersonScore').focus();">${escapeHtml(p)}</button>`).join('');
 
-      // Source & Recipe
-      const srcWrap = document.getElementById('emSourceWrap');
-      if (m.source) {
+      // Source, Recipe, Notes
+      const srcWrap = document.getElementById('evmSourceWrap');
+      if (v.source) {
         srcWrap.style.display = 'block';
-        const isUrl = /^https?:\/\//i.test(m.source);
+        const isUrl = /^https?:\/\//i.test(v.source);
         srcWrap.innerHTML = isUrl
-          ? `🔗 Source: <a href="${escapeHtml(m.source)}" target="_blank" style="color:var(--derek); font-weight:700;">Open Recipe Link ↗</a>`
-          : `📚 Source: <strong style="color:#e2e8f0;">${escapeHtml(m.source)}</strong>`;
+          ? `🔗 Source: <a href="${escapeHtml(v.source)}" target="_blank" style="color:var(--derek); font-weight:700;">Open Recipe Link ↗</a>`
+          : `📚 Source: <strong style="color:#e2e8f0;">${escapeHtml(v.source)}</strong>`;
       } else {
         srcWrap.style.display = 'none';
       }
 
-      const recBox = document.getElementById('emRecipeBox');
-      if (m.recipe) {
+      const recBox = document.getElementById('evmRecipeBox');
+      if (v.recipe) {
         recBox.style.display = 'block';
-        document.getElementById('emRecipeText').textContent = m.recipe;
+        document.getElementById('evmRecipeText').textContent = v.recipe;
       } else {
         recBox.style.display = 'none';
       }
 
-      const notesEl = document.getElementById('emNotes');
-      if (m.notes) {
+      const notesEl = document.getElementById('evmNotes');
+      if (v.notes) {
         notesEl.style.display = 'block';
-        notesEl.textContent = '📝 ' + m.notes;
+        notesEl.textContent = '📝 ' + v.notes;
       } else {
         notesEl.style.display = 'none';
       }
+    }
 
-      // Versions List
-      const vWrap = document.getElementById('emVersionsList');
-      const versions = m.versions || [];
-      if (!versions.length) {
-        vWrap.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:8px 2px;">No variations logged yet — tap <strong>+ Add Version</strong> to compare different sauces, meats, or recipes!</div>';
-      } else {
-        vWrap.innerHTML = '';
-        versions.forEach(v => {
-          const card = document.createElement('div');
-          card.style.cssText = 'background:var(--surface-elevated); border:1px solid var(--border); border-radius:12px; padding:12px;';
-          const vRatings = Object.entries(v.ratings || {}).filter(([, s]) => Number(s) > 0);
-          const vAvg = getRatingsAverage(v.ratings);
-          const vBadges = vRatings.map(([p, s]) => {
-            const cls = p === 'Derek' ? 'badge-derek' : (p === 'Kianna' ? 'badge-kianna' : '');
-            return `<span class="rating-badge ${cls}">${escapeHtml(p)}: ★ ${s}</span>`;
-          }).join('');
-          const vSrcHtml = v.source
-            ? (/^https?:\/\//i.test(v.source)
-                ? `<a href="${escapeHtml(v.source)}" target="_blank" style="color:var(--derek); font-size:0.72rem; font-weight:700;">🔗 Recipe Link ↗</a>`
-                : `<span style="font-size:0.72rem; color:var(--text-muted);">📚 ${escapeHtml(v.source)}</span>`)
-            : '';
-          const vImgHtml = v.photoUrl
-            ? `<img class="dish-thumb" src="${v.photoUrl}" referrerpolicy="no-referrer" onclick="openPhotoLightbox('${v.photoUrl}')" style="margin-right:10px;">`
-            : '';
+    function editActiveEatInVersion() {
+      if (!activeEatInVersion) return;
+      const verId = activeEatInVersion.id;
+      closeEatInVersionModal();
+      editEatInVersion(verId);
+    }
 
-          card.innerHTML = `
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
-              <div style="display:flex; align-items:flex-start; flex:1; min-width:0;">
-                ${vImgHtml}
-                <div style="flex:1; min-width:0;">
-                  <div style="font-size:0.88rem; font-weight:900; color:#fff;">${escapeHtml(v.name)}</div>
-                  <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    ${v.loe === 'Easy' ? '⚡ Easy' : (v.loe === 'Project' ? '🔥 Project' : '🍳 Medium')} • ${v.stability === 'Pantry' ? '🥫 Pantry' : '🥬 Fresh'}
-                    ${vAvg !== null ? ` • Avg ★ ${vAvg.toFixed(1)}` : ''}
-                  </div>
-                </div>
-              </div>
-              <div style="display:flex; gap:4px; flex-shrink:0;">
-                <button type="button" class="dish-del-btn" style="color:var(--gold);" title="Rate version" onclick="promptRateEatInVersion('${v.id}')">⭐</button>
-                <button type="button" class="dish-del-btn" style="color:#94a3b8;" title="Edit version" onclick="editEatInVersion('${v.id}')">✏️</button>
-                <button type="button" class="dish-del-btn" title="Delete version" onclick="deleteEatInVersion('${v.id}')">✕</button>
-              </div>
-            </div>
-            ${vBadges ? `<div class="ratings-row" style="margin-top:8px;">${vBadges}</div>` : ''}
-            ${v.recipe ? `<div style="font-size:0.76rem; color:#cbd5e1; margin-top:6px; line-height:1.4; white-space:pre-wrap;">${escapeHtml(v.recipe)}</div>` : ''}
-            ${v.notes ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">📝 ${escapeHtml(v.notes)}</div>` : ''}
-            ${vSrcHtml ? `<div style="margin-top:6px;">${vSrcHtml}</div>` : ''}
-          `;
-          vWrap.appendChild(card);
-        });
-      }
+    function deleteActiveEatInVersion() {
+      if (!activeEatInVersion) return;
+      const verId = activeEatInVersion.id;
+      if (!confirm(`Delete "${activeEatInVersion.name}"?`)) return;
+      closeEatInVersionModal();
+      activeEatInMeal.versions = (activeEatInMeal.versions || []).filter(v => v.id !== verId);
+      saveEatInCache();
+      renderEatInModal();
+      renderEatIn();
+      postEatInApi({ action: 'deleteEatInVersion', id: verId }, () => showToast('🗑️ Option removed'));
     }
 
     function markActiveEatInMade() {
@@ -7408,6 +7501,7 @@
       activeEatInMeal.timesMade = (activeEatInMeal.timesMade || 0) + 1;
       saveEatInCache();
       renderEatInModal();
+      if (activeEatInVersion) renderEatInVersionModal();
       renderEatIn();
       postEatInApi({ action: 'markEatInMade', id: activeEatInMeal.id }, () => showToast(`🍳 Logged ${activeEatInMeal.name} for tonight!`));
     }
@@ -7427,6 +7521,7 @@
       saveEatInCache();
       populateEatInPeopleFilter();
       renderEatInModal();
+      if (activeEatInVersion) renderEatInVersionModal();
       renderEatIn();
       postEatInApi({ action: 'saveEatInRating', targetType, id, person, rating }, () => {
         showToast(rating ? `⭐ Saved ${person}'s ${rating}/10` : `Removed ${person}'s rating`);
@@ -7435,15 +7530,17 @@
 
     function addCustomEatInRating(targetType) {
       if (!activeEatInMeal) return;
-      const nameEl = document.getElementById('emCustomPersonName');
-      const scoreEl = document.getElementById('emCustomPersonScore');
+      const isVer = targetType === 'VERSION' && activeEatInVersion;
+      const nameEl = document.getElementById(isVer ? 'evmCustomPersonName' : 'emCustomPersonName');
+      const scoreEl = document.getElementById(isVer ? 'evmCustomPersonScore' : 'emCustomPersonScore');
+      if (!nameEl || !scoreEl) return;
       const person = (nameEl.value || '').trim();
       const score = parseFloat(scoreEl.value);
       if (!person) { showToast('Enter a name (e.g. Finn, Grandma)'); return; }
       if (isNaN(score) || score < 1 || score > 10) { showToast('Enter a rating from 1 to 10'); return; }
       nameEl.value = '';
       scoreEl.value = '';
-      saveEatInQuickRating(targetType, activeEatInMeal.id, person, score);
+      saveEatInQuickRating(isVer ? 'VERSION' : 'MEAL', isVer ? activeEatInVersion.id : activeEatInMeal.id, person, score);
     }
 
     function promptRateEatInVersion(verId) {
@@ -7469,6 +7566,8 @@
       const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
       box.style.display = show ? 'block' : 'none';
       if (show) {
+        const heading = document.getElementById('evFormHeading');
+        if (heading) heading.textContent = '➕ Add New Option';
         document.getElementById('evEditId').value = '';
         document.getElementById('evNameInput').value = '';
         document.getElementById('evLoeInput').value = activeEatInMeal ? (activeEatInMeal.loe || 'Easy') : 'Easy';
@@ -7477,7 +7576,8 @@
         document.getElementById('evRecipeInput').value = '';
         document.getElementById('evNotesInput').value = '';
         document.getElementById('evPhotoInput').value = '';
-        document.getElementById('btnSaveEatInVer').textContent = 'Save Version';
+        document.getElementById('btnSaveEatInVer').textContent = '💾 Save Option';
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.getElementById('evNameInput').focus();
       }
     }
@@ -7489,6 +7589,8 @@
       const box = document.getElementById('eatInVersionFormBox');
       if (!box) return;
       box.style.display = 'block';
+      const heading = document.getElementById('evFormHeading');
+      if (heading) heading.textContent = '✏️ Edit Option';
       document.getElementById('evEditId').value = v.id;
       document.getElementById('evNameInput').value = v.name || '';
       document.getElementById('evLoeInput').value = v.loe || 'Easy';
@@ -7497,7 +7599,7 @@
       document.getElementById('evRecipeInput').value = v.recipe || '';
       document.getElementById('evNotesInput').value = v.notes || '';
       document.getElementById('evPhotoInput').value = '';
-      document.getElementById('btnSaveEatInVer').textContent = '💾 Update Version';
+      document.getElementById('btnSaveEatInVer').textContent = '💾 Update Option';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -7541,7 +7643,8 @@
           toggleEatInVersionForm(false);
           renderEatInModal();
           renderEatIn();
-          showToast(editId ? '✅ Version updated!' : '✅ Version added!');
+          showToast(editId ? '✅ Option updated!' : '✅ Option added!');
+          openEatInVersionModal(res.version.id);
         } else {
           showToast('❌ Could not save version');
         }
@@ -7654,6 +7757,7 @@
         ['bookModal', () => closeModal()],
         ['movieModal', () => closeMovieModal()],
         ['restaurantModal', () => closeRestaurantModal()],
+        ['eatInVersionModal', () => closeEatInVersionModal()],
         ['eatInModal', () => closeEatInModal()]
       ];
       for (const [id, fn] of checks) {
