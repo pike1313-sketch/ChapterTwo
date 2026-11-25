@@ -1864,8 +1864,9 @@
           <button type="button" class="dining-add-btn" style="padding:5px 10px; font-size:0.72rem;" onclick="toggleDishForm()">+ Log Dish</button>
         </div>
 
-        <!-- Inline Add Dish Form -->
+        <!-- Inline Add / Edit Dish Form -->
         <div id="addDishFormBox" style="display:none; background:var(--surface-elevated); border:1px solid var(--accent); border-radius:10px; padding:10px; margin-top:8px;">
+          <input type="hidden" id="dishEditId">
           <div class="form-row-2">
             <div class="form-group" style="margin-bottom:8px;">
               <label class="form-label">Dish Name *</label>
@@ -5940,6 +5941,7 @@
               <div class="dish-meta">${escapeHtml(d.orderedBy || 'Shared')}${d.dateLogged ? ' • ' + d.dateLogged : ''}${d.notes ? ' • ' + escapeHtml(d.notes) : ''}</div>
             </div>
             ${ratingBadgeHtml}
+            <button type="button" class="dish-del-btn" title="Edit dish" style="color:#94a3b8;" onclick="editDishItem('${d.id}')">✏️</button>
             <button type="button" class="dish-del-btn" title="Delete dish" onclick="deleteDishItem('${d.id}')">✕</button>
           `;
           dishWrap.appendChild(item);
@@ -6096,12 +6098,34 @@
       const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
       box.style.display = show ? 'block' : 'none';
       if (show) {
+        const editIdEl = document.getElementById('dishEditId');
+        if (editIdEl) editIdEl.value = '';
+        const btn = document.getElementById('btnSaveDish');
+        if (btn) btn.textContent = 'Save Dish';
         document.getElementById('dishNameInput').value = '';
         document.getElementById('dishRatingInput').value = '';
         document.getElementById('dishNotesInput').value = '';
         document.getElementById('dishPhotoInput').value = '';
         document.getElementById('dishNameInput').focus();
       }
+    }
+
+    function editDishItem(dishId) {
+      if (!activeRestaurant) return;
+      const d = (activeRestaurant.dishes || []).find(x => x.id === dishId);
+      if (!d) return;
+      const box = document.getElementById('addDishFormBox');
+      if (!box) return;
+      box.style.display = 'block';
+      document.getElementById('dishEditId').value = d.id;
+      document.getElementById('dishNameInput').value = d.name || '';
+      document.getElementById('dishRatingInput').value = (d.rating !== undefined && d.rating !== null && d.rating !== '') ? d.rating : '';
+      document.getElementById('dishOrderedByInput').value = d.orderedBy || 'Family / Shared';
+      document.getElementById('dishNotesInput').value = d.notes || '';
+      document.getElementById('dishPhotoInput').value = '';
+      const btn = document.getElementById('btnSaveDish');
+      if (btn) btn.textContent = '💾 Update Dish';
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function compressImageToBase64(file, maxWidth, quality) {
@@ -6130,6 +6154,8 @@
 
     async function submitNewDish() {
       if (!activeRestaurant) return;
+      const editId = (document.getElementById('dishEditId') || {}).value || '';
+      const isEdit = Boolean(editId);
       const name = document.getElementById('dishNameInput').value.trim();
       const rawRating = document.getElementById('dishRatingInput').value.trim();
       const rating = rawRating !== '' ? parseFloat(rawRating) : '';
@@ -6142,7 +6168,7 @@
 
       const btn = document.getElementById('btnSaveDish');
       btn.disabled = true;
-      btn.textContent = photoFile ? 'Uploading photo...' : 'Saving...';
+      btn.textContent = photoFile ? 'Uploading photo...' : (isEdit ? 'Updating...' : 'Saving...');
 
       let compressed = null;
       if (photoFile) {
@@ -6150,7 +6176,8 @@
       }
 
       const payload = {
-        action: 'addDish',
+        action: isEdit ? 'updateDish' : 'addDish',
+        id: editId,
         restaurantId: activeRestaurant.id,
         name,
         rating,
@@ -6165,14 +6192,20 @@
         btn.textContent = 'Save Dish';
         if (res && res.success && res.dish) {
           if (!Array.isArray(activeRestaurant.dishes)) activeRestaurant.dishes = [];
-          activeRestaurant.dishes.unshift(res.dish);
-          activeRestaurant.visited = true;
+          if (isEdit) {
+            const idx = activeRestaurant.dishes.findIndex(x => x.id === editId);
+            if (idx !== -1) activeRestaurant.dishes[idx] = res.dish;
+            else activeRestaurant.dishes.unshift(res.dish);
+          } else {
+            activeRestaurant.dishes.unshift(res.dish);
+            activeRestaurant.visited = true;
+          }
           if (res.dish.photoUrl && !activeRestaurant.photoUrl) activeRestaurant.photoUrl = res.dish.photoUrl;
           saveRestaurantsCache();
           toggleDishForm(false);
           renderRestaurantModal();
           renderDining();
-          showToast('✅ Dish logged!');
+          showToast(isEdit ? '✅ Dish updated!' : '✅ Dish logged!');
         } else {
           showToast('❌ ' + (res && res.error ? res.error : 'Could not save dish'));
         }
