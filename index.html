@@ -889,6 +889,15 @@
             <button type="button" class="dining-mode-btn" data-dmode="DATE" onclick="setDiningMode('DATE')">🥂 Date Night</button>
           </div>
 
+          <div class="filter-section-label">Max Drive Time</div>
+          <div class="status-btn-grid" id="diningMaxDriveRow" style="margin-bottom:4px;">
+            <button type="button" class="toggle-pill" data-maxdrive="10" onclick="setMaxDiningDrive(10)">10m</button>
+            <button type="button" class="toggle-pill" data-maxdrive="15" onclick="setMaxDiningDrive(15)">15m</button>
+            <button type="button" class="toggle-pill active" data-maxdrive="20" onclick="setMaxDiningDrive(20)">20m</button>
+            <button type="button" class="toggle-pill" data-maxdrive="30" onclick="setMaxDiningDrive(30)">30m</button>
+            <button type="button" class="toggle-pill" data-maxdrive="999" onclick="setMaxDiningDrive(999)">Any</button>
+          </div>
+
           <div class="filter-section-label">Rank / Sort By</div>
           <select id="diningSortPicker" class="list-select" onchange="onDiningFilterChange()">
             <option value="NEARBY_SCORE" selected>📍 Best Nearby (Distance + Rating + Cost)</option>
@@ -2138,6 +2147,7 @@
         const catF = (document.getElementById('diningCategoryPicker') || {}).value || 'ALL';
         const sortF = (document.getElementById('diningSortPicker') || {}).value || 'NEARBY_SCORE';
         if (diningMode !== 'ALL') count++;
+        if (maxDiningDriveMins !== 20) count++;
         if (listF !== 'ALL_SPOTS') count++;
         if (regF !== 'Haslet / DFW') count++;
         if (catF !== 'ALL') count++;
@@ -2188,6 +2198,8 @@
         renderMovies();
       } else if (currentTab === 'dining') {
         diningMode = 'ALL';
+        maxDiningDriveMins = 20;
+        syncMaxDiningDriveUI();
         document.querySelectorAll('.dining-mode-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.dmode === 'ALL');
         });
@@ -4199,6 +4211,22 @@
     let diningMode = 'ALL'; // 'ALL' | 'FAMILY' | 'DATE'
     let dFilterDerek = 'ALL';
     let dFilterKianna = 'ALL';
+    let maxDiningDriveMins = 20;
+
+    function syncMaxDiningDriveUI() {
+      document.querySelectorAll('#diningMaxDriveRow button').forEach(btn => {
+        const active = Number(btn.dataset.maxdrive) === Number(maxDiningDriveMins);
+        btn.classList.toggle('active', active);
+        btn.style.background = active ? 'var(--accent)' : 'transparent';
+        btn.style.color = active ? '#fff' : 'var(--text-muted)';
+      });
+    }
+
+    function setMaxDiningDrive(mins) {
+      maxDiningDriveMins = Number(mins) || 20;
+      syncMaxDiningDriveUI();
+      renderDining();
+    }
     let activeRestaurant = null;
 
     document.querySelectorAll('.toggle-pill[data-dfilter]').forEach(btn => {
@@ -4371,7 +4399,9 @@
     function scanNearbyLiveGps(lat, lng) {
       const btn = document.getElementById('diningScanBtn');
       if (btn) btn.textContent = '🌍 Scanning...';
-      fetch(`${API_URL}?action=scanNearbyRestaurants&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius=10500`)
+      const scanMins = (maxDiningDriveMins && maxDiningDriveMins < 999) ? maxDiningDriveMins : 20;
+      const scanRadius = Math.min(18000, Math.max(5000, Math.round(scanMins * 700)));
+      fetch(`${API_URL}?action=scanNearbyRestaurants&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radius=${scanRadius}`)
         .then(r => r.json())
         .then(res => {
           if (btn) btn.textContent = '🌍 Scan';
@@ -4381,9 +4411,9 @@
             const b = document.getElementById('liveScanBanner');
             const bt = document.getElementById('liveScanBannerText');
             if (b) b.style.display = 'flex';
-            if (bt) bt.textContent = `🌍 Live Nearby (15m) — ${liveScanCity} (${res.restaurants.length} spots)`;
+            if (bt) bt.textContent = `🌍 Live Nearby (${scanMins}m) — ${liveScanCity} (${res.restaurants.length} spots)`;
             renderDining();
-            showToast(`🌍 Found ${res.restaurants.length} top spots within 15m of ${liveScanCity}!`);
+            showToast(`🌍 Found ${res.restaurants.length} top spots within ${scanMins}m of ${liveScanCity}!`);
           } else {
             showToast('No nearby spots returned — check GPS or try again');
           }
@@ -4650,6 +4680,8 @@
         if (visSel) visSel.value = 'ALL';
         dFilterDerek = 'ALL';
         dFilterKianna = 'ALL';
+        maxDiningDriveMins = 999;
+        syncMaxDiningDriveUI();
         syncTogglePillUI('data-dfilter', 'derek', 'ALL');
         syncTogglePillUI('data-dfilter', 'kianna', 'ALL');
       }
@@ -4778,6 +4810,11 @@
             const rReg = r.region || 'Haslet / DFW';
             if (!r.isChain && rReg !== regionFilter) return false;
           }
+        }
+
+        if (maxDiningDriveMins && maxDiningDriveMins < 999) {
+          const effMins = getEffectiveDriveMins(r);
+          if (effMins === null || isNaN(effMins) || effMins > maxDiningDriveMins) return false;
         }
 
         if (diningMode === 'FAMILY' && !r.familyFriendly) return false;
@@ -5681,8 +5718,10 @@
       syncTogglePillUI('data-mfilter', 'derek', mFilterDerek);
       syncTogglePillUI('data-mfilter', 'kianna', mFilterKianna);
 
-      // 3. Dining: Not visited out of Best Nearby (Distance + Rating + Cost)
+      // 3. Dining: Not visited out of Best Nearby within 20m (Distance + Rating + Cost)
       diningMode = 'ALL';
+      maxDiningDriveMins = 20;
+      syncMaxDiningDriveUI();
       document.querySelectorAll('.dining-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.dmode === 'ALL'));
       currentDiningScope = 'top100';
       dFilterDerek = isKianna ? 'ALL' : 'NOT_VISITED';
