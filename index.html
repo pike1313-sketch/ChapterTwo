@@ -8300,7 +8300,8 @@
       setAiScanStatus(mode, '✨ Reading recipe photo with AI...', false);
 
       try {
-        const compressed = await compressImageToBase64(file, 1400, 0.85);
+        // Keep max dimension at 768px so vision token count stays well under Groq's 1000-token free-tier limit while keeping text crisp
+        const compressed = await compressImageToBase64(file, 768, 0.85);
         if (!compressed || !compressed.base64) {
           throw new Error('Could not read photo');
         }
