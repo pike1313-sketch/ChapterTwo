@@ -1,5 +1,5 @@
 // Increment version string whenever pushing a major frontend update
-const CACHE_NAME = 'chaptertwo-v54';
+const CACHE_NAME = 'chaptertwo-v55';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -33,10 +33,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Network-first for index.html: checks GitHub for updates, falls back to cache if offline
+  // Network-first for index.html: bypass browser HTTP cache so GitHub Pages updates appear immediately
   if (e.request.mode === 'navigate' || e.request.url.endsWith('index.html') || e.request.url.endsWith('/')) {
     e.respondWith(
-      fetch(e.request)
+      fetch(e.request, { cache: 'no-cache' })
         .then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
