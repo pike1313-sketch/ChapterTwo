@@ -2305,14 +2305,16 @@
           <!-- ✨ AI Photo Scanner & Free URL Importer -->
           <div style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.35); border-radius:10px; padding:10px; margin-bottom:12px;">
             <div style="font-size:0.7rem; font-weight:900; color:#c7d2fe; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:7px;">✨ Auto-Fill Recipe (Free)</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <button type="button" id="btnScanRecipePhoto" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900; min-height:42px; font-size:0.78rem;" onclick="document.getElementById('evScanPhotoInput').click()">📷 Scan Photo</button>
-              <button type="button" id="btnToggleUrlImport" class="btn-act btn-goodreads" style="min-height:42px; font-size:0.78rem;" onclick="toggleEvUrlImportBox()">🔗 Import URL</button>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+              <button type="button" id="btnScanRecipeCamera" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900; min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="document.getElementById('evScanCameraInput').click()">📸 Take Photo</button>
+              <button type="button" id="btnScanRecipePhoto" class="btn-act btn-goodreads" style="min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="document.getElementById('evScanPhotoInput').click()">🖼️ Photos</button>
+              <button type="button" id="btnToggleUrlImport" class="btn-act btn-goodreads" style="min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="toggleEvUrlImportBox()">🔗 URL</button>
             </div>
-            <input type="file" id="evScanPhotoInput" accept="image/*" style="display:none;" onchange="handleScanRecipePhoto(this)">
+            <input type="file" id="evScanCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleScanRecipePhoto(this, 'VER')">
+            <input type="file" id="evScanPhotoInput" accept="image/*" style="display:none;" onchange="handleScanRecipePhoto(this, 'VER')">
             <div id="evUrlImportRow" style="display:none; margin-top:8px; gap:6px;">
-              <input type="url" id="evUrlImportInput" class="form-input" placeholder="Paste recipe link (https://...)" style="flex:1; min-height:40px; padding:8px 10px;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitImportRecipeUrl(); }">
-              <button type="button" id="btnRunUrlImport" class="dining-add-btn" style="flex-shrink:0; min-height:40px; padding:8px 12px;" onclick="submitImportRecipeUrl()">Go</button>
+              <input type="url" id="evUrlImportInput" class="form-input" placeholder="Paste recipe link (https://...)" style="flex:1; min-height:40px; padding:8px 10px;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitImportRecipeUrl('VER'); }">
+              <button type="button" id="btnRunUrlImport" class="dining-add-btn" style="flex-shrink:0; min-height:40px; padding:8px 12px;" onclick="submitImportRecipeUrl('VER')">Go</button>
             </div>
             <div id="evAiScanStatus" style="display:none; font-size:0.74rem; font-weight:800; color:#34d399; margin-top:8px;"></div>
           </div>
@@ -2578,10 +2580,41 @@
       </div>
 
       <div class="form-scroll">
+        <!-- ✨ AI Photo Scanner & Free URL Importer right on Main + Add -->
+        <div style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.35); border-radius:10px; padding:10px; margin-bottom:12px;">
+          <div style="font-size:0.7rem; font-weight:900; color:#c7d2fe; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:7px;">✨ Auto-Fill Recipe (Free)</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+            <button type="button" id="btnEfScanCamera" class="btn-act" style="background:var(--accent); color:#fff; font-weight:900; min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="document.getElementById('efScanCameraInput').click()">📸 Take Photo</button>
+            <button type="button" id="btnEfScanPhoto" class="btn-act btn-goodreads" style="min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="document.getElementById('efScanPhotoInput').click()">🖼️ Photos</button>
+            <button type="button" class="btn-act btn-goodreads" style="min-height:42px; font-size:0.74rem; padding:6px 4px;" onclick="toggleEfUrlImportBox()">🔗 URL</button>
+          </div>
+          <input type="file" id="efScanCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleScanRecipePhoto(this, 'MEAL')">
+          <input type="file" id="efScanPhotoInput" accept="image/*" style="display:none;" onchange="handleScanRecipePhoto(this, 'MEAL')">
+          <div id="efUrlImportRow" style="display:none; margin-top:8px; gap:6px;">
+            <input type="url" id="efUrlImportInput" class="form-input" placeholder="Paste recipe link (https://...)" style="flex:1; min-height:40px; padding:8px 10px;" onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitImportRecipeUrl('MEAL'); }">
+            <button type="button" id="btnEfRunUrlImport" class="dining-add-btn" style="flex-shrink:0; min-height:40px; padding:8px 12px;" onclick="submitImportRecipeUrl('MEAL')">Go</button>
+          </div>
+          <div id="efAiScanStatus" style="display:none; font-size:0.74rem; font-weight:800; color:#34d399; margin-top:8px;"></div>
+        </div>
+
         <input type="hidden" id="efId">
         <div class="form-group">
           <label class="form-label">Meal Name *</label>
           <input type="text" id="efName" class="form-input" placeholder="e.g. Spaghetti, Sloppy Joes, Chicken Alfredo">
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Prep (min)</label>
+            <input type="number" id="efPrepInput" class="form-input" min="0" placeholder="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cook (min)</label>
+            <input type="number" id="efCookInput" class="form-input" min="0" placeholder="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Servings</label>
+            <input type="text" id="efServingsInput" class="form-input" placeholder="6">
+          </div>
         </div>
         <div class="form-row-2">
           <div class="form-group">
@@ -2626,12 +2659,16 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">📷 Photo (Optional)</label>
+          <label class="form-label">📷 Dish Photo (Optional)</label>
           <input type="file" id="efPhotoInput" accept="image/*" class="form-input" style="padding:6px; font-size:0.78rem;">
         </div>
         <div class="form-group">
-          <label class="form-label">📖 Recipe / Ingredients</label>
-          <textarea id="efRecipe" class="form-input" rows="4" placeholder="Ingredients & quick directions..."></textarea>
+          <label class="form-label">🥣 Ingredients &amp; Amounts (one per line)</label>
+          <textarea id="efIngredientsInput" class="form-input" rows="4" placeholder="1 lb ground beef&#10;1 jar marinara sauce&#10;1 lb spaghetti"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">👨‍🍳 Directions (one step per line)</label>
+          <textarea id="efDirectionsInput" class="form-input" rows="4" placeholder="Boil salted water and cook pasta.&#10;Brown ground beef and simmer with sauce."></textarea>
         </div>
         <div class="form-group">
           <label class="form-label">📝 Notes</label>
@@ -7995,9 +8032,10 @@
           <div style="text-align:center; padding:12px 6px;">
             <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Scan a cookbook page, paste a link, or type directions so you can cook right from your phone!</div>
             <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-              <button type="button" class="dining-add-btn" style="padding:10px 14px;" onclick="quickScanActiveRecipe('PHOTO')">📷 Scan Photo</button>
-              <button type="button" class="cook-wake-btn" style="padding:10px 14px;" onclick="quickScanActiveRecipe('URL')">🔗 Import URL</button>
-              <button type="button" class="cook-wake-btn" style="padding:10px 14px;" onclick="editActiveEatInVersion()">✏️ Type</button>
+              <button type="button" class="dining-add-btn" style="padding:10px 12px;" onclick="quickScanActiveRecipe('CAMERA')">📸 Take Photo</button>
+              <button type="button" class="cook-wake-btn" style="padding:10px 12px;" onclick="quickScanActiveRecipe('PHOTO')">🖼️ Photos</button>
+              <button type="button" class="cook-wake-btn" style="padding:10px 12px;" onclick="quickScanActiveRecipe('URL')">🔗 URL</button>
+              <button type="button" class="cook-wake-btn" style="padding:10px 12px;" onclick="editActiveEatInVersion()">✏️ Type</button>
             </div>
           </div>`;
       } else {
@@ -8153,7 +8191,10 @@
       closeEatInVersionModal();
       editEatInVersion(verId);
       setTimeout(() => {
-        if (mode === 'PHOTO') {
+        if (mode === 'CAMERA') {
+          const inp = document.getElementById('evScanCameraInput');
+          if (inp) inp.click();
+        } else if (mode === 'PHOTO') {
           const inp = document.getElementById('evScanPhotoInput');
           if (inp) inp.click();
         } else if (mode === 'URL') {
@@ -8173,8 +8214,19 @@
       }
     }
 
-    function setEvAiStatus(msg, isError) {
-      const el = document.getElementById('evAiScanStatus');
+    function toggleEfUrlImportBox(forceOpen) {
+      const row = document.getElementById('efUrlImportRow');
+      if (!row) return;
+      const show = (typeof forceOpen === 'boolean') ? forceOpen : (row.style.display !== 'flex');
+      row.style.display = show ? 'flex' : 'none';
+      if (show) {
+        const inp = document.getElementById('efUrlImportInput');
+        if (inp) inp.focus();
+      }
+    }
+
+    function setAiScanStatus(targetForm, msg, isError) {
+      const el = document.getElementById(targetForm === 'MEAL' ? 'efAiScanStatus' : 'evAiScanStatus');
       if (!el) return;
       if (!msg) { el.style.display = 'none'; el.textContent = ''; return; }
       el.style.display = 'block';
@@ -8182,45 +8234,70 @@
       el.textContent = msg;
     }
 
-    function applyExtractedRecipeToForm(rec, sourceLabel) {
+    function guessEatInCategoryFromRecipe(rec) {
+      const text = ((rec.name || '') + ' ' + (rec.ingredients || []).join(' ')).toLowerCase();
+      if (/\b(pancake|waffle|crepe|omelet|egg|bacon|breakfast|french toast|hashbrown)\b/.test(text)) return 'Breakfast';
+      if (/\b(shrimp|salmon|tuna|fish|cod|tilapia|crab|seafood)\b/.test(text)) return 'Seafood';
+      if (/\b(taco|fajita|enchilada|quesadilla|tamale|burrito|chili verde|salsa|tortilla)\b/.test(text)) return 'Mexican';
+      if (/\b(pizza|flatbread|calzone)\b/.test(text)) return 'Pizza & Flatbread';
+      if (/\b(soup|chowder|stew|chili|broth|bisque)\b/.test(text)) return 'Soup & Chili';
+      if (/\b(salad|romaine|spinach|spring mix|dressing)\b/.test(text) && !/\bchicken breast|ground beef\b/.test(text)) return 'Salads & Bowls';
+      if (/\b(pasta|spaghetti|ziti|lasagna|mac|noodle|gnocchi|ravioli|alfredo|penne|fettuccine)\b/.test(text)) return 'Pasta';
+      if (/\b(burger|sloppy joe|sandwich|french dip|wrap|blt|sub|hoagie)\b/.test(text)) return 'Burgers & Sandwiches';
+      if (/\b(slow cooker|crockpot|crock pot|pot roast)\b/.test(text)) return 'Slow Cooker';
+      if (/\b(chicken)\b/.test(text)) return 'Chicken';
+      if (/\b(beef|steak|pork|ham|sausage|brat|meatloaf|roast)\b/.test(text)) return 'Beef / Pork';
+      if (/\b(cookie|cake|brownie|pie|cobbler|dessert|frosting)\b/.test(text)) return 'Treats';
+      return 'Other';
+    }
+
+    function applyExtractedRecipeToForm(rec, sourceLabel, targetForm) {
       if (!rec) return;
-      const nameEl = document.getElementById('evNameInput');
+      const isMeal = targetForm === 'MEAL';
+      const nameEl = document.getElementById(isMeal ? 'efName' : 'evNameInput');
       if (rec.name && !nameEl.value.trim()) nameEl.value = rec.name;
-      if (rec.prepMin > 0) document.getElementById('evPrepInput').value = rec.prepMin;
-      if (rec.cookMin > 0) document.getElementById('evCookInput').value = rec.cookMin;
-      if (rec.servings) document.getElementById('evServingsInput').value = rec.servings;
-      updateEvTotalPreview();
+      if (rec.prepMin > 0) document.getElementById(isMeal ? 'efPrepInput' : 'evPrepInput').value = rec.prepMin;
+      if (rec.cookMin > 0) document.getElementById(isMeal ? 'efCookInput' : 'evCookInput').value = rec.cookMin;
+      if (rec.servings) document.getElementById(isMeal ? 'efServingsInput' : 'evServingsInput').value = rec.servings;
+      if (!isMeal) updateEvTotalPreview();
+      if (isMeal) {
+        const guessedCat = guessEatInCategoryFromRecipe(rec);
+        const catEl = document.getElementById('efCategory');
+        if (catEl && guessedCat) catEl.value = guessedCat;
+      }
       if (rec.loe && ['Easy', 'Medium', 'Project'].includes(rec.loe)) {
-        document.getElementById('evLoeInput').value = rec.loe;
+        document.getElementById(isMeal ? 'efLoe' : 'evLoeInput').value = rec.loe;
       }
       if (rec.stability && ['Fresh', 'Pantry'].includes(rec.stability)) {
-        document.getElementById('evStabInput').value = rec.stability;
+        document.getElementById(isMeal ? 'efStability' : 'evStabInput').value = rec.stability;
       }
-      if (rec.source && !document.getElementById('evSourceInput').value.trim()) {
-        document.getElementById('evSourceInput').value = rec.source;
-      }
+      const srcEl = document.getElementById(isMeal ? 'efSource' : 'evSourceInput');
+      if (rec.source && !srcEl.value.trim()) srcEl.value = rec.source;
       if (Array.isArray(rec.ingredients) && rec.ingredients.length) {
-        document.getElementById('evIngredientsInput').value = rec.ingredients.join('\n');
+        document.getElementById(isMeal ? 'efIngredientsInput' : 'evIngredientsInput').value = rec.ingredients.join('\n');
       }
       if (Array.isArray(rec.directions) && rec.directions.length) {
-        document.getElementById('evDirectionsInput').value = rec.directions.join('\n');
+        document.getElementById(isMeal ? 'efDirectionsInput' : 'evDirectionsInput').value = rec.directions.join('\n');
       }
-      if (rec.notes && !document.getElementById('evNotesInput').value.trim()) {
-        document.getElementById('evNotesInput').value = rec.notes;
-      }
+      const notesEl = document.getElementById(isMeal ? 'efNotes' : 'evNotesInput');
+      if (rec.notes && !notesEl.value.trim()) notesEl.value = rec.notes;
+
       const ingCount = (rec.ingredients || []).length;
       const dirCount = (rec.directions || []).length;
-      setEvAiStatus(`✅ Filled ${ingCount} ingredients & ${dirCount} steps${sourceLabel ? ' (' + sourceLabel + ')' : ''}! Review & tap Save Recipe.`, false);
+      setAiScanStatus(targetForm, `✅ Filled ${ingCount} ingredients & ${dirCount} steps${sourceLabel ? ' (' + sourceLabel + ')' : ''}! Review & tap Save.`, false);
       showToast(`✨ Extracted ${ingCount} ingredients & ${dirCount} steps!`);
     }
 
-    async function handleScanRecipePhoto(input) {
+    async function handleScanRecipePhoto(input, targetForm) {
+      const mode = targetForm === 'MEAL' ? 'MEAL' : 'VER';
       const file = input && input.files && input.files[0];
       if (!file) return;
       input.value = '';
-      const btn = document.getElementById('btnScanRecipePhoto');
-      if (btn) { btn.disabled = true; btn.textContent = '⏳ Reading...'; }
-      setEvAiStatus('✨ Scanning recipe photo with Gemini AI...', false);
+      const camBtn = document.getElementById(mode === 'MEAL' ? 'btnEfScanCamera' : 'btnScanRecipeCamera');
+      const galBtn = document.getElementById(mode === 'MEAL' ? 'btnEfScanPhoto' : 'btnScanRecipePhoto');
+      if (camBtn) camBtn.disabled = true;
+      if (galBtn) galBtn.disabled = true;
+      setAiScanStatus(mode, '✨ Reading recipe photo with AI...', false);
 
       try {
         const compressed = await compressImageToBase64(file, 1400, 0.85);
@@ -8232,42 +8309,47 @@
           imageBase64: compressed.base64,
           mimeType: compressed.mimeType || 'image/jpeg'
         }, (res) => {
-          if (btn) { btn.disabled = false; btn.textContent = '📷 Scan Photo'; }
+          if (camBtn) camBtn.disabled = false;
+          if (galBtn) galBtn.disabled = false;
           if (res && res.success && res.recipe) {
-            applyExtractedRecipeToForm(res.recipe, 'Gemini Vision');
+            const prov = res.provider === 'groq' ? 'Groq Vision' : 'AI Vision';
+            applyExtractedRecipeToForm(res.recipe, prov, mode);
           } else {
             const errMsg = (res && res.error) ? res.error : 'Could not read recipe photo';
-            setEvAiStatus('❌ ' + errMsg, true);
+            setAiScanStatus(mode, '❌ ' + errMsg, true);
             showToast('❌ ' + errMsg);
           }
         });
       } catch (e) {
-        if (btn) { btn.disabled = false; btn.textContent = '📷 Scan Photo'; }
-        setEvAiStatus('❌ ' + e.message, true);
+        if (camBtn) camBtn.disabled = false;
+        if (galBtn) galBtn.disabled = false;
+        setAiScanStatus(mode, '❌ ' + e.message, true);
       }
     }
 
-    function submitImportRecipeUrl() {
-      const inp = document.getElementById('evUrlImportInput');
+    function submitImportRecipeUrl(targetForm) {
+      const mode = targetForm === 'MEAL' ? 'MEAL' : 'VER';
+      const inp = document.getElementById(mode === 'MEAL' ? 'efUrlImportInput' : 'evUrlImportInput');
       const url = (inp ? inp.value : '').trim();
       if (!/^https?:\/\//i.test(url)) {
         showToast('Paste a valid recipe URL (https://...)');
         return;
       }
-      const btn = document.getElementById('btnRunUrlImport');
+      const btn = document.getElementById(mode === 'MEAL' ? 'btnEfRunUrlImport' : 'btnRunUrlImport');
       if (btn) { btn.disabled = true; btn.textContent = '...'; }
-      setEvAiStatus('🔗 Reading recipe from website...', false);
+      setAiScanStatus(mode, '🔗 Reading recipe from website...', false);
 
       postEatInApi({ action: 'importRecipeUrl', url }, (res) => {
         if (btn) { btn.disabled = false; btn.textContent = 'Go'; }
         if (res && res.success && res.recipe) {
           if (inp) inp.value = '';
-          toggleEvUrlImportBox(false);
-          const methodLbl = res.method === 'jsonld' ? 'Instant Free Parse' : 'Gemini AI';
-          applyExtractedRecipeToForm(res.recipe, methodLbl);
+          if (mode === 'MEAL') toggleEfUrlImportBox(false);
+          else toggleEvUrlImportBox(false);
+          const methodLbl = res.method === 'jsonld' ? 'Instant Free Parse' : 'AI Extract';
+          applyExtractedRecipeToForm(res.recipe, methodLbl, mode);
         } else {
           const errMsg = (res && res.error) ? res.error : 'Could not import recipe URL';
-          setEvAiStatus('❌ ' + errMsg, true);
+          setAiScanStatus(mode, '❌ ' + errMsg, true);
           showToast('❌ ' + errMsg);
         }
       });
@@ -8279,6 +8361,8 @@
       const show = (typeof forceState === 'boolean') ? forceState : (box.style.display === 'none');
       box.style.display = show ? 'block' : 'none';
       if (show) {
+        setAiScanStatus('VER', '', false);
+        toggleEvUrlImportBox(false);
         const heading = document.getElementById('evFormHeading');
         if (heading) heading.textContent = '➕ Add New Recipe Option';
         document.getElementById('evEditId').value = '';
@@ -8307,6 +8391,8 @@
       const box = document.getElementById('eatInVersionFormBox');
       if (!box) return;
       box.style.display = 'block';
+      setAiScanStatus('VER', '', false);
+      toggleEvUrlImportBox(false);
       const heading = document.getElementById('evFormHeading');
       if (heading) heading.textContent = '✏️ Edit Recipe';
       const parsed = parseStructuredRecipe(v.recipe || '', v.loe || activeEatInMeal.loe);
@@ -8394,19 +8480,25 @@
 
     function openEatInFormModal(existing) {
       const isEdit = !!existing;
+      setAiScanStatus('MEAL', '', false);
+      toggleEfUrlImportBox(false);
       document.getElementById('efModalTitle').textContent = isEdit ? '✏️ Edit Home Meal' : '🍳 Add Home Meal';
       document.getElementById('efId').value = isEdit ? existing.id : '';
       document.getElementById('efName').value = isEdit ? (existing.name || '') : '';
+      const parsed = isEdit ? parseStructuredRecipe(existing.recipe || '', existing.loe) : null;
+      document.getElementById('efPrepInput').value = (parsed && !parsed.isEstimated && parsed.prepMin) ? parsed.prepMin : '';
+      document.getElementById('efCookInput').value = (parsed && !parsed.isEstimated && parsed.cookMin) ? parsed.cookMin : '';
+      document.getElementById('efServingsInput').value = (parsed && parsed.servings) ? parsed.servings : '';
       document.getElementById('efCategory').value = isEdit ? (existing.category || 'Other') : 'Pasta';
       document.getElementById('efLoe').value = isEdit ? (existing.loe || 'Easy') : 'Easy';
       document.getElementById('efStability').value = isEdit ? (existing.stability || 'Pantry') : 'Pantry';
       document.getElementById('efSource').value = isEdit ? (existing.source || '') : '';
-      document.getElementById('efRecipe').value = isEdit ? (existing.recipe || '') : '';
+      document.getElementById('efIngredientsInput').value = (parsed && parsed.ingredients) ? parsed.ingredients.join('\n') : '';
+      document.getElementById('efDirectionsInput').value = (parsed && parsed.directions) ? parsed.directions.join('\n') : '';
       document.getElementById('efNotes').value = isEdit ? (existing.notes || '') : '';
       document.getElementById('efPhotoInput').value = '';
       document.getElementById('btnDeleteEatInMeal').style.display = isEdit ? 'inline-block' : 'none';
       document.getElementById('eatInFormModal').classList.add('open');
-      setTimeout(() => document.getElementById('efName').focus(), 100);
     }
 
     function closeEatInFormModal() {
@@ -8426,19 +8518,33 @@
       btn.disabled = true;
       btn.textContent = 'Saving...';
 
+      const editId = document.getElementById('efId').value.trim();
       const photoFile = document.getElementById('efPhotoInput').files[0];
       const compressed = photoFile ? await compressImageToBase64(photoFile, 900, 0.78) : null;
 
+      const structuredRecipe = formatStructuredRecipe({
+        prepMin: document.getElementById('efPrepInput').value,
+        cookMin: document.getElementById('efCookInput').value,
+        servings: document.getElementById('efServingsInput').value,
+        ingredientsText: document.getElementById('efIngredientsInput').value,
+        directionsText: document.getElementById('efDirectionsInput').value
+      });
+
+      const loe = document.getElementById('efLoe').value;
+      const stability = document.getElementById('efStability').value;
+      const source = document.getElementById('efSource').value.trim();
+      const notes = document.getElementById('efNotes').value.trim();
+
       const payload = {
         action: 'saveEatInMeal',
-        id: document.getElementById('efId').value.trim(),
+        id: editId,
         name,
         category: document.getElementById('efCategory').value,
-        loe: document.getElementById('efLoe').value,
-        stability: document.getElementById('efStability').value,
-        source: document.getElementById('efSource').value.trim(),
-        recipe: document.getElementById('efRecipe').value.trim(),
-        notes: document.getElementById('efNotes').value.trim(),
+        loe,
+        stability,
+        source,
+        recipe: structuredRecipe,
+        notes,
         photoBase64: compressed ? compressed.base64 : '',
         photoMimeType: compressed ? compressed.mimeType : ''
       };
@@ -8457,7 +8563,33 @@
           renderEatIn();
           closeEatInFormModal();
           showToast(`✅ Saved ${merged.name}!`);
-          openEatInModal(merged);
+
+          // If brand-new meal with recipe content, auto-create its first Recipe Option so it opens straight into Cook View!
+          if (!editId && structuredRecipe) {
+            postEatInApi({
+              action: 'saveEatInVersion',
+              id: '',
+              mealId: merged.id,
+              name: merged.name,
+              loe,
+              stability,
+              source,
+              recipe: structuredRecipe,
+              notes
+            }, (vRes) => {
+              if (vRes && vRes.success && vRes.version) {
+                merged.versions = [vRes.version];
+                saveEatInCache();
+                renderEatIn();
+                openEatInModal(merged);
+                openEatInVersionModal(vRes.version.id);
+              } else {
+                openEatInModal(merged);
+              }
+            });
+          } else {
+            openEatInModal(merged);
+          }
         } else {
           showToast('❌ Could not save meal');
         }
