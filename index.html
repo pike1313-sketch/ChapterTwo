@@ -2395,7 +2395,7 @@
   <div class="modal-overlay fullscreen-modal" id="eatInVersionModal" onclick="if(event.target===this) closeEatInVersionModal()">
     <div class="modal-sheet">
       <div class="fp-topbar">
-        <button type="button" class="fp-back-btn" onclick="closeEatInVersionModal()">← Options</button>
+        <button type="button" class="fp-back-btn" id="evmBackBtn" onclick="closeEatInVersionModal()">← Back</button>
         <div class="fp-top-title" id="evmTopTitle">Recipe</div>
         <button type="button" class="fp-back-btn" onclick="editActiveEatInVersion()">✏️ Edit</button>
       </div>
@@ -2435,7 +2435,10 @@
             <span id="evmServingsPill" class="rest-tag-pill" style="display:none;"></span>
             <button type="button" class="cook-wake-btn" id="btnCookWakeLock" onclick="toggleCookWakeLock()">🔆 Keep Screen On</button>
           </div>
-          <button type="button" class="cook-wake-btn" onclick="document.getElementById('evmRatingsSection').scrollIntoView({behavior:'smooth', block:'start'})">⭐ Rate</button>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="cook-wake-btn" onclick="addAnotherVariantFromVersionModal()">+ Variant</button>
+            <button type="button" class="cook-wake-btn" onclick="document.getElementById('evmRatingsSection').scrollIntoView({behavior:'smooth', block:'start'})">⭐ Rate</button>
+          </div>
         </div>
 
         <div id="evmSourceWrap" style="display:none; margin-bottom:12px; font-size:0.8rem;"></div>
@@ -7623,18 +7626,35 @@
     }
 
     let activeEatInVersion = null;
+    let eatInSkippedVariants = false;
 
-    function openEatInModal(meal) {
+    function openEatInModal(meal, forceShowVariants) {
       activeEatInMeal = meal;
       activeEatInVersion = null;
       toggleEatInVersionForm(false);
       renderEatInModal();
+      const versions = (meal && meal.versions) ? meal.versions : [];
+      if (!forceShowVariants && versions.length === 1) {
+        eatInSkippedVariants = true;
+        openEatInVersionModal(versions[0].id);
+        return;
+      }
+      eatInSkippedVariants = false;
       document.getElementById('eatInModal').classList.add('open');
     }
 
     function closeEatInModal() {
       document.getElementById('eatInModal').classList.remove('open');
       toggleEatInVersionForm(false);
+    }
+
+    function addAnotherVariantFromVersionModal() {
+      if (!activeEatInMeal) return;
+      eatInSkippedVariants = false;
+      closeEatInVersionModal();
+      renderEatInModal();
+      document.getElementById('eatInModal').classList.add('open');
+      toggleEatInVersionForm(true);
     }
 
     // =========================================================================
@@ -7927,6 +7947,8 @@
       const v = (activeEatInMeal.versions || []).find(x => x.id === verId);
       if (!v) return;
       activeEatInVersion = v;
+      const backBtn = document.getElementById('evmBackBtn');
+      if (backBtn) backBtn.textContent = eatInSkippedVariants ? '← Back' : '← Options';
       renderEatInVersionModal();
       document.getElementById('eatInVersionModal').classList.add('open');
       const body = document.querySelector('#eatInVersionModal .fp-body');
@@ -7937,7 +7959,9 @@
       releaseCookWakeLock();
       document.getElementById('eatInVersionModal').classList.remove('open');
       activeEatInVersion = null;
-      renderEatInModal();
+      if (!eatInSkippedVariants) {
+        renderEatInModal();
+      }
     }
 
     function renderEatInVersionModal() {
@@ -8104,6 +8128,8 @@
       if (!activeEatInVersion) return;
       const verId = activeEatInVersion.id;
       closeEatInVersionModal();
+      renderEatInModal();
+      document.getElementById('eatInModal').classList.add('open');
       editEatInVersion(verId);
     }
 
@@ -8189,6 +8215,8 @@
       if (!activeEatInVersion) return;
       const verId = activeEatInVersion.id;
       closeEatInVersionModal();
+      renderEatInModal();
+      document.getElementById('eatInModal').classList.add('open');
       editEatInVersion(verId);
       setTimeout(() => {
         if (mode === 'CAMERA') {
