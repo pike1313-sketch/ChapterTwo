@@ -8274,10 +8274,10 @@
       const srcEl = document.getElementById(isMeal ? 'efSource' : 'evSourceInput');
       if (rec.source && !srcEl.value.trim()) srcEl.value = rec.source;
       if (Array.isArray(rec.ingredients) && rec.ingredients.length) {
-        document.getElementById(isMeal ? 'efIngredientsInput' : 'evIngredientsInput').value = rec.ingredients.join('\n');
+        document.getElementById(isMeal ? 'efIngredientsInput' : 'evIngredientsInput').value = rec.ingredients.map(i => `• ${i}`).join('\n');
       }
       if (Array.isArray(rec.directions) && rec.directions.length) {
-        document.getElementById(isMeal ? 'efDirectionsInput' : 'evDirectionsInput').value = rec.directions.join('\n');
+        document.getElementById(isMeal ? 'efDirectionsInput' : 'evDirectionsInput').value = rec.directions.map((d, idx) => `${idx + 1}. ${d}`).join('\n');
       }
       const notesEl = document.getElementById(isMeal ? 'efNotes' : 'evNotesInput');
       if (rec.notes && !notesEl.value.trim()) notesEl.value = rec.notes;
@@ -8406,8 +8406,8 @@
       document.getElementById('evLoeInput').value = v.loe || 'Easy';
       document.getElementById('evStabInput').value = v.stability || 'Pantry';
       document.getElementById('evSourceInput').value = v.source || '';
-      document.getElementById('evIngredientsInput').value = (parsed.ingredients || []).join('\n');
-      document.getElementById('evDirectionsInput').value = (parsed.directions || []).join('\n');
+      document.getElementById('evIngredientsInput').value = (parsed.ingredients || []).map(i => `• ${i}`).join('\n');
+      document.getElementById('evDirectionsInput').value = (parsed.directions || []).map((d, idx) => `${idx + 1}. ${d}`).join('\n');
       document.getElementById('evNotesInput').value = v.notes || '';
       document.getElementById('evPhotoInput').value = '';
       document.getElementById('btnSaveEatInVer').textContent = '💾 Update Recipe';
@@ -8494,8 +8494,8 @@
       document.getElementById('efLoe').value = isEdit ? (existing.loe || 'Easy') : 'Easy';
       document.getElementById('efStability').value = isEdit ? (existing.stability || 'Pantry') : 'Pantry';
       document.getElementById('efSource').value = isEdit ? (existing.source || '') : '';
-      document.getElementById('efIngredientsInput').value = (parsed && parsed.ingredients) ? parsed.ingredients.join('\n') : '';
-      document.getElementById('efDirectionsInput').value = (parsed && parsed.directions) ? parsed.directions.join('\n') : '';
+      document.getElementById('efIngredientsInput').value = (parsed && parsed.ingredients) ? parsed.ingredients.map(i => `• ${i}`).join('\n') : '';
+      document.getElementById('efDirectionsInput').value = (parsed && parsed.directions) ? parsed.directions.map((d, idx) => `${idx + 1}. ${d}`).join('\n') : '';
       document.getElementById('efNotes').value = isEdit ? (existing.notes || '') : '';
       document.getElementById('efPhotoInput').value = '';
       document.getElementById('btnDeleteEatInMeal').style.display = isEdit ? 'inline-block' : 'none';
